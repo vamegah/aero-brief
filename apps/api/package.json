@@ -1,0 +1,20 @@
+{
+  "name": "@aerobrief/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@aerobrief/core": "*",
+    "@aerobrief/db": "*",
+    "@aerobrief/mail": "*",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

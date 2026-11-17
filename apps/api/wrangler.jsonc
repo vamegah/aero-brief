@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "aerobrief-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-15",
+  // No secrets belong in this file. Set DATABASE_URL, RESEND_API_KEY and
+  // UNSUBSCRIBE_SECRET with `wrangler secret put <NAME>`; locally use .dev.vars.
+  // Non-secret config. Override per environment; locally use .dev.vars.
+  "vars": {
+    "FRONTEND_URL": "https://aerobrief.example.com",
+    "MAIL_FROM": "AeroBrief <alerts@aerobriefs.com>"
+  }
+}
