@@ -40,3 +40,8 @@ This stack is fixed. Build within it.
 ## Rule: no unflagged deviations
 
 Never suggest a technology outside this list without flagging the deviation explicitly. State that it is outside the approved stack, why it is needed, and what in-stack option was considered. Wait for the user's approval before using it.
+
+## Deployment
+
+- Frontend: Vercel Git integration, auto-deploys on push to `main`.
+- Workers: GitHub Actions (`.github/workflows/deploy-workers.yml`) with `cloudflare/wrangler-action`.
