@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Require PBT Update for Schema Changes",
+  "description": "Before any write to src/lib/schemas/**, confirm the corresponding property-based test file is updated.",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": ["write"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check the target path of this write. If it is NOT under src/lib/schemas/, do nothing and let the write proceed. If it IS under src/lib/schemas/, do not proceed until you confirm that the corresponding property-based test file is updated to cover the change. Per the project's structure rules, the PBT file mirrors the source path: src/lib/schemas/<name>.ts maps to tests/pbt/<name>.pbt.test.ts. Verify that file exists and that it is updated (or is being updated in this same task) to reflect the schema change. If it is missing or out of date, update or create it first, then perform the schema write. If you cannot confirm this, stop and tell the user why."
+  }
+}
