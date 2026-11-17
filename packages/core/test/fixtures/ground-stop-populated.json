@@ -1,0 +1,39 @@
+[
+  {
+    "airportId": "ATL",
+    "airportLongName": "Hartsfield-Jackson Atlanta International",
+    "latitude": "33.6367",
+    "longitude": "-84.4281",
+    "groundStop": {
+      "id": 4521,
+      "airportId": "ATL",
+      "createdAt": "2025-06-01T17:55:00Z",
+      "sourceTimeStamp": "2025-06-01T18:00:00Z",
+      "updatedAt": "2025-06-01T18:00:00Z",
+      "impactingCondition": "THUNDERSTORMS",
+      "programExpirationTime": "2025-06-01T20:00:00Z",
+      "startTime": "2025-06-01T18:00:00Z",
+      "endTime": "2025-06-01T19:30:00Z",
+      "center": "ZTL",
+      "advisoryUrl": "https://example.invalid/advzy",
+      "includedFacilities": ["ZTL"],
+      "includedFlights": "ALL",
+      "probabilityOfExtension": "MEDIUM"
+    },
+    "groundDelay": null
+  },
+  {
+    "airportId": "BOS",
+    "airportLongName": "Boston Logan International",
+    "groundStop": {
+      "startTime": "2025-06-01T18:30:00Z",
+      "impactingCondition": "WIND",
+      "center": "ZBW"
+    }
+  },
+  {
+    "airportId": "DEN",
+    "airportLongName": "Denver International",
+    "groundStop": {}
+  }
+]
