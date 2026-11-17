@@ -1,0 +1,122 @@
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+main {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+a {
+  color: var(--color-link);
+}
+
+.banner {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.banner--warn {
+  background: var(--color-warn-bg);
+  color: var(--color-warn-fg);
+}
+
+.banner--danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+}
+
+.banner__heading {
+  margin: 0 0 0.25rem;
+}
+
+.error-region__text {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-border);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+}
+
+.airport-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.airport-table caption {
+  text-align: left;
+  font-weight: bold;
+  padding-bottom: 0.5rem;
+}
+
+.airport-table th,
+.airport-table td {
+  text-align: left;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.airport-table thead th {
+  background: var(--color-surface);
+}
+
+.status {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.status--stop {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+}
+
+.status--clear {
+  background: var(--color-ok-bg);
+  color: var(--color-ok-fg);
+}
+
+.event-list {
+  padding-left: 1.25rem;
+}
+
+.event-list li {
+  margin-bottom: 0.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 24rem;
+}
+
+.form input {
+  padding: 0.5rem;
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  font: inherit;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}

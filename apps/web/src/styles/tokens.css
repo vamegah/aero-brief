@@ -1,0 +1,34 @@
+/*
+ * Design tokens (Task 10.6). KEEP IN SYNC with palette.ts: same variable
+ * names, same lowercase hex. test/palette-sync.test.ts enforces this.
+ *
+ * Contrast (hand-computed): normal text >= 4.5:1 (all pairs here are >= 6:1),
+ * large text and UI boundaries/focus >= 3:1 (all >= 4.4:1).
+ * Color is decoration only: never the sole status signal; always pair with text.
+ */
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #f3f5f7;
+  --color-text: #1a1a1a;
+  --color-text-muted: #4a4a4a;
+  --color-link: #1d4ed8;
+  --color-border: #6b7280;
+  --color-focus: #1d4ed8;
+
+  --color-ok-fg: #14532d;
+  --color-ok-bg: #dcfce7;
+  --color-warn-fg: #713f12;
+  --color-warn-bg: #fef9c3;
+  --color-danger-fg: #7f1d1d;
+  --color-danger-bg: #fee2e2;
+
+  /* Visible focus outline */
+  --focus-outline-width: 3px;
+  --focus-outline-offset: 2px;
+  --focus-outline: var(--focus-outline-width) solid var(--color-focus);
+}
+
+:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
