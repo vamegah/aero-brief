@@ -1,0 +1,157 @@
+import {
+  createLogger,
+  detectChanges,
+  eventKey,
+  explain,
+  normalizeResponse,
+  type Logger,
+} from "@aerobrief/core";
+import { createDb, createRepositories, type FailureKind, type Repositories } from "@aerobrief/db";
+import { parseEnv, type Env } from "./env";
+import { fetchFaa, type FetchFn } from "./faa-client";
+import { notify as defaultNotify, type NotifierDeps, type NotifierRepositories, type NotifierEvent, type NotifyInput, type NotifySummary } from "./notifier";
+import { sendEmail } from "@aerobrief/mail";
+
+/** Lease TTL from design.md (Poller): 3 minutes. */
+export const LEASE_TTL_MS = 180_000;
+
+const MAX_DETAIL_CHARS = 200;
+
+/** The repository methods the poll cycle uses. */
+export type PollRepositories = {
+  snapshots: Pick<Repositories["snapshots"], "latestSnapshot">;
+  jobRuns: Pick<Repositories["jobRuns"], "recordFailure">;
+  pollerLease: Pick<Repositories["pollerLease"], "acquire" | "release">;
+  storePollResult: Repositories["storePollResult"];
+  subscriptions: NotifierRepositories["subscriptions"];
+  alertLog: NotifierRepositories["alertLog"];
+};
+
+export type PollDeps = {
+  fetchFn?: FetchFn;
+  /** Builds the repositories from the validated DATABASE_URL. */
+  createRepositories?: (databaseUrl: string) => PollRepositories;
+  logger?: Logger;
+  /** Clock for `finishedAt`. Defaults to the real time. */
+  clock?: () => Date;
+  /** Notifier entry point. Defaults to `notify` from ./notifier. */
+  notifyFn?: (deps: NotifierDeps, input: NotifyInput) => Promise<NotifySummary>;
+  sendEmailFn?: NotifierDeps["sendEmail"];
+};
+
+function describeError(err: unknown): string {
+  const name = err instanceof Error ? err.name : "Error";
+  const message = err instanceof Error ? err.message : String(err);
+  return `${name}: ${message}`;
+}
+
+function truncate(text: string): string {
+  return text.length > MAX_DETAIL_CHARS ? `${text.slice(0, MAX_DETAIL_CHARS)}…` : text;
+}
+
+/**
+ * One poll cycle (Requirements 1.1, 1.2, 1.3, 1.5, 1.6, 1.7, 2.2, 2.3, 2.7).
+ * Never throws for runtime failures: they become a failed job_run or a log line.
+ * An invalid env is the one exception, because nothing can run without it.
+ */
+export async function runPoll(env: Env, now: Date, deps: PollDeps = {}): Promise<void> {
+  const validEnv = parseEnv(env);
+  const secrets = [validEnv.DATABASE_URL, validEnv.RESEND_API_KEY, validEnv.UNSUBSCRIBE_SECRET];
+  const logger = deps.logger ?? createLogger(secrets);
+  const clock = deps.clock ?? (() => new Date());
+  const repos = (deps.createRepositories ?? defaultRepositories)(validEnv.DATABASE_URL);
+
+  const redact = (text: string): string => {
+    let out = text;
+    for (const secret of secrets) if (secret.length > 0) out = out.split(secret).join("[REDACTED]");
+    return out;
+  };
+
+  let token: string | null;
+  try {
+    token = await repos.pollerLease.acquire(now, LEASE_TTL_MS);
+  } catch (err) {
+    // Database unreachable: nothing can be recorded. The next cron run retries.
+    logger.error("poll_lease_acquire_failed", { error: err });
+    return;
+  }
+  if (token === null) return; // Another run holds the lease (Requirement 1.7). No job_run.
+
+  const startedAt = now;
+  const fail = async (kind: FailureKind, detail: string): Promise<void> => {
+    try {
+      await repos.jobRuns.recordFailure(kind, truncate(redact(detail)), startedAt, clock());
+    } catch (err) {
+      logger.error("poll_failure_record_failed", { kind, error: err });
+    }
+  };
+
+  let inserted: Awaited<ReturnType<Repositories["storePollResult"]>> = [];
+  let storedAt: Date | null = null;
+  try {
+    const result = await fetchFaa(deps.fetchFn);
+    if (!result.ok) {
+      await fail(result.kind, result.detail);
+      return;
+    }
+    try {
+      const previous = await repos.snapshots.latestSnapshot(now);
+      const snapshot = normalizeResponse(
+        result.response,
+        result.fetchedAt ?? now.toISOString(),
+        crypto.randomUUID(),
+        previous,
+      );
+      const detected = detectChanges(snapshot, previous);
+      const newEvents = detected.map((e) => ({
+        eventKey: eventKey(e, previous?.id ?? null),
+        snapshotId: snapshot.id,
+        type: e.type,
+        airportId: e.type === "NATIONWIDE_EVENT" ? null : e.airportId,
+        occurredAt: new Date(e.occurredAt),
+        payload: e,
+        explanation: explain(e),
+      }));
+      // One db.batch: Snapshot, Events (ON CONFLICT DO NOTHING RETURNING) and success job_run.
+      inserted = await repos.storePollResult({ snapshot, events: newEvents, startedAt, finishedAt: clock() });
+      storedAt = clock(); // Alert_Latency starts right after the commit (Requirement 12.4).
+    } catch (err) {
+      // The batch is one transaction, so a throw leaves no partial Snapshot (Requirement 2.7).
+      await fail("storage", describeError(err));
+      return;
+    }
+
+    // Notifier failures never fail the poll or undo stored data (Requirement 9.1).
+    if (inserted.length > 0 && storedAt !== null) {
+      try {
+        await (deps.notifyFn ?? defaultNotify)(
+          {
+            repos: { snapshots: repos.snapshots, subscriptions: repos.subscriptions, alertLog: repos.alertLog },
+            sendEmail: deps.sendEmailFn ?? sendEmail,
+            clock,
+            logger,
+            config: {
+              resendApiKey: validEnv.RESEND_API_KEY,
+              unsubscribeSecret: validEnv.UNSUBSCRIBE_SECRET,
+              frontendUrl: validEnv.FRONTEND_URL,
+              from: validEnv.MAIL_FROM,
+            },
+          },
+          { events: inserted satisfies readonly NotifierEvent[], storedAt },
+        );
+      } catch (err) {
+        logger.error("poll_notify_failed", { error: err });
+      }
+    }
+  } finally {
+    try {
+      await repos.pollerLease.release(token, now);
+    } catch (err) {
+      logger.error("poll_lease_release_failed", { error: err });
+    }
+  }
+}
+
+function defaultRepositories(databaseUrl: string): PollRepositories {
+  return createRepositories(createDb(databaseUrl));
+}
