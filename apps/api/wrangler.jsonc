@@ -7,7 +7,7 @@
   // UNSUBSCRIBE_SECRET with `wrangler secret put <NAME>`; locally use .dev.vars.
   // Non-secret config. Override per environment; locally use .dev.vars.
   "vars": {
-    "FRONTEND_URL": "https://aerobrief.example.com",
+    "FRONTEND_URL": "https://www.aerobriefs.com",
     "MAIL_FROM": "AeroBrief <alerts@aerobriefs.com>"
   }
 }
