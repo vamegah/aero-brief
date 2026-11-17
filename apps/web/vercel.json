@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://aerobrief-api.<your-subdomain>.workers.dev/api/:path*" },
+    { "source": "/api/:path*", "destination": "https://aerobrief-api.vamegah.workers.dev/api/:path*" },
     { "source": "/auth/callback", "destination": "/index.html" },
     { "source": "/unsubscribe", "destination": "/index.html" },
     { "source": "/sign-in", "destination": "/index.html" },
