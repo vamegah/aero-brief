@@ -1,4 +1,4 @@
-﻿name: Deploy Workers
+name: Deploy Workers
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
       - "apps/poller/**"
       - "packages/**"
       - ".github/workflows/deploy-workers.yml"
+  workflow_dispatch:
 
 concurrency:
   group: deploy-workers-${{ github.ref }}
