@@ -884,7 +884,7 @@ Text             "There is no page at this address."   link "Go to national stat
 | 375 px (base) | Single column. NavBar links wrap under the brand. MetricChips stack. Table cells wrap text, so the page does not scroll sideways (Requirement 15.10). |
 | 768 px | MetricChips sit in one row. The watched list becomes a wrapping row of chips. |
 | 1024 px | Wider table columns and more spacing. |
-| 1440 px | Maximum content width. Content is centered and stops growing beyond this. |
+| 1440 px | Wider screens keep the same layout. Content is capped at 1000 px and centered (Task 17.1). |
 
 ### Test Compatibility
 

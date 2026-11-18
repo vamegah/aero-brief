@@ -20,7 +20,7 @@ export function AirportTable({ airports }: AirportTableProps) {
         {airports.map((airport) => (
           <tr key={airport.airportId}>
             <th scope="row">{airport.airportId}</th>
-            <td>{airport.name}</td>
+            <td className="airport-table__name">{airport.name}</td>
             <td>
               {airport.groundStop !== null ? (
                 <StatusPill variant="active" text="Ground stop" />

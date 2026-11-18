@@ -1,0 +1,264 @@
+/*
+ * Typography and base layout (Task 17.1). Imported LAST in main.tsx so it wins over
+ * tokens.css, app.css and primitives.css. Colors come from tokens only (see palette.ts).
+ * Pairs: text/text-primary/text-muted/link/border/focus on color-page are in palettePairs.
+ */
+
+html,
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-text-primary);
+  font-size: var(--text-md);
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea,
+table,
+caption,
+th,
+td {
+  font: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: inherit;
+  color: var(--color-text-primary);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+h3 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+th {
+  font-weight: 600;
+}
+
+/* Content container: 1000px, centered. Overrides the older 1440px rules. */
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header and footer inner content line up with main's content edge (1000px + 2rem padding). */
+.site-header {
+  background: var(--color-surface-raised);
+}
+
+.site-header__inner,
+.site-footer__inner {
+  max-width: 1000px;
+  margin-inline: auto;
+  padding-inline: 2rem;
+}
+
+@media (min-width: 1024px) {
+  main {
+    padding: 2rem;
+  }
+
+  .site-header__inner,
+  .site-footer__inner {
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  main,
+  .site-header__inner,
+  .site-footer__inner {
+    max-width: 1000px;
+    margin-inline: auto;
+  }
+}
+
+/*
+ * Summary hero card (Task 17.2). Pairs: status-normal/status-alert on surface-raised (large text),
+ * chip-text on chip-bg (normal). Status is also conveyed by the hero text; color only repeats it.
+ */
+.summary-card {
+  padding: var(--space-5);
+  background: var(--color-surface-raised);
+  border: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  gap: var(--space-3);
+}
+
+.summary-card .summary-card__hero {
+  flex: 1 0 100%;
+  display: block;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.summary-card .summary-card__hero .metric-chip__value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.summary-card .summary-card__hero--normal .metric-chip__value {
+  color: var(--color-status-normal);
+}
+
+.summary-card .summary-card__hero--alert .metric-chip__value {
+  color: var(--color-status-alert);
+}
+
+.summary-card .metric-chip:not(.summary-card__hero) {
+  padding: 4px 12px;
+  background: var(--color-chip-bg);
+  color: var(--color-chip-text);
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+/*
+ * Modern airport table (Task 17.3). Pairs: table-muted on table-head-bg and on surface-raised,
+ * text-primary on surface-raised, success on success-surface, pill-danger-text on danger-surface.
+ * table-rule is a decorative row separator (not a UI component boundary). Shared with WatchlistTable.
+ * Neutralizes older rules: app.css cell borders (vertical/outer), primitives.css sticky header,
+ * header box-shadow and zebra striping. overflow: hidden on the table disables sticky headers.
+ */
+.airport-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 0;
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.airport-table caption {
+  caption-side: top;
+  text-align: left;
+  padding: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.airport-table th,
+.airport-table td {
+  border: 0;
+  border-bottom: 1px solid var(--color-table-rule);
+  text-align: left;
+  padding: 16px;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.airport-table thead th {
+  position: static;
+  box-shadow: none;
+  padding: 12px 16px;
+  background: var(--color-table-head-bg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-table-muted);
+}
+
+.airport-table tbody tr,
+.airport-table tbody tr:nth-child(even) {
+  background: transparent;
+}
+
+.airport-table tbody tr:last-child th,
+.airport-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.airport-table tbody th[scope="row"] {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.airport-table tbody td {
+  color: var(--color-text-primary);
+}
+
+.airport-table tbody td.airport-table__name {
+  font-size: 0.875rem;
+  color: var(--color-table-muted);
+}
+
+.status-pill {
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-pill--normal {
+  background: var(--color-success-surface);
+  color: var(--color-success);
+}
+
+.status-pill--active {
+  background: var(--color-danger-surface);
+  color: var(--color-pill-danger-text);
+}
+
+@media (max-width: 480px) {
+  .airport-table th,
+  .airport-table td {
+    padding: 12px;
+  }
+
+  .airport-table tbody td .ui-button + .ui-button,
+  .airport-table tbody td button + button {
+    margin-top: 4px;
+  }
+}

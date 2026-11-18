@@ -8,6 +8,12 @@ const TYPE_PRESENTATION: Record<string, { label: string; icon: IconName }> = {
   NATIONWIDE_EVENT: { label: "System-wide disruption", icon: "info" },
 };
 
+const MODIFIER: Record<string, string> = {
+  GROUND_STOP_STARTED: "event-card--started",
+  GROUND_STOP_ENDED: "event-card--ended",
+  NATIONWIDE_EVENT: "event-card--nationwide",
+};
+
 const FALLBACK = { label: "Event", icon: "plane" } as const;
 
 export interface EventCardProps {
@@ -21,11 +27,13 @@ export interface EventCardProps {
 export function EventCard({ event }: EventCardProps) {
   const { label, icon } = TYPE_PRESENTATION[event.type] ?? FALLBACK;
   return (
-    <div className="event-card">
+    <div className={`event-card ${MODIFIER[event.type] ?? ""}`.trim()}>
       <div className="event-card__header">
-        <Icon name={icon} />
-        <span className="event-card__type">{label}</span>
-        {event.airportId !== null ? <strong className="event-card__airport">{event.airportId}</strong> : null}
+        <div className="event-card__title">
+          <Icon name={icon} />
+          <span className="event-card__type">{label}</span>
+          {event.airportId !== null ? <strong className="event-card__airport">{event.airportId}</strong> : null}
+        </div>
         <time className="event-card__time" dateTime={event.occurredAt}>
           {formatUtc(event.occurredAt)}
         </time>

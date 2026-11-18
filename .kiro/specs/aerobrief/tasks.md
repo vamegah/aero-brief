@@ -528,6 +528,24 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
     - Darken `color-border` so it reaches at least 4.5:1 on `color-bg`, `color-surface` and `color-surface-raised` (currently 4.42:1 on `color-surface`), keeping `palette.ts` and `tokens.css` in sync.
     - _Requirements: 15.12, 13.5_
 
+- [x] 17. Dashboard visual overhaul (CSS only, preserves all tests)
+  - [x] 17.1 Typography and base CSS in apps/web/src/index.css
+    - Create `apps/web/src/index.css`, imported last in `main.tsx`. Font `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`; page background `#f8fafc`; text `#0f172a`; content container `max-width: 1000px; margin: 0 auto; padding: 2rem`.
+    - Colors are tokens in `palette.ts` and `tokens.css`, with pairs in `palettePairs`.
+    - _Requirements: 15.1, 15.10, 15.12_
+
+  - [x] 17.2 Summary hero card
+    - White card, 12px radius, `0 1px 3px rgba(0,0,0,0.1)` shadow, 24px padding. The overall status value is 2rem bold, green `#16a34a` when normal and red when any ground stop or system-wide disruption is active. Count chips are grey pills (`#f1f5f9` background, `#475569` text, 4px 12px padding, 999px radius, 0.875rem).
+    - _Requirements: 15.4, 15.12_
+
+  - [x] 17.3 Modern airport table
+    - No vertical or outer borders; white table with 12px radius and shadow; uppercase muted header cells; 16px body cells with a 1px `#e2e8f0` bottom border; airport code 700 weight 1rem `#0f172a`; name column muted `#64748b` 0.875rem; softer status pills (green `#dcfce7` / `#166534` when normal, a matching red pair for ground stops). Table DOM unchanged.
+    - _Requirements: 15.5, 15.6, 15.12_
+
+  - [x] 17.4 Event alert cards
+    - White card with a 1px `#e2e8f0` border, 4px left border (blue `#3b82f6` default, red `#ef4444` for ground stop started, green `#22c55e` for ended), 8px radius, 16px padding, 12px gap. Header row uses flex `space-between` with a bold title and a muted 0.875rem timestamp.
+    - _Requirements: 15.7, 15.12_
+
 ## Notes
 
 - Tasks marked with `*` are optional test-only sub-tasks and can be skipped for a faster MVP. Task 11.1 is intentionally not optional because it is the Requirement 13.6 gate.

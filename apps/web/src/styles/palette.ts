@@ -12,8 +12,9 @@
 
 export const palette = {
   "color-bg": "#ffffff",
+  "color-page": "#f8fafc",
   "color-surface": "#f3f5f7",
-  "color-text": "#1a1a1a",
+  "color-text": "#0f172a",
   "color-text-muted": "#4a4a4a",
   "color-link": "#1d4ed8",
   "color-border": "#646b78",
@@ -26,7 +27,7 @@ export const palette = {
   "color-danger-bg": "#fee2e2",
   // Semantic roles (Task 16.1)
   "color-surface-raised": "#ffffff",
-  "color-text-primary": "#1a1a1a",
+  "color-text-primary": "#0f172a",
   "color-accent": "#1d4ed8",
   "color-accent-surface": "#dbeafe",
   "color-on-accent": "#ffffff",
@@ -41,6 +42,21 @@ export const palette = {
   "color-disabled-fg": "#4b5563",
   "color-disabled-bg": "#e5e7eb",
   "color-disabled-border": "#7c8494",
+  // Summary hero card (Task 17.2)
+  "color-status-normal": "#16a34a",
+  "color-status-alert": "#dc2626",
+  "color-chip-bg": "#f1f5f9",
+  "color-chip-text": "#475569",
+  // Modern airport table (Task 17.3)
+  "color-table-head-bg": "#f8fafc",
+  "color-table-muted": "#64748b",
+  "color-table-rule": "#e2e8f0",
+  "color-pill-danger-text": "#991b1b",
+  // Event alert cards (Task 17.4). Decorative 4px left-border accents only. The card's type label
+  // text carries the meaning, so these are not registered in palettePairs (#22c55e is ~2.3:1 on white).
+  "color-event-accent": "#3b82f6",
+  "color-event-accent-started": "#ef4444",
+  "color-event-accent-ended": "#22c55e",
 } as const;
 
 export type PaletteToken = keyof typeof palette;
@@ -135,4 +151,30 @@ export const palettePairs: readonly PalettePair[] = [
   { fg: "color-disabled-border", bg: "color-bg", size: "ui" },
   { fg: "color-disabled-border", bg: "color-surface", size: "ui" },
   { fg: "color-disabled-border", bg: "color-surface-raised", size: "ui" },
+
+  // Task 17.1: page background (#f8fafc) with cards on color-surface-raised
+  { fg: "color-text", bg: "color-page", size: "normal" },
+  { fg: "color-text-primary", bg: "color-page", size: "normal" },
+  { fg: "color-text-muted", bg: "color-page", size: "normal" },
+  { fg: "color-link", bg: "color-page", size: "normal" },
+  { fg: "color-accent", bg: "color-page", size: "normal" },
+  { fg: "color-border", bg: "color-page", size: "ui" },
+  { fg: "color-focus", bg: "color-page", size: "ui" },
+  { fg: "color-warning", bg: "color-page", size: "normal" },
+  { fg: "color-danger", bg: "color-page", size: "normal" },
+  { fg: "color-success", bg: "color-page", size: "normal" },
+  { fg: "color-disabled-border", bg: "color-page", size: "ui" },
+
+  // Task 17.2: hero value is 2rem bold (large text); chips are normal-size text
+  { fg: "color-status-normal", bg: "color-surface-raised", size: "large" }, // ~3.3:1
+  { fg: "color-status-alert", bg: "color-surface-raised", size: "large" }, // ~4.8:1
+  { fg: "color-chip-text", bg: "color-chip-bg", size: "normal" }, // ~6.9:1
+
+  // Task 17.3: airport table. color-table-rule (#e2e8f0) is a decorative row separator,
+  // not a component boundary, so it has no 3:1 pair.
+  { fg: "color-table-muted", bg: "color-table-head-bg", size: "normal" }, // ~4.55:1 header cells
+  { fg: "color-table-muted", bg: "color-surface-raised", size: "normal" }, // ~4.76:1 name column
+  { fg: "color-text-primary", bg: "color-surface-raised", size: "normal" }, // ~17:1 airport code
+  { fg: "color-success", bg: "color-success-surface", size: "normal" }, // ~6.5:1 normal pill
+  { fg: "color-pill-danger-text", bg: "color-danger-surface", size: "normal" }, // ~7:1 ground stop pill
 ];

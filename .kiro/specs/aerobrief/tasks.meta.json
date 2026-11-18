@@ -1640,6 +1640,61 @@
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1794970721597
       }
+    ],
+    "17.1 Typography and base CSS in apps/web/src/index.css": [
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972240782
+      },
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972404593
+      }
+    ],
+    "17.2 Summary hero card": [
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972406265
+      },
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972546387
+      }
+    ],
+    "17.3 Modern airport table": [
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972545833
+      },
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972685646
+      }
+    ],
+    "17.4 Event alert cards": [
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972685275
+      },
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972833345
+      }
+    ],
+    "17. Dashboard visual overhaul (CSS only, preserves all tests)": [
+      {
+        "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794972833748
+      }
     ]
   }
 }

@@ -8,8 +8,9 @@
 :root {
   /* Legacy color keys (still used by app.css) */
   --color-bg: #ffffff;
+  --color-page: #f8fafc;
   --color-surface: #f3f5f7;
-  --color-text: #1a1a1a;
+  --color-text: #0f172a;
   --color-text-muted: #4a4a4a;
   --color-link: #1d4ed8;
   --color-border: #646b78;
@@ -24,7 +25,7 @@
 
   /* Semantic color roles (Task 16.1) */
   --color-surface-raised: #ffffff;
-  --color-text-primary: #1a1a1a;
+  --color-text-primary: #0f172a;
   --color-accent: #1d4ed8;
   --color-accent-surface: #dbeafe;
   --color-on-accent: #ffffff;
@@ -38,6 +39,23 @@
   --color-disabled-fg: #4b5563;
   --color-disabled-bg: #e5e7eb;
   --color-disabled-border: #7c8494;
+
+  /* Summary hero card (Task 17.2) */
+  --color-status-normal: #16a34a;
+  --color-status-alert: #dc2626;
+  --color-chip-bg: #f1f5f9;
+  --color-chip-text: #475569;
+
+  /* Modern airport table (Task 17.3). --color-table-rule is a decorative row separator, not a UI boundary. */
+  --color-table-head-bg: #f8fafc;
+  --color-table-muted: #64748b;
+  --color-table-rule: #e2e8f0;
+  --color-pill-danger-text: #991b1b;
+
+  /* Event alert cards (Task 17.4). Decorative left-border accents; the type label text carries meaning. */
+  --color-event-accent: #3b82f6;
+  --color-event-accent-started: #ef4444;
+  --color-event-accent-ended: #22c55e;
 
   /* Spacing */
   --space-1: 4px;
