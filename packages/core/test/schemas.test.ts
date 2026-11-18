@@ -97,7 +97,7 @@ describe("parseFaaBody", () => {
 
   it("strips unknown keys", () => {
     const body = JSON.stringify([
-      { airportId: "ATL", latitude: "1", groundStop: { id: 7, advisoryUrl: "u" }, groundDelay: null },
+      { airportId: "ATL", latitude: "1", groundStop: { id: 7, someFutureField: "u" }, groundDelay: null },
     ]);
     const r = parseFaaBody(body);
     expect(r.kind).toBe("ok");

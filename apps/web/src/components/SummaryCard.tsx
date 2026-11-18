@@ -13,11 +13,17 @@ export function overallStatusText(groundStops: number, nationwideActive: boolean
   return groundStops > 0 ? "Ground stops active" : "Normal";
 }
 
+/** Decorative tone modifier for the hero value; the text stays the primary signal. */
+export function overallTone(overall: string): "normal" | "warning" | "critical" {
+  if (overall === "System-wide disruption") return "critical";
+  return overall === "Ground stops active" ? "warning" : "normal";
+}
+
 /** National summary: overall status text, two counts and the last-updated time. */
 export function SummaryCard({ airports, nationwide, capturedAt }: SummaryCardProps) {
   const groundStops = airports.filter((a) => a.groundStop !== null).length;
   const overall = overallStatusText(groundStops, nationwide.active);
-  const tone = overall === "Normal" ? "normal" : "alert";
+  const tone = overallTone(overall);
   return (
     <section className="summary-card" aria-label="National summary">
       <MetricChip

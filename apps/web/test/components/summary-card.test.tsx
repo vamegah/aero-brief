@@ -43,6 +43,17 @@ describe("SummaryCard", () => {
     expect(overallStatusText(2, true)).toBe("System-wide disruption");
   });
 
+  it("uses three decorative tone classes for the three levels", () => {
+    const stop = { ...makeAirports()[0]!, groundStop: { reasonText: "x" } };
+    const hero = (airports: ReturnType<typeof makeAirports>, active: boolean) =>
+      render(<SummaryCard airports={airports} nationwide={{ active, count: 0 }} capturedAt={CAPTURED_AT} />)
+        .container.querySelector(".summary-card__hero");
+    const calm = makeAirports().map((a) => ({ ...a, groundStop: null }));
+    expect(hero(calm, false)?.className).toContain("summary-card__hero--normal");
+    expect(hero([stop], false)?.className).toContain("summary-card__hero--warning");
+    expect(hero([stop], true)?.className).toContain("summary-card__hero--critical");
+  });
+
   it("sits after the aria-live region and before the table in StatusView", () => {
     const status = okStatus({ nationwide: { active: true, count: 4, artccs: [], explanation: "e" } });
     const { container } = render(<StatusView status={status} events={[]} loading={false} />);

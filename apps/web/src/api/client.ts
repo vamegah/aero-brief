@@ -9,7 +9,12 @@ export const REQUEST_TIMEOUT_MS = 10_000;
 export type AirportSummary = {
   airportId: string;
   name: string;
-  groundStop: { reasonText: string } | null;
+  groundStop: {
+    reasonText: string;
+    /** ISO 8601 UTC. Absent from older API responses; `fetchNationalStatus` normalizes to null. */
+    expectedEnd?: string | null;
+    advisoryUrl?: string | null;
+  } | null;
 };
 
 export type EventSummary = {
@@ -60,8 +65,33 @@ function isAirportSummary(value: unknown): value is AirportSummary {
   return (
     typeof value["airportId"] === "string" &&
     typeof value["name"] === "string" &&
-    (stop === null || (isRecord(stop) && typeof stop["reasonText"] === "string"))
+    (stop === null ||
+      (isRecord(stop) &&
+        typeof stop["reasonText"] === "string" &&
+        isOptionalString(stop["expectedEnd"]) &&
+        isOptionalString(stop["advisoryUrl"])))
   );
+}
+
+function isOptionalString(value: unknown): boolean {
+  return value === undefined || value === null || typeof value === "string";
+}
+
+function normalizeAirport(a: AirportSummary): AirportSummary {
+  if (a.groundStop === null) return a;
+  return {
+    ...a,
+    groundStop: {
+      reasonText: a.groundStop.reasonText,
+      expectedEnd: a.groundStop.expectedEnd ?? null,
+      advisoryUrl: a.groundStop.advisoryUrl ?? null,
+    },
+  };
+}
+
+/** Fills missing `expectedEnd` / `advisoryUrl` with null so callers can rely on `string | null`. */
+export function normalizeNationalStatus(body: NationalStatusResponse): NationalStatusResponse {
+  return body.state === "ok" ? { ...body, airports: body.airports.map(normalizeAirport) } : body;
 }
 
 function isEventSummary(value: unknown): value is EventSummary {
@@ -128,5 +158,54 @@ export async function fetchNationalStatus(signal?: AbortSignal): Promise<Nationa
   if (!isNationalStatusResponse(body)) {
     throw new ApiRequestError("Status response had an unexpected shape.", response.status);
   }
-  return body;
+  return normalizeNationalStatus(body);
+}
+
+function isAirportStatusResponse(value: unknown): value is AirportStatusResponse {
+  if (!isRecord(value)) return false;
+  if (value["state"] === "no_data") return typeof value["message"] === "string";
+  return (
+    value["state"] === "ok" &&
+    typeof value["capturedAt"] === "string" &&
+    typeof value["stale"] === "boolean" &&
+    isAirportSummary(value["airport"]) &&
+    Array.isArray(value["events"]) &&
+    value["events"].every(isEventSummary)
+  );
+}
+
+async function getJson(path: string, signal: AbortSignal | undefined): Promise<unknown> {
+  const response = await fetch(path, {
+    headers: { Accept: "application/json" },
+    signal: anySignal(AbortSignal.timeout(REQUEST_TIMEOUT_MS), signal),
+  });
+  if (!response.ok) {
+    throw new ApiRequestError(`Request failed with HTTP ${response.status}.`, response.status);
+  }
+  try {
+    return await response.json();
+  } catch {
+    throw new ApiRequestError("Response was not valid JSON.", response.status);
+  }
+}
+
+/**
+ * GET /api/status/airport/:code. `expectedEnd` and `advisoryUrl` are normalized to `string | null`.
+ * Rejects with `ApiRequestError` (status 404 for an unmonitored airport).
+ */
+export async function fetchAirportStatus(code: string, signal?: AbortSignal): Promise<AirportStatusResponse> {
+  const body = await getJson(`/api/status/airport/${encodeURIComponent(code)}`, signal);
+  if (!isAirportStatusResponse(body)) {
+    throw new ApiRequestError("Airport status response had an unexpected shape.", 200);
+  }
+  return body.state === "ok" ? { ...body, airport: normalizeAirport(body.airport) } : body;
+}
+
+/** GET /api/history/:code. Events for one airport within the last 24 h, newest first. */
+export async function fetchAirportHistory(code: string, signal?: AbortSignal): Promise<EventSummary[]> {
+  const body = await getJson(`/api/history/${encodeURIComponent(code)}`, signal);
+  if (!isRecord(body) || !Array.isArray(body["events"]) || !body["events"].every(isEventSummary)) {
+    throw new ApiRequestError("History response had an unexpected shape.", 200);
+  }
+  return body["events"];
 }

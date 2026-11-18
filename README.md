@@ -37,7 +37,7 @@ apps/poller      Worker: 5-minute FAA poll and 30-minute cleanup crons
 apps/api         Worker: HTTP API
 apps/web         React + Vite frontend
 tests/           repo-level tests (repo guard)
-docs/            kiro-usage.md, decisions.md, production-runbook.md
+docs/            kiro-usage.md, decisions.md, devpost-submission.md, production-runbook.md
 ```
 
 ## Prerequisites
@@ -127,13 +127,13 @@ To build the frontend: `npm run build -w apps/web`.
 
 ## Deployment
 
-> **Not deployed yet.** Production deployment, the live smoke test, the Resend domain check and uptime monitoring (tasks 13.2 to 13.5) are unfinished. No live URLs are claimed here.
+AeroBrief is live. Deployment, the live smoke test, the Resend domain check and uptime monitoring are done (tasks 13.2 to 13.5; results in [`docs/decisions.md`](docs/decisions.md)).
 
 | Item | URL |
 | --- | --- |
-| Web app (Vercel) | _TODO: fill in after deployment_ |
-| API (Cloudflare Worker) | _TODO: fill in after deployment_ |
-| Health check (`/api/health`) | _TODO: fill in after deployment_ |
+| Web app (Vercel) | https://www.aerobriefs.com |
+| API (Cloudflare Worker) | https://aerobrief-api.vamegah.workers.dev (also served at https://www.aerobriefs.com/api/ through the Vercel rewrite) |
+| Health check (`/api/health`) | https://www.aerobriefs.com/api/health |
 
 Deployment steps are in [`docs/production-runbook.md`](docs/production-runbook.md). Rotating production secrets is covered in [`docs/secret-rotation.md`](docs/secret-rotation.md).
 
@@ -144,6 +144,10 @@ See [`docs/kiro-usage.md`](docs/kiro-usage.md) for how agents, hooks, specs, ste
 - `.kiro/specs/aerobrief/`: requirements, design and tasks
 - `.kiro/steering/`: product, tech, structure and scope rules
 - `.kiro/hooks/`: hook definitions
+
+## Kiroween 2026 submission
+
+The Devpost text, judge testing notes and submission checklist are in [`docs/devpost-submission.md`](docs/devpost-submission.md).
 
 ## License
 

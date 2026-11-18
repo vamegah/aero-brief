@@ -12,7 +12,7 @@ function snap(active: Partial<Record<MonitoredId, { id: string; reason: string |
       return {
         airportId,
         groundStop: a
-          ? { faaEventId: a.id, idSource: "faa_id" as const, reason: a.reason, center: null, endTime: null }
+          ? { faaEventId: a.id, idSource: "faa_id" as const, reason: a.reason, center: null, endTime: null, expectedEnd: null, advisoryUrl: null }
           : null,
       };
     }),

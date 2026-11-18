@@ -12,6 +12,7 @@ export const FaaGroundStopSchema = z.object({
   center: z.string().nullish(),
   endTime: z.string().nullish(),
   programExpirationTime: z.string().nullish(),
+  advisoryUrl: z.string().nullish(),
 });
 
 export const FaaAirportEventSchema = z.object({
@@ -36,6 +37,10 @@ export const GroundStopInfoSchema = z.object({
   reason: z.string().nullable(),
   center: z.string().nullable(),
   endTime: z.string().nullable(),
+  /** ISO UTC expected end (endTime, else programExpirationTime). Old Snapshots lack it. */
+  expectedEnd: z.string().nullable().default(null),
+  /** Validated FAA advisory link (https, faa.gov only). Old Snapshots lack it. */
+  advisoryUrl: z.string().nullable().default(null),
 });
 
 const monitoredIdSchema = z.custom<MonitoredId>(

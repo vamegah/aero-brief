@@ -147,7 +147,11 @@ main {
   color: var(--color-status-normal);
 }
 
-.summary-card .summary-card__hero--alert .metric-chip__value {
+.summary-card .summary-card__hero--warning .metric-chip__value {
+  color: var(--color-status-warning);
+}
+
+.summary-card .summary-card__hero--critical .metric-chip__value {
   color: var(--color-status-alert);
 }
 
@@ -235,6 +239,48 @@ main {
 .airport-table tbody td.airport-table__name {
   font-size: 0.875rem;
   color: var(--color-table-muted);
+}
+
+/* Task 20.3: ground stop detail line and airport links. Pairs: table-muted and link on
+ * surface-raised and on table-head-bg (striped rows). */
+.airport-table tbody th[scope="row"] a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.airport-table tbody th[scope="row"] a:hover {
+  text-decoration: underline;
+}
+
+.airport-table tbody a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.airport-table__detail {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  color: var(--color-table-muted);
+  overflow-wrap: anywhere;
+}
+
+.airport-table__detail a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .status-pill {

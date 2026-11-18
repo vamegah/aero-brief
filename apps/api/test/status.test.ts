@@ -22,7 +22,7 @@ function snapshot(capturedAt: string, stopped: readonly string[] = []): Snapshot
     airports: AIRPORTS.map((a) => ({
       airportId: a.id,
       groundStop: stopped.includes(a.id)
-        ? { faaEventId: `faa-${a.id}`, idSource: "faa_id" as const, reason: "wind", center: null, endTime: null }
+        ? { faaEventId: `faa-${a.id}`, idSource: "faa_id" as const, reason: "wind", center: null, endTime: null, expectedEnd: null, advisoryUrl: null }
         : null,
     })),
   };
@@ -199,5 +199,58 @@ describe("history", () => {
     await expect(
       call(setup(null, events).handlers.history, ctx({ code: "JFK" }, "?since=notadate")),
     ).rejects.toMatchObject({ status: 400, code: "invalid_since" });
+  });
+});
+
+describe("ground stop expectedEnd and advisoryUrl (Requirements 17.1, 17.4, 17.5)", () => {
+  type Stop = { reasonText: string; expectedEnd: string | null; advisoryUrl: string | null };
+
+  function withStop(extra: Record<string, unknown>): Snapshot {
+    const snap = snapshot(secondsAgo(30), ["JFK"]);
+    const jfk = snap.airports.find((a) => a.airportId === "JFK");
+    if (jfk?.groundStop == null) throw new Error("fixture");
+    // Fixture override: lets tests simulate old snapshots and unsafe URLs.
+    jfk.groundStop = { ...jfk.groundStop, ...extra } as typeof jfk.groundStop;
+    return snap;
+  }
+
+  async function stops(snap: Snapshot): Promise<{ national: Stop | null; airport: Stop | null }> {
+    const { handlers } = setup(snap);
+    const n = await call(handlers.national, ctx());
+    const a = await call(handlers.airport, ctx({ code: "JFK" }));
+    const list = n.json["airports"] as { airportId: string; groundStop: Stop | null }[];
+    return {
+      national: list.find((x) => x.airportId === "JFK")?.groundStop ?? null,
+      airport: (a.json["airport"] as { groundStop: Stop | null }).groundStop,
+    };
+  }
+
+  it("returns expectedEnd and a safe advisoryUrl on both endpoints", async () => {
+    const r = await stops(withStop({ expectedEnd: "2025-01-02T14:00:00.000Z", advisoryUrl: "https://www.fly.faa.gov/adv" }));
+    for (const s of [r.national, r.airport]) {
+      expect(s?.expectedEnd).toBe("2025-01-02T14:00:00.000Z");
+      expect(s?.advisoryUrl).toBe("https://www.fly.faa.gov/adv");
+    }
+  });
+
+  it("returns null for both when absent (old snapshot)", async () => {
+    const snap = withStop({});
+    const jfk = snap.airports.find((a) => a.airportId === "JFK");
+    if (jfk?.groundStop == null) throw new Error("fixture");
+    const legacy: Record<string, unknown> = { ...jfk.groundStop };
+    delete legacy["expectedEnd"];
+    delete legacy["advisoryUrl"];
+    jfk.groundStop = legacy as unknown as typeof jfk.groundStop;
+    const r = await stops(snap);
+    for (const s of [r.national, r.airport]) {
+      expect(s?.expectedEnd).toBeNull();
+      expect(s?.advisoryUrl).toBeNull();
+    }
+  });
+
+  it("nulls an unsafe advisoryUrl", async () => {
+    const r = await stops(withStop({ advisoryUrl: "javascript:alert(1)" }));
+    expect(r.national?.advisoryUrl).toBeNull();
+    expect(r.airport?.advisoryUrl).toBeNull();
   });
 });

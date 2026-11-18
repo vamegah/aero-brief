@@ -1,10 +1,18 @@
 import { MONITORED_IDS, isMonitoredId, type MonitoredId } from "./airports";
+import { acceptAdvisoryUrl } from "./advisory-url";
 import { deriveFaaEventId } from "./dedupe";
 import type { AirportStatus, FaaResponse, GroundStopInfo, Snapshot } from "./schemas";
 
 // FAA_Event_ID derivation lives in dedupe.ts; re-exported here so callers of
 // normalization have a single entry point.
 export { deriveFaaEventId } from "./dedupe";
+
+/** ISO UTC with milliseconds, or null when absent or unparseable. */
+function toIsoUtc(value: string | null | undefined): string | null {
+  if (value === null || value === undefined) return null;
+  const ms = new Date(value).getTime();
+  return Number.isNaN(ms) ? null : new Date(ms).toISOString();
+}
 
 /**
  * Turn a validated FAA response into a stored Snapshot (Requirements 2.4, 2.5, 2.8).
@@ -33,6 +41,8 @@ export function normalizeResponse(
       reason: gs.impactingCondition ?? null,
       center: gs.center ?? null,
       endTime: gs.endTime ?? null,
+      expectedEnd: toIsoUtc(gs.endTime) ?? toIsoUtc(gs.programExpirationTime),
+      advisoryUrl: acceptAdvisoryUrl(gs.advisoryUrl),
     };
 
     const current = best.get(airportId);

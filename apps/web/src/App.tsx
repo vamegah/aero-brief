@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Footer } from "./components/Footer";
 import { NavBar } from "./components/NavBar";
+import { AirportPage, airportIdFromPath } from "./pages/AirportPage";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { SignInPage } from "./pages/SignInPage";
@@ -10,6 +11,10 @@ import { WatchlistPage } from "./pages/WatchlistPage";
 
 /** Picks the page for a pathname. No router library. Tasks 10.4/10.5 replace the placeholders. */
 function pageFor(pathname: string): ReactNode {
+  if (pathname.startsWith("/airport/")) {
+    const airportId = airportIdFromPath(pathname);
+    return airportId === null ? <NotFoundPage /> : <AirportPage airportId={airportId} />;
+  }
   switch (pathname) {
     case "/auth/callback":
       return <AuthCallbackPage />;

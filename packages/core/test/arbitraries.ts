@@ -195,6 +195,8 @@ function makeGroundStop(airportId: MonitoredId, slot: number, idSource: IdSource
     reason: slot % 2 === 0 ? "wind" : null,
     center: slot % 3 === 0 ? "ZNY" : null,
     endTime: null,
+    expectedEnd: slot % 4 === 0 ? "2026-01-01T12:00:00.000Z" : null,
+    advisoryUrl: slot % 5 === 0 ? "https://www.fly.faa.gov/adv/adv_otherdis?advn=1" : null,
   };
 }
 

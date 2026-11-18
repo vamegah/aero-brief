@@ -57,7 +57,12 @@ export function SignInPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            aria-describedby="sign-in-privacy"
           />
+          <p id="sign-in-privacy" className="form__hint">
+            We store your email only to send sign-in links and the alerts you choose. You can delete your account and
+            all its data at any time.
+          </p>
           <Button type="submit" variant="primary" disabled={busy}>
             {busy ? "Sending…" : "Email me a sign-in link"}
           </Button>

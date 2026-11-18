@@ -1820,6 +1820,121 @@
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1794980007871
       }
+    ],
+    "14.7 Pick the Devpost category and write the submission text": [
+      {
+        "executionId": "6070892a-f144-4a13-a0fa-304cf63f1355",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795023157944
+      },
+      {
+        "executionId": "6070892a-f144-4a13-a0fa-304cf63f1355",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795023409113
+      }
+    ],
+    "14.8 Update docs/kiro-usage.md for the Kiroween 2026 write-up questions": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795023714973
+      },
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795024059397
+      }
+    ],
+    "20.1 Capture expected end and a safe FAA advisory URL in the Snapshot": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795024059861
+      },
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795024475330
+      }
+    ],
+    "20.2 Expose reason, expected end and advisory URL from the API": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795024477133
+      },
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795024974148
+      }
+    ],
+    "20.3 Status table: reason, expected end, FAA link, and airport links": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795024974964
+      },
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795025275455
+      }
+    ],
+    "20.4 Airport page at /airport/<id>": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795025275913
+      },
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795025668291
+      }
+    ],
+    "20.5 Three-level national status color": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795025669177
+      },
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795025999071
+      }
+    ],
+    "20.6 Privacy notice on the sign-in page": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795025669874
+      },
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795025999557
+      }
+    ],
+    "20.7 Checkpoint: run the full test suite": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795026000036
+      },
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795026217105
+      }
+    ],
+    "20. Ground stop details, airport page and small product additions (no new dependencies)": [
+      {
+        "executionId": "4942cddb-811f-4938-8bc0-3f002f9cb6bb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795026217626
+      }
     ]
   }
 }

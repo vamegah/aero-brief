@@ -157,6 +157,7 @@ The MVP monitors exactly 20 hardcoded US airports, caps each watchlist at 10 air
 8. IF a visitor has submitted 5 Magic_Link requests for the same email address within the preceding 60 minutes, THEN THE API SHALL reject each further request for that address with a rate-limit error, create no Magic_Link, and send no email until fewer than 5 requests fall within the preceding 60 minutes.
 9. WHEN a User signs out, THE API SHALL invalidate the Session so that any later request using that Session is rejected as unauthenticated.
 10. IF Resend fails to accept the email for a Magic_Link, THEN THE API SHALL return an error indicating the email could not be sent and SHALL invalidate the Magic_Link that was created.
+11. THE Frontend SHALL show on the sign-in page, before the email address is submitted, a notice stating that AeroBrief stores the email address only to send sign-in links and the alerts the User chooses, and that the User can delete the account and all its data at any time.
 
 ### Requirement 8: Manage the watchlist
 
@@ -287,6 +288,7 @@ The MVP monitors exactly 20 hardcoded US airports, caps each watchlist at 10 air
 11. THE Frontend SHALL implement every interactive element as a native `<button>` element or an `<a>` element with an `href`, reachable by keyboard and showing a visible focus indicator.
 12. THE Frontend SHALL give every new foreground and background color pair a contrast ratio of at least 4.5:1 for normal text and at least 3:1 for large text, user interface component boundaries, and focus indicators.
 13. WHEN a User reaches the Watchlist page directly after redeeming a Magic_Link, THE Frontend SHALL display a dismissible success message "Successfully signed in as <email>." containing the email address returned by the API, SHALL announce it through an ARIA live region without moving keyboard focus, AND SHALL NOT place the email address in the page URL.
+14. WHEN the Status page displays a Snapshot, THE Frontend SHALL show the overall national status as exactly one of three levels: "Normal" when no Monitored_Airport has an active Ground_Stop, "Ground stops active" when at least one Monitored_Airport has an active Ground_Stop and no nationwide event is active, and "System-wide disruption" when a nationwide event is active, each with a decorative color (green, amber, and red respectively) that meets a 3:1 contrast ratio as large text.
 
 ### Requirement 16: Rotate secrets safely
 
@@ -302,3 +304,28 @@ The MVP monitors exactly 20 hardcoded US airports, caps each watchlist at 10 air
 6. IF a verification step fails after a secret was changed, THEN THE rotation script SHALL stop, report which secrets were changed and which were not, and SHALL NOT delete any old Resend key.
 7. WHEN the UNSUBSCRIBE_SECRET is rotated, THE API SHALL accept unsubscribe links signed with the previous secret for 30 days after the rotation, and THE Notifier SHALL sign new links only with the current secret.
 8. WHEN the 30-day period after an UNSUBSCRIBE_SECRET rotation has passed, THE API SHALL reject unsubscribe links signed only with the previous secret.
+
+### Requirement 17: Show the cause, expected end, and official source of each ground stop
+
+**User Story:** As a traveler or dispatcher, I want to see why an airport is stopped, how long it may last, and where the official notice is, so that I can plan and check the source myself.
+
+#### Acceptance Criteria
+
+1. WHILE a Monitored_Airport has an active Ground_Stop, THE Frontend SHALL show in that airport's row of the airport status table the plain-language reason text returned by the API, produced by the Explanation_Mapper rules of Requirement 5.
+2. WHERE the FAA_API supplies an end time or a program expiration time for an active Ground_Stop, THE Frontend SHALL show "Expected to end around <time> UTC", using the end time when both are supplied.
+3. IF the FAA_API supplies neither an end time nor a program expiration time for an active Ground_Stop, THEN THE Frontend SHALL show "Until further notice".
+4. WHERE the FAA_API supplies an advisory URL for an active Ground_Stop that uses HTTPS and whose host is `faa.gov` or a subdomain of `faa.gov`, THE Frontend SHALL show a link labelled "FAA advisory" to that URL.
+5. IF the advisory URL is absent, is not HTTPS, or has a host outside `faa.gov`, THEN THE API SHALL omit it, AND THE Frontend SHALL instead link to `https://nasstatus.faa.gov`.
+6. THE Poller SHALL store the end time, program expiration time, and accepted advisory URL in the Snapshot without making any Snapshot that lacks them invalid, so that the round-trip property of Requirement 2.8 still holds.
+
+### Requirement 18: Show a 24-hour timeline for one airport
+
+**User Story:** As a traveler, I want a page for one airport, so that I can see its current status and everything that happened there in the last 24 hours.
+
+#### Acceptance Criteria
+
+1. THE Frontend SHALL link the airport identifier in each row of the airport status table to the page `/airport/<identifier>` for that airport.
+2. WHEN a visitor opens `/airport/<identifier>` for a Monitored_Airport, THE Frontend SHALL show the airport name, its current status with the details of Requirement 17, the capture time of the latest Snapshot, and every Event for that airport whose start time is within the previous 24 hours, ordered from most recent to oldest, each with its Explanation unaltered and its time.
+3. IF the identifier in `/airport/<identifier>` is not one of the 20 Monitored_Airports, THEN THE Frontend SHALL show the Not found page.
+4. WHILE the API response for the airport includes the Stale_State indicator, THE Frontend SHALL display the Stale_Data_Banner on the airport page.
+5. THE airport page SHALL define visible loading, empty, and error states, and SHALL request data only from the existing `/api/status/airport/:code` and `/api/history/:code` endpoints.

@@ -464,3 +464,10 @@ main {
     margin-inline: auto;
   }
 }
+
+/* Sign-in privacy notice (Task 20.6). Pair: text-muted on page/surface. */
+.form__hint {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}

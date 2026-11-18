@@ -78,7 +78,7 @@ An alert email is only sent when a ground stop starts or ends at an airport on s
 
 ## YouTube upload notes
 
-- Visibility: **Unlisted** is enough for Devpost judges and keeps it off search. Choose Public only if you want it discoverable. Do not leave it Private; judges cannot open it. Confirm the link works in a logged-out window.
+- Visibility: **Public**. The Kiroween 2026 rules require the demo video to be uploaded to YouTube and made public. Do not use Unlisted or Private. Confirm the link works in a logged-out window.
 - Audience: "No, it's not made for kids".
 - Title: `AeroBrief demo: FAA ground stop alerts in plain language (under 3 minutes)`
 - Description (adapt):

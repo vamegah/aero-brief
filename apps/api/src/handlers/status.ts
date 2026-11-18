@@ -1,5 +1,6 @@
 import {
   AIRPORTS,
+  acceptAdvisoryUrl,
   RETENTION_MS,
   explain,
   isMonitoredId,
@@ -29,7 +30,11 @@ export interface StatusDeps {
   recentEvents(now: Date, airportId?: string): Promise<readonly StatusEventRow[]>;
 }
 
-export type AirportSummary = { airportId: string; name: string; groundStop: { reasonText: string } | null };
+export type AirportSummary = {
+  airportId: string;
+  name: string;
+  groundStop: { reasonText: string; expectedEnd: string | null; advisoryUrl: string | null } | null;
+};
 export type EventSummary = { type: string; airportId: string | null; occurredAt: string; explanation: string };
 
 export type NationalStatusResponse =
@@ -87,6 +92,9 @@ function summarizeAirports(snapshot: Snapshot): AirportSummary[] {
                 faaEventId: stop.faaEventId,
                 reason: stop.reason,
               }),
+              // Old snapshots may lack these fields. The URL is re-checked here (Requirement 17.5).
+              expectedEnd: typeof stop.expectedEnd === "string" ? stop.expectedEnd : null,
+              advisoryUrl: acceptAdvisoryUrl(stop.advisoryUrl),
             },
     };
   });

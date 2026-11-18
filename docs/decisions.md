@@ -82,3 +82,25 @@ Note: a direct Node connection to Neon from this machine fails with `UNABLE_TO_V
 - `apps/api/wrangler.jsonc` and `apps/poller/wrangler.jsonc` both set `MAIL_FROM` to `AeroBrief <alerts@aerobriefs.com>`.
 - `.env.example` documents `MAIL_FROM` with the note that it must be a verified Resend domain (placeholder `alerts@your-domain.com`).
 - Fixed stray references: both `.dev.vars.example` files and the stale placeholder note in `docs/production-runbook.md` now use the aerobriefs.com address.
+
+## 2026-11-18: Kiroween 2026 category: Frankenstein (Task 14.7)
+
+**Choice:** Frankenstein. The user picked it. The category asks for a chimera of technologies stitched into one app, bringing together elements that don't obviously belong together.
+
+**Why it fits, from what is in the repo:**
+
+| Part | Where it lives | What it does in the stitched whole |
+| --- | --- | --- |
+| Government data feed | `apps/poller/src/faa-client.ts` (`https://nasstatus.faa.gov/api/airport-events`, the only host the poller calls) | Source of ground stop data, validated with Zod in `packages/core/src/schemas.ts` |
+| Scheduled edge compute | `apps/poller/wrangler.jsonc` (crons `*/5` and `*/30`), `apps/api/wrangler.jsonc` | Cloudflare Workers poll every 5 minutes and serve the API. No always-on server |
+| Serverless Postgres | `packages/db` (Drizzle, `@neondatabase/serverless`), 4 migrations | Snapshots, events, watchlists, sessions, alert log, with 24 hour retention |
+| Pure, property-tested core | `packages/core/src/` (change detector, explanation mapper, event keys, watchlist rules), 44 `*.pbt.test.ts` files using fast-check | Decides what changed and says why in plain English, with no I/O |
+| Transactional email | `packages/mail` (Resend over `fetch`, retries, `Idempotency-Key`), `packages/core` unsubscribe signing | Alert emails, magic-link sign-in, signed one-click unsubscribe. No passwords |
+| Accessible frontend | `apps/web` (React 18 + Vite, Vercel), `styles/palette.ts`, contrast test, vitest-axe suite | Dashboard and watchlist, text-first status, tested against WCAG 2.1 AA contrast |
+| Kiro process | `.kiro/specs`, `.kiro/steering`, `.kiro/hooks` | Spec-driven build; steering rules enforced by `tests/repo-guard.test.ts` |
+
+**The chimera:** an aviation data feed, edge cron jobs, a serverless database, a verified pure-logic core, an email system that doubles as the login mechanism, and an accessibility-tested UI are combined into one crisis tool. The tool is meant to keep serving cached data, with a visible stale banner, when the FAA's own status page fails.
+
+**Alternatives not chosen:** Resurrection (no old technology is revived), Skeleton Crew (the app is not a flexible base with two distinct uses), Costume Contest (no spooky UI theme; the design rules say clarity over decoration).
+
+**Not claimed:** The stitching is unusual in how the parts combine, not in any single exotic technology. The FAA feed is public JSON and the design is conventional.

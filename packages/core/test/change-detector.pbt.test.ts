@@ -36,6 +36,8 @@ function buildSnapshot(slots: readonly (number | null)[], capturedAt: string, id
               reason: slot % 2 === 0 ? "wind" : null,
               center: null,
               endTime: null,
+              expectedEnd: null,
+              advisoryUrl: null,
             },
     };
   });
@@ -153,7 +155,7 @@ describe("change detector properties", () => {
           a.airportId === extra && a.groundStop === null
             ? {
                 airportId: a.airportId,
-                groundStop: { faaEventId: `faa:${extra}-x`, idSource: "faa_id", reason: null, center: null, endTime: null },
+                groundStop: { faaEventId: `faa:${extra}-x`, idSource: "faa_id", reason: null, center: null, endTime: null, expectedEnd: null, advisoryUrl: null },
               }
             : a,
         ),

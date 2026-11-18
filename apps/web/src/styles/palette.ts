@@ -44,6 +44,7 @@ export const palette = {
   "color-disabled-border": "#7c8494",
   // Summary hero card (Task 17.2)
   "color-status-normal": "#16a34a",
+  "color-status-warning": "#b45309",
   "color-status-alert": "#dc2626",
   "color-chip-bg": "#f1f5f9",
   "color-chip-text": "#475569",
@@ -167,6 +168,7 @@ export const palettePairs: readonly PalettePair[] = [
 
   // Task 17.2: hero value is 2rem bold (large text); chips are normal-size text
   { fg: "color-status-normal", bg: "color-surface-raised", size: "large" }, // ~3.3:1
+  { fg: "color-status-warning", bg: "color-surface-raised", size: "large" }, // ~5.0:1 (Task 20.5)
   { fg: "color-status-alert", bg: "color-surface-raised", size: "large" }, // ~4.8:1
   { fg: "color-chip-text", bg: "color-chip-bg", size: "normal" }, // ~6.9:1
 
@@ -178,6 +180,8 @@ export const palettePairs: readonly PalettePair[] = [
   { fg: "color-success", bg: "color-success-surface", size: "normal" }, // ~6.5:1 normal pill
   { fg: "color-pill-danger-text", bg: "color-danger-surface", size: "normal" }, // ~7:1 ground stop pill
   { fg: "color-text-primary", bg: "color-table-head-bg", size: "normal" }, // Task 18.1 striped rows
+  { fg: "color-link", bg: "color-table-head-bg", size: "normal" }, // Task 20.3 FAA link on striped rows
+  { fg: "color-focus", bg: "color-table-head-bg", size: "ui" }, // Task 20.3 link focus on striped rows
   // Task 18.3 danger-outline button: text on raised surface is listed above; border as UI component
   { fg: "color-danger", bg: "color-surface-raised", size: "ui" },
   { fg: "color-danger", bg: "color-page", size: "ui" },

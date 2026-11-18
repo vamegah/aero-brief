@@ -431,6 +431,14 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
   - [ ] 14.4 Record <3min demo video on YouTube (working app: dashboard, email, stale banner)
   - [ ] 14.5 Verify .kiro/ not in .gitignore, flip repo public, submit on Devpost
   - [x] 14.6 Audit .kiro/ as a judge would: is the Kiro usage story visible and compelling?
+  - [x] 14.7 Pick the Devpost category and write the submission text
+    - Choose one Kiroween 2026 category (Resurrection, Frankenstein, Skeleton Crew or Costume Contest) and record the choice and the reason in `docs/decisions.md`.
+    - Write the Devpost text description: the problem (Nov 13, 2026 ground stop, FAA page down), who it is for, features, and the working URL `https://www.aerobriefs.com`. Judge testing notes for the private form field: sign in with any email you own through the magic link; no password or test account is needed.
+    - The demo video from 14.4 must be public on YouTube and under 3 minutes.
+
+  - [x] 14.8 Update docs/kiro-usage.md for the Kiroween 2026 write-up questions
+    - Answer each question on the Kiroween 2026 page truthfully and with concrete examples from this repo: Kiro IDE, CLI, Web or Crew used; custom agents; agent hooks; spec-driven development and how it compared to vibe coding; steering strategy; MCP (Neon and context7 as actually used); property-based testing and what it caught; Kiro powers (state plainly if none were used).
+    - Keep the existing "What this document does not claim" section accurate.
 
 - [ ] 15. Bonus prizes
   - [ ] 15.1 Publish public blog post mentioning Kiroween 2026, submit URL to Devpost
@@ -583,6 +591,35 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
   - [x] 19.3 Rotation runbook and configuration
     - Write `docs/secret-rotation.md`: one-time setup (Neon API key and ids, Resend full-access admin key, `RESEND_API_KEY_ID`, `wrangler login`), the deploy-19.1-first rule, how to run a dry run and a real rotation, what to check afterwards, and how to recover from a failed run. Add the new variable names (no values) to `.env.example`.
     - _Requirements: 16.1, 16.2_
+
+- [x] 20. Ground stop details, airport page and small product additions (no new dependencies)
+  - [x] 20.1 Capture expected end and a safe FAA advisory URL in the Snapshot
+    - Add `advisoryUrl` to `FaaGroundStopSchema`; add `expectedEnd` and `advisoryUrl` (nullable, default null) to `GroundStopInfoSchema`; set `expectedEnd` from `endTime`, else `programExpirationTime`, as ISO UTC. Add pure `acceptAdvisoryUrl` in `packages/core` (HTTPS only, host `faa.gov` or `*.faa.gov`).
+    - Unit tests for normalization and old Snapshots without the fields; property test tagged `// Feature: aerobrief, Property 38: Advisory URL acceptance` (numRuns >= 100). Existing Property 2 and 3 tests stay green.
+    - _Requirements: 17.2, 17.3, 17.4, 17.5, 17.6, 2.8_
+
+  - [x] 20.2 Expose reason, expected end and advisory URL from the API
+    - `AirportSummary.groundStop` becomes `{ reasonText, expectedEnd, advisoryUrl }` on `/api/status/national` and `/api/status/airport/:code`. Update the web client validator to accept the new fields as optional.
+    - _Requirements: 17.1, 17.4, 17.5_
+
+  - [x] 20.3 Status table: reason, expected end, FAA link, and airport links
+    - In the status cell of an active ground stop, add a muted line with the reason, "Expected to end around <time> UTC" or "Until further notice", and the "FAA advisory" link (fallback `https://nasstatus.faa.gov`). Make the airport identifier in the row header a link to `/airport/<id>`. Keep the table's rows, columns and cells; existing tests stay unchanged.
+    - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5, 18.1_
+
+  - [x] 20.4 Airport page at /airport/<id>
+    - New `AirportPage` routed from `App.tsx` for paths starting with `/airport/`; unknown ids render `NotFoundPage`. Shows name, current status with the 17 details, last-updated time, stale banner in an always-mounted `aria-live` region, and the airport's 24-hour Events as EventCards. Loading, empty and error states. Unit and vitest-axe tests in new files.
+    - _Requirements: 18.2, 18.3, 18.4, 18.5_
+
+  - [x] 20.5 Three-level national status color
+    - Summary card overall status: green for "Normal", amber for "Ground stops active", red for "System-wide disruption". Add the amber token to `palette.ts`, `tokens.css` and `palettePairs` as large text (>= 3:1).
+    - _Requirements: 15.14, 15.12_
+
+  - [x] 20.6 Privacy notice on the sign-in page
+    - One muted sentence under the email field stating the email is used only for sign-in links and chosen alerts, and that the account and its data can be deleted at any time. Existing sign-in tests stay unchanged.
+    - _Requirements: 7.11_
+
+  - [x] 20.7 Checkpoint: run the full test suite
+    - Root `npm test` and `npm run typecheck` pass; the web build passes. Ask the user if questions arise.
 
 ## Notes
 

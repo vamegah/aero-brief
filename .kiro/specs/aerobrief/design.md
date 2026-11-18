@@ -695,6 +695,12 @@ These apply to the pure logic in `packages/core` and to the Notifier with in-mem
 
 **Validates: Requirements 16.7, 16.8, 9.8**
 
+### Property 38: Advisory URL acceptance
+
+*For any* string, `acceptAdvisoryUrl` returns it unchanged only when it parses as a URL with the `https:` scheme and a host equal to `faa.gov` or ending in `.faa.gov`; for every other string, including other schemes and look-alike hosts, it returns `null`.
+
+**Validates: Requirements 17.4, 17.5**
+
 ## Error Handling
 
 | Failure | Behavior |
@@ -945,3 +951,51 @@ If a step fails, the script stops and reports which secrets are already rotated.
 ### Pure helpers (unit-tested)
 
 The decisions are pure functions, tested without network or file access: replacing the password inside a Postgres connection string, updating `KEY=value` lines in `.env` text while keeping other lines and comments, building the step plan from `--only`, and deciding whether the previous unsubscribe secret is still valid at a given time.
+
+## Ground Stop Details and Airport Page
+
+This section is the design for Requirements 7.11, 15.14, 17 and 18. Every item reuses data the FAA payload already carries or an endpoint the API already serves. Nothing adds a dependency, a table, an event type or a new alert.
+
+### Data (Requirement 17)
+
+- `FaaGroundStopSchema` gains `advisoryUrl: z.string().nullish()`. `endTime` and `programExpirationTime` are already parsed.
+- `GroundStopInfoSchema` gains `expectedEnd: z.string().nullable().default(null)` and `advisoryUrl: z.string().nullable().default(null)`. The defaults keep every Snapshot stored before this change valid, and normalization always writes both keys, so the JSON round trip of Requirement 2.8 is unchanged.
+- `normalizeResponse` sets `expectedEnd` to `endTime` when it parses as a date, otherwise to `programExpirationTime` when that parses, otherwise `null`, always as ISO UTC with milliseconds.
+- A pure `acceptAdvisoryUrl(raw)` in `packages/core` returns the URL only when it parses, uses `https:`, and has a host equal to `faa.gov` or ending in `.faa.gov`. Anything else, including `javascript:` URLs and look-alike hosts such as `faa.gov.example.com`, returns `null`.
+
+### API
+
+`AirportSummary.groundStop` becomes `{ reasonText, expectedEnd, advisoryUrl }` on `/api/status/national` and `/api/status/airport/:code`. `expectedEnd` and `advisoryUrl` are `null` when unknown. The web client's response validator accepts the two new fields and treats them as optional, so an older API response still parses.
+
+### Status page
+
+- The airport identifier in the row header becomes a link to `/airport/<id>`. The status cell keeps the StatusPill and, for an active Ground_Stop, adds a muted line with the reason text, "Expected to end around <time> UTC" or "Until further notice", and the "FAA advisory" link (or the `nasstatus.faa.gov` fallback). The table keeps its rows, columns and cells, so the DOM rule in the design steering file still holds.
+- The summary card's overall status uses three decorative colors keyed to the existing `overallStatusText` values: green for "Normal", amber for "Ground stops active" and red for "System-wide disruption". The amber token must reach 3:1 on white as large text and is added to `palettePairs`.
+
+### Airport page (Requirement 18)
+
+`App.tsx` routes paths that start with `/airport/` to `AirportPage`, which reads the identifier, checks it against the 20 monitored ids (unknown ids render `NotFoundPage`), and loads `/api/status/airport/:code` and `/api/history/:code` once on open. The page shows a PageHeader with the airport name, the Stale_Data_Banner inside an always-mounted `aria-live` region when the response is stale, the airport's current status with the Requirement 17 details, the last-updated time, and the airport's last-24-hour Events as EventCards, newest first. Loading, empty ("No events for this airport in the last 24 hours.") and error states follow the States Matrix. The Vercel catch-all rewrite already serves `/airport/*`.
+
+### Privacy notice (Requirement 7.11)
+
+The sign-in page shows one muted sentence under the email field, before submission: AeroBrief stores your email only to send sign-in links and the alerts you choose, and you can delete your account and its data at any time.
+
+### Not adopted from the outside requirements document
+
+These items were reviewed and left out. Each one conflicts with `scope.md`, `tech.md`, or the MVP's complexity budget:
+
+| Item | Reason |
+|---|---|
+| All U.S. airports (FR-03) | `scope.md`: exactly 20 hardcoded airports |
+| Push notifications, Firebase Cloud Messaging (FR-08) | `scope.md` prohibits push; FCM is outside the approved stack |
+| Map view, Leaflet or Mapbox (FR-18) | `scope.md` prohibits a map view; both are outside the stack |
+| FAA SWIM feed (FR-07) | `scope.md` prohibits SWIM in the MVP |
+| Native iOS and Android apps (FR-17 Phase 2) | `scope.md` prohibits native apps |
+| FlightAware or ADS-B Exchange as secondary sources | `scope.md` prohibits scraping third-party sites; Requirement 1.4 limits data to the FAA_API |
+| SendGrid, SES, SQLite, Lambda | Outside the approved stack (Resend, Neon, Cloudflare Workers) |
+| Ground delay programs, closures and delays (FR-02) | The data exists in the payload, but tracking them needs new event types, detection rules, explanations and alerts. Deferred; see Open Question 1 |
+| Alert thresholds and quiet hours (FR-10, FR-12) | Only ground stops alert today, so thresholds have nothing to choose between; quiet hours need per-user time zones |
+| Configurable poll interval (FR-01) | The cron schedule in `wrangler.jsonc` already sets it; Requirement 1.1 keeps 5 minutes |
+| 100,000 concurrent users (NFR-04) | Phase 2; Workers and Vercel scale without MVP work |
+| Retention analytics (success metric) | Needs an analytics tool, which is a new dependency |
+| Monetization and commercial-use review | `scope.md` prohibits monetization |

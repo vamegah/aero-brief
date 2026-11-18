@@ -44,7 +44,7 @@ const candidateArb: fc.Arbitrary<AlertCandidate> = fc.record({
 
 const firstSeenEntry = (airportId: MonitoredId, faaEventId: string): AirportStatus => ({
   airportId,
-  groundStop: { faaEventId, idSource: "first_seen", reason: null, center: null, endTime: null },
+  groundStop: { faaEventId, idSource: "first_seen", reason: null, center: null, endTime: null, expectedEnd: null, advisoryUrl: null },
 });
 
 describe("FAA_Event_ID derivation properties", () => {
@@ -93,7 +93,7 @@ describe("FAA_Event_ID derivation properties", () => {
   test("a previous faa_id entry is not carried forward to a new id-less ground stop", () => {fc.assert(fc.property(airportIdArb, tokenArb, isoArb, (airport, token, capturedAt) => {
       const previous: AirportStatus = {
         airportId: airport,
-        groundStop: { faaEventId: `faa:${token}`, idSource: "faa_id", reason: null, center: null, endTime: null },
+        groundStop: { faaEventId: `faa:${token}`, idSource: "faa_id", reason: null, center: null, endTime: null, expectedEnd: null, advisoryUrl: null },
       };
       const r = deriveFaaEventId(airport, {}, capturedAt, previous);
       expect(r.faaEventId).toBe(`seen:${airport}:${capturedAt}`);

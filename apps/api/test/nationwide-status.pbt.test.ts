@@ -40,7 +40,7 @@ const snapshotArb: fc.Arbitrary<Snapshot> = fc
     airports: AIRPORTS.map((a, i) => ({
       airportId: a.id,
       groundStop: flags[i]
-        ? { faaEventId: `faa-${a.id}`, idSource: "faa_id" as const, reason: null, center: null, endTime: null }
+        ? { faaEventId: `faa-${a.id}`, idSource: "faa_id" as const, reason: null, center: null, endTime: null, expectedEnd: null, advisoryUrl: null }
         : null,
     })),
   }));
