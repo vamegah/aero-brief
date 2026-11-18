@@ -3,6 +3,7 @@ import { redeemMagicLink } from "../api/auth";
 import { ErrorRegion } from "../components/ErrorRegion";
 import { LoadingState } from "../components/LoadingState";
 import { PageHeader } from "../components/PageHeader";
+import { SIGNIN_PARAM, SIGNIN_SUCCESS, storeSigninEmail } from "../lib/signin-flash";
 import { errorText, readTokenFromHash } from "../lib/url-params";
 
 const INVALID_LINK_TEXT = "This sign-in link is missing its token. Request a new link.";
@@ -26,9 +27,10 @@ export function AuthCallbackPage() {
       return;
     }
     redeemMagicLink(token)
-      .then(() => {
+      .then((email) => {
         clearFragment();
-        window.location.assign("/watchlist");
+        storeSigninEmail(email);
+        window.location.assign(`/watchlist?${SIGNIN_PARAM}=${SIGNIN_SUCCESS}`);
       })
       .catch((err: unknown) => {
         clearFragment();

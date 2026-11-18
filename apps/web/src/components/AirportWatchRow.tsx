@@ -1,3 +1,6 @@
+import { Button } from "./Button";
+import { StatusPill } from "./StatusPill";
+
 export interface AirportWatchRowProps {
   airportId: string;
   name: string;
@@ -7,7 +10,7 @@ export interface AirportWatchRowProps {
   onRemove: (airportId: string) => void;
 }
 
-/** One airport row: text label ("Watching" / "Not watching") plus an add or remove button. */
+/** One airport row: a status pill ("Watching" / "Not watching") plus a single add or remove button. */
 export function AirportWatchRow({ airportId, name, watching, disabled, onAdd, onRemove }: AirportWatchRowProps) {
   return (
     <tr>
@@ -15,27 +18,27 @@ export function AirportWatchRow({ airportId, name, watching, disabled, onAdd, on
         {name} ({airportId})
       </th>
       <td>
-        <span className={watching ? "status status--clear" : "status"}>{watching ? "Watching" : "Not watching"}</span>
+        <StatusPill variant={watching ? "normal" : "neutral"} text={watching ? "Watching" : "Not watching"} />
       </td>
       <td>
         {watching ? (
-          <>
-            <button type="button" disabled aria-label={`Add ${name} to watchlist (already watching)`}>
-              Add
-            </button>{" "}
-            <button
-              type="button"
-              disabled={disabled}
-              aria-label={`Remove ${name} from watchlist`}
-              onClick={() => onRemove(airportId)}
-            >
-              Remove
-            </button>
-          </>
+          <Button
+            variant="secondary"
+            disabled={disabled}
+            aria-label={`Remove ${name} from watchlist`}
+            onClick={() => onRemove(airportId)}
+          >
+            Remove
+          </Button>
         ) : (
-          <button type="button" disabled={disabled} aria-label={`Add ${name} to watchlist`} onClick={() => onAdd(airportId)}>
+          <Button
+            variant="primary"
+            disabled={disabled}
+            aria-label={`Add ${name} to watchlist`}
+            onClick={() => onAdd(airportId)}
+          >
             Add
-          </button>
+          </Button>
         )}
       </td>
     </tr>

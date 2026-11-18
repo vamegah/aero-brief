@@ -542,9 +542,27 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
     - No vertical or outer borders; white table with 12px radius and shadow; uppercase muted header cells; 16px body cells with a 1px `#e2e8f0` bottom border; airport code 700 weight 1rem `#0f172a`; name column muted `#64748b` 0.875rem; softer status pills (green `#dcfce7` / `#166534` when normal, a matching red pair for ground stops). Table DOM unchanged.
     - _Requirements: 15.5, 15.6, 15.12_
 
-  - [-] 17.4 Event alert cards
+  - [x] 17.4 Event alert cards
     - White card with a 1px `#e2e8f0` border, 4px left border (blue `#3b82f6` default, red `#ef4444` for ground stop started, green `#22c55e` for ended), 8px radius, 16px padding, 12px gap. Header row uses flex `space-between` with a bold title and a muted 0.875rem timestamp.
     - _Requirements: 15.7, 15.12_
+
+- [x] 18. Watchlist page polish
+  - [x] 18.1 Watchlist table: STATUS pills, single action per row, striping on both tables
+    - Rename the WatchlistTable column headers to "Airport", "Status", "Action" (shown uppercase by CSS). "Watching" is a green pill (`#dcfce7` / `#166534`); "Not watching" is a gray pill (`#f1f5f9` background, `#475569` text, weight 600; `#64748b` was ~4.4:1 and fails AA). Unwatched rows show only a primary "Add" button; watched rows show only a secondary "Remove" button (remove the disabled Add). Accessible names stay "Add Airport XXX to watchlist" / "Remove Airport XXX from watchlist".
+    - Add subtle striping (`#f8fafc` on even rows) to both the Status and Watchlist tables; keep no vertical borders, white background and shadow. Update only the section-16 tests that assert the disabled Add.
+    - _Requirements: 15.5, 15.8, 13.7_
+
+  - [x] 18.2 Remove the watched-airport chips
+    - Delete the "Watched airports" chip list; the table and the "N of 10 airports watched" counter remain. Update only the section-16 tests that assert the chips.
+    - _Requirements: 15.8_
+
+  - [x] 18.3 Move the Account section last and tone down Delete account
+    - The Account section is the last element of the page. "Delete account" becomes a subtle outlined button with red text (no solid red fill); the ConfirmDialog flow and button names are unchanged.
+    - _Requirements: 8.9, 15.11_
+
+  - [x] 18.4 Sign-in success banner on the Watchlist page
+    - On successful redeem, `AuthCallbackPage` stores the returned email in `sessionStorage` and redirects to `/watchlist?signin=success`. `WatchlistPage` reads the flag on mount, shows a dismissible success banner "Successfully signed in as <email>." in a `role="status"` region, removes the stored email, and strips the query parameter with `history.replaceState`. The email never goes in the URL.
+    - _Requirements: 15.13, 13.4_
 
 ## Notes
 

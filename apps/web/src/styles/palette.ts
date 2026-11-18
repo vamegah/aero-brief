@@ -177,4 +177,9 @@ export const palettePairs: readonly PalettePair[] = [
   { fg: "color-text-primary", bg: "color-surface-raised", size: "normal" }, // ~17:1 airport code
   { fg: "color-success", bg: "color-success-surface", size: "normal" }, // ~6.5:1 normal pill
   { fg: "color-pill-danger-text", bg: "color-danger-surface", size: "normal" }, // ~7:1 ground stop pill
+  { fg: "color-text-primary", bg: "color-table-head-bg", size: "normal" }, // Task 18.1 striped rows
+  // Task 18.3 danger-outline button: text on raised surface is listed above; border as UI component
+  { fg: "color-danger", bg: "color-surface-raised", size: "ui" },
+  { fg: "color-danger", bg: "color-page", size: "ui" },
+  { fg: "color-text-muted", bg: "color-page", size: "normal" }, // account helper text
 ];

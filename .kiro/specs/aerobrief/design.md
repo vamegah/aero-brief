@@ -824,12 +824,14 @@ EventCards       newest first, or EmptyState
 **Watchlist** (`/watchlist`)
 
 ```
-PageHeader       h2 "Your watchlist"              MetricChip "3 of 10 airports watched"
+[role=status]    "Successfully signed in as <email>." (only right after sign-in, dismissible)
+PageHeader       h2 "Your watchlist"              counter chip "3 of 10 airports watched"
 [role=alert]     API error text
-Watched list     <ul> of read-only chips (code and name); removal happens in the table row
-All airports     WatchlistTable (20 rows): Code | Airport | Watching / Not watching | Add (disabled when watched) / Remove
-Account          h3 "Account", Button danger "Delete account" -> ConfirmDialog
+All airports     WatchlistTable (20 rows): AIRPORT | STATUS pill (green "Watching" / gray "Not watching") | ACTION (primary "Add" when not watched, secondary "Remove" when watched)
+Account          (last on the page) h3 "Account", subtle outlined red-text "Delete account" -> ConfirmDialog
 ```
+
+After a successful redeem, `AuthCallbackPage` stores the returned email in `sessionStorage` and redirects to `/watchlist?signin=success`. `WatchlistPage` reads the flag on mount, shows the banner, removes the email from `sessionStorage`, and strips the query parameter with `history.replaceState`. The email never appears in the URL.
 
 **Sign in** (`/sign-in`)
 
@@ -871,7 +873,7 @@ Text             "There is no page at this address."   link "Go to national stat
 | Page | Loading | Empty | Error | Success |
 |---|---|---|---|---|
 | Status | LoadingState "Loading status…" | `no_data` message in EmptyState, with no Stale_Data_Banner (Requirement 6.7). No events: "No events in the last 24 hours." | First load fails: error text in `role="alert"`. Refresh fails: previous data stays and the refresh error shows (Requirement 10.7). Stale data: Stale_Data_Banner. | SummaryCard, table, EventCards |
-| Watchlist | LoadingState "Loading your watchlist…" | Counter "0 of 10 airports watched" and "You are not watching any airports yet." | No Session: "Sign in to see your watchlist." with a sign-in link. A rejected action shows the API text in `role="alert"` and the list is unchanged (Requirement 13.7). | Counter, watched list, table |
+| Watchlist | LoadingState "Loading your watchlist…" | Counter "0 of 10 airports watched" and "You are not watching any airports yet." | No Session: "Sign in to see your watchlist." with a sign-in link. A rejected action shows the API text in `role="alert"` and the list is unchanged (Requirement 13.7). | Counter, table, sign-in success banner after redeem |
 | Sign in | Button disabled with "Sending…" | Empty input is caught by native `required` validation | Send failure or rate limit: text in `role="alert"`, input kept | "Check your inbox" message |
 | Auth callback | LoadingState "Signing you in…" | Missing token: error state | Invalid or expired link: text in `role="alert"` and a new-link link | Redirect to `/watchlist` |
 | Unsubscribe | LoadingState "Unsubscribing…" | Missing parameters: error state | Invalid signature: text in `role="alert"` | Confirmation naming the airport |
@@ -882,7 +884,7 @@ Text             "There is no page at this address."   link "Go to national stat
 | Width | Layout |
 |---|---|
 | 375 px (base) | Single column. NavBar links wrap under the brand. MetricChips stack. Table cells wrap text, so the page does not scroll sideways (Requirement 15.10). |
-| 768 px | MetricChips sit in one row. The watched list becomes a wrapping row of chips. |
+| 768 px | MetricChips sit in one row. |
 | 1024 px | Wider table columns and more spacing. |
 | 1440 px | Wider screens keep the same layout. Content is capped at 1000 px and centered (Task 17.1). |
 

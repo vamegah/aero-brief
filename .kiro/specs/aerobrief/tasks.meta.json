@@ -1692,6 +1692,11 @@
         "executionId": "3edb1eec-61b2-4523-9cad-1b86aa6cb5ed",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1794973084806
+      },
+      {
+        "executionId": "3edb1eec-61b2-4523-9cad-1b86aa6cb5ed",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794973225651
       }
     ],
     "17. Dashboard visual overhaul (CSS only, preserves all tests)": [
@@ -1699,6 +1704,61 @@
         "executionId": "092d6b49-2234-4190-870b-9045fa40e82f",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1794972833748
+      }
+    ],
+    "18.1 Watchlist table: STATUS pills, single action per row, striping on both tables": [
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794975455073
+      },
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794975732989
+      }
+    ],
+    "18.2 Remove the watched-airport chips": [
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794975734188
+      },
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794975849971
+      }
+    ],
+    "18.3 Move the Account section last and tone down Delete account": [
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794975850194
+      },
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794975969922
+      }
+    ],
+    "18.4 Sign-in success banner on the Watchlist page": [
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794975968100
+      },
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794976160892
+      }
+    ],
+    "18. Watchlist page polish": [
+      {
+        "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794976161335
       }
     ]
   }

@@ -197,6 +197,25 @@
   color: var(--color-danger);
 }
 
+.ui-banner--success {
+  background: var(--color-success-surface);
+  color: var(--color-success);
+  border-left-width: 4px;
+}
+
+/* Sign-in message on the Watchlist page. The empty live region has no chrome of its own. */
+.signin-flash__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+}
+
+.signin-flash__row .ui-banner {
+  flex: 1;
+  margin: 0;
+}
+
 /* EmptyState and LoadingState */
 .empty-state,
 .loading-state {
@@ -340,27 +359,35 @@
   color: var(--color-text-primary);
 }
 
-/* Watchlist page: watched list and account section. Uses existing tokens only. */
-.watched-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin: var(--space-4) 0;
-  padding: 0;
-  list-style: none;
-}
-
-.watched-list__item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-
+/* Watchlist page: account section. Uses existing tokens only. */
 .account-section {
-  margin-block: var(--space-6);
+  margin-block: var(--space-6) 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.account-section__help {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* Subtle destructive entry point: outlined, red text, no solid fill. */
+.btn--danger-outline {
+  background: var(--color-surface-raised);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.btn--danger-outline:hover:not(:disabled) {
+  background: var(--color-danger-surface);
+}
+
+.btn--danger-outline:disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-fg);
+  cursor: not-allowed;
 }
 
 /*
@@ -401,24 +428,6 @@ main {
   max-width: min(24rem, 100%);
 }
 
-/* Watched list: stacked full-width rows at 375 px; wrapping chips from 768 px. */
-.watched-list {
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.watched-list__item {
-  flex-wrap: wrap;
-  justify-content: space-between;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.watched-list__name {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
 /* The dialog keeps a gutter on each side of a narrow viewport. */
 .confirm-dialog {
   max-width: min(28rem, calc(100vw - 2 * var(--space-4)));
@@ -427,18 +436,6 @@ main {
 
 .confirm-dialog__actions .btn {
   flex: 1 1 auto;
-}
-
-/* 768 px: MetricChips in one row (SummaryCard rule above); watched list becomes wrapping chips. */
-@media (min-width: 768px) {
-  .watched-list {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .watched-list__item {
-    justify-content: flex-start;
-  }
 }
 
 /* 1024 px: more spacing and wider table cells. */

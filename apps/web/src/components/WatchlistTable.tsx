@@ -16,7 +16,7 @@ export function WatchlistTable({ airports, watchlist, disabled, onAdd, onRemove 
       <thead>
         <tr>
           <th scope="col">Airport</th>
-          <th scope="col">Watching</th>
+          <th scope="col">Status</th>
           <th scope="col">Action</th>
         </tr>
       </thead>

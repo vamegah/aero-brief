@@ -37,25 +37,21 @@ afterEach(() => {
 });
 
 describe("WatchlistPage layout", () => {
-  it("shows the counter and the watched list", async () => {
+  it("shows the counter and no watched-airports chip list", async () => {
     render(<WatchlistPage />);
     expect(await screen.findByText("2 of 10 airports watched")).not.toBeNull();
-    const list = screen.getByRole("list", { name: "Watched airports" });
-    expect(within(list).getAllByRole("listitem")).toHaveLength(2);
-    expect(within(list).queryAllByRole("button")).toHaveLength(0);
-    expect(within(list).getByText(/^ATL: /)).not.toBeNull();
+    expect(screen.queryByRole("list", { name: "Watched airports" })).toBeNull();
+    expect(screen.queryByText(/^ATL: /)).toBeNull();
     expect(screen.getAllByRole("button", { name: /^Remove / })).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Remove Airport ATL from watchlist" })).not.toBeNull();
   });
 
-  it("removes via the table row and updates both the counter and the chip list", async () => {
+  it("removes via the table row and updates the counter", async () => {
     render(<WatchlistPage />);
     fireEvent.click(await screen.findByRole("button", { name: "Remove Airport ATL from watchlist" }));
     expect(await screen.findByText("1 of 10 airports watched")).not.toBeNull();
-    const list = screen.getByRole("list", { name: "Watched airports" });
-    await waitFor(() => expect(within(list).getAllByRole("listitem")).toHaveLength(1));
-    expect(within(list).queryByText(/^ATL: /)).toBeNull();
-    expect(within(list).getByText(/^LAX: /)).not.toBeNull();
+    expect(screen.queryByRole("list", { name: "Watched airports" })).toBeNull();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Airport ATL to watchlist" })).not.toBeNull());
   });
 
   it("shows the empty state at zero airports", async () => {
@@ -94,13 +90,26 @@ describe("WatchlistPage layout", () => {
 });
 
 describe("WatchlistTable add control for watched airports", () => {
-  it("renders a disabled Add next to Remove for watched rows and keeps enabled Add for others", () => {
+  it("renders only Remove for watched rows and only Add for unwatched rows", () => {
     const { container } = render(
       <WatchlistTable airports={makeAirports().slice(0, 2)} watchlist={["ATL"]} disabled={false} onAdd={vi.fn()} onRemove={vi.fn()} />,
     );
-    expect(container.querySelectorAll("tbody tr")).toHaveLength(2);
-    const disabledAdd = screen.getByRole("button", { name: "Add Airport ATL to watchlist (already watching)" }) as HTMLButtonElement;
-    expect(disabledAdd.disabled).toBe(true);
+    const rows = container.querySelectorAll("tbody tr");
+    expect(rows).toHaveLength(2);
+    expect(within(rows[0] as HTMLElement).getAllByRole("button")).toHaveLength(1);
+    expect(within(rows[0] as HTMLElement).getByRole("button", { name: "Remove Airport ATL from watchlist" })).not.toBeNull();
+    expect(screen.queryByRole("button", { name: /^Add Airport ATL/ })).toBeNull();
+    expect(within(rows[1] as HTMLElement).getAllByRole("button")).toHaveLength(1);
     expect((screen.getByRole("button", { name: "Add Airport LAX to watchlist" }) as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.queryByRole("button", { name: /^Remove Airport LAX/ })).toBeNull();
+  });
+
+  it("keeps Add enabled on unwatched rows when 10 airports are watched", () => {
+    const all = makeAirports();
+    const watched = all.slice(0, 10).map((a) => a.airportId);
+    render(<WatchlistTable airports={all} watchlist={watched} disabled={false} onAdd={vi.fn()} onRemove={vi.fn()} />);
+    const adds = screen.getAllByRole("button", { name: /^Add / }) as HTMLButtonElement[];
+    expect(adds).toHaveLength(all.length - 10);
+    expect(adds.every((b) => !b.disabled)).toBe(true);
   });
 });

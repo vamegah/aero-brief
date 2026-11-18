@@ -2,7 +2,7 @@ import type { HTMLAttributes } from "react";
 import { Icon } from "./Icon";
 import type { IconName } from "./Icon";
 
-export type BannerVariant = "stale" | "nationwide" | "error";
+export type BannerVariant = "stale" | "nationwide" | "error" | "success";
 
 export type BannerProps = Omit<HTMLAttributes<HTMLDivElement>, "role" | "aria-live"> & {
   variant: BannerVariant;
@@ -12,6 +12,7 @@ const ICONS: Record<BannerVariant, IconName> = {
   stale: "info",
   nationwide: "alert",
   error: "error",
+  success: "check",
 };
 
 /**

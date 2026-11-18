@@ -16,6 +16,14 @@ describe("Button", () => {
     expect(screen.getByRole("button").className).toContain(`btn--${variant}`);
   });
 
+  it("applies the danger-outline variant class on a native button", () => {
+    render(<Button variant="danger-outline">Delete account</Button>);
+    const button = screen.getByRole("button", { name: "Delete account" });
+    expect(button.tagName).toBe("BUTTON");
+    expect(button.className).toContain("btn--danger-outline");
+    expect(button.className).not.toContain("btn--danger ");
+  });
+
   it("forwards type, aria props and click handlers, and honors disabled", () => {
     const onClick = vi.fn();
     render(

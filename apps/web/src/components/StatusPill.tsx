@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from "react";
 import { Icon } from "./Icon";
 
-export type StatusPillVariant = "active" | "normal";
+export type StatusPillVariant = "active" | "normal" | "neutral";
 
 export interface StatusPillProps extends HTMLAttributes<HTMLSpanElement> {
   /** Visible status text, for example "Ground stop" or "No ground stop reported". */
@@ -14,7 +14,7 @@ export function StatusPill({ text, variant, className, ...rest }: StatusPillProp
   const classes = ["status-pill", `status-pill--${variant}`, className].filter(Boolean).join(" ");
   return (
     <span {...rest} className={classes}>
-      <Icon name={variant === "active" ? "alert" : "check"} />
+      <Icon name={variant === "active" ? "alert" : variant === "neutral" ? "info" : "check"} />
       <span className="status-pill__text">{text}</span>
     </span>
   );

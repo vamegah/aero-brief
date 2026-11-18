@@ -208,9 +208,13 @@ main {
   color: var(--color-table-muted);
 }
 
-.airport-table tbody tr,
-.airport-table tbody tr:nth-child(even) {
+.airport-table tbody tr {
   background: transparent;
+}
+
+/* Task 18.1: subtle striping on both tables. Pairs: table-muted and text-primary on table-head-bg. */
+.airport-table tbody tr:nth-child(even) {
+  background: var(--color-table-head-bg);
 }
 
 .airport-table tbody tr:last-child th,
@@ -249,6 +253,12 @@ main {
 .status-pill--active {
   background: var(--color-danger-surface);
   color: var(--color-pill-danger-text);
+}
+
+.status-pill--neutral {
+  background: var(--color-chip-bg);
+  color: var(--color-chip-text);
+  font-weight: 600;
 }
 
 @media (max-width: 480px) {
