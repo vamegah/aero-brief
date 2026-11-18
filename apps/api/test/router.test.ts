@@ -250,6 +250,73 @@ describe("Origin and JSON checks", () => {
     expect(handler.mock.calls[0]?.[2].params).toEqual({ code: "JFK" });
   });
 
+  describe("DELETE bodies behind a proxy", () => {
+    const deleteRoute = (handler: ReturnType<typeof makeHandler>): Route => ({
+      method: "DELETE",
+      pattern: "/api/watchlist/:code",
+      auth: "none",
+      handler,
+    });
+    const emptyStream = () =>
+      new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.close();
+        },
+      });
+
+    it("accepts a DELETE with an empty body stream and no Content-Type", async () => {
+      const handler = makeHandler();
+      const { fetchHandler } = build([deleteRoute(handler)]);
+      const res = await fetchHandler(
+        new Request("https://api.example.com/api/watchlist/ATL", {
+          method: "DELETE",
+          headers: { Origin: ORIGIN },
+          body: emptyStream(),
+          duplex: "half",
+        } as RequestInit),
+        rawEnv,
+      );
+      expect(res.status).toBe(200);
+      expect(handler.mock.calls[0]?.[2].body).toBeUndefined();
+    });
+
+    it("accepts a DELETE with an empty string body", async () => {
+      const handler = makeHandler();
+      const { fetchHandler } = build([deleteRoute(handler)]);
+      const res = await fetchHandler(
+        new Request("https://api.example.com/api/watchlist/ATL", {
+          method: "DELETE",
+          headers: { Origin: ORIGIN },
+          body: "",
+        }),
+        rawEnv,
+      );
+      expect(res.status).toBe(200);
+    });
+
+    it("still rejects a DELETE with a non-empty non-JSON body with 415", async () => {
+      const handler = makeHandler();
+      const { fetchHandler } = build([deleteRoute(handler)]);
+      const res = await fetchHandler(
+        new Request("https://api.example.com/api/watchlist/ATL", {
+          method: "DELETE",
+          headers: { Origin: ORIGIN, "Content-Type": "text/plain" },
+          body: "hello",
+        }),
+        rawEnv,
+      );
+      expect(res.status).toBe(415);
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it("still rejects a POST with an empty body and no JSON Content-Type with 415", async () => {
+      const handler = makeHandler();
+      const { fetchHandler } = build([route(handler)]);
+      const res = await fetchHandler(post("/api/watchlist", { contentType: null, body: "" }), rawEnv);
+      expect(res.status).toBe(415);
+    });
+  });
+
   it("does not require Origin for GET", async () => {
     const handler = makeHandler();
     const { fetchHandler } = build([{ method: "GET", pattern: "/api/health", auth: "none", handler }]);

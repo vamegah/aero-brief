@@ -134,10 +134,26 @@ function unavailable(): Response {
 
 type BodyResult = { ok: true; body: unknown } | { ok: false; response: Response };
 
-/** JSON checks for mutating requests (design.md: Content-Type must be application/json). */
+/**
+ * JSON checks for mutating requests. Body presence is decided by content, not by `req.body`,
+ * because proxies (the Vercel rewrite) hand bodiless DELETEs through with an empty, non-null body.
+ * POST and any request with a non-empty body must send Content-Type: application/json.
+ */
 async function readBody(req: Request): Promise<BodyResult> {
-  const hasBody = req.body !== null;
-  if (req.method === "POST" || hasBody) {
+  const tooLarge = (): BodyResult => ({
+    ok: false,
+    response: errorResponse(413, "payload_too_large", "The request body is too large."),
+  });
+  let text = "";
+  if (req.body !== null) {
+    // A UTF-8 char is at most 4 bytes, so a larger Content-Length can never fit the char limit.
+    const declared = Number(req.headers.get("Content-Length"));
+    if (Number.isFinite(declared) && declared > MAX_BODY_CHARS * 4) return tooLarge();
+    text = await req.text();
+    if (text.length > MAX_BODY_CHARS) return tooLarge();
+  }
+  const hasContent = text.trim().length > 0;
+  if (req.method === "POST" || hasContent) {
     if (!isJsonContentType(req.headers.get("Content-Type"))) {
       return {
         ok: false,
@@ -145,12 +161,7 @@ async function readBody(req: Request): Promise<BodyResult> {
       };
     }
   }
-  if (!hasBody) return { ok: true, body: undefined };
-  const text = await req.text();
-  if (text.length > MAX_BODY_CHARS) {
-    return { ok: false, response: errorResponse(413, "payload_too_large", "The request body is too large.") };
-  }
-  if (text.trim().length === 0) return { ok: true, body: undefined };
+  if (!hasContent) return { ok: true, body: undefined };
   try {
     return { ok: true, body: JSON.parse(text) as unknown };
   } catch {

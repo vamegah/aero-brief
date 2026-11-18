@@ -1759,6 +1759,23 @@
         "executionId": "194dc64b-5bcd-4724-aa02-cbfc95373056",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1794976161335
+      },
+      {
+        "executionId": "e1059148-c84f-4b4d-9ccf-593668bd74ff",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794977900726
+      }
+    ],
+    "18.5 Fix 415 on bodiless DELETE requests (watchlist remove, account delete)": [
+      {
+        "executionId": "e1059148-c84f-4b4d-9ccf-593668bd74ff",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794977533134
+      },
+      {
+        "executionId": "e1059148-c84f-4b4d-9ccf-593668bd74ff",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794977900519
       }
     ]
   }

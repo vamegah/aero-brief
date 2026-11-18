@@ -564,6 +564,11 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
     - On successful redeem, `AuthCallbackPage` stores the returned email in `sessionStorage` and redirects to `/watchlist?signin=success`. `WatchlistPage` reads the flag on mount, shows a dismissible success banner "Successfully signed in as <email>." in a `role="status"` region, removes the stored email, and strips the query parameter with `history.replaceState`. The email never goes in the URL.
     - _Requirements: 15.13, 13.4_
 
+  - [x] 18.5 Fix 415 on bodiless DELETE requests (watchlist remove, account delete)
+    - Bug: `readBody` in `apps/api/src/router.ts` treats any non-null `req.body` as a body and requires `Content-Type: application/json`. DELETE requests proxied through the Vercel rewrite arrive with an empty, non-null body, so "Remove" and "Delete account" fail with 415 "Content-Type must be application/json."
+    - Decide on presence by content: for non-POST requests, read the body text; when it is empty, accept the request with no body regardless of Content-Type. Keep the JSON Content-Type requirement for POST and for any request with a non-empty body, the size limit, and the invalid-JSON check. Add router regression tests for DELETE with an empty body stream and no Content-Type, DELETE with a non-empty non-JSON body (still 415), and POST without JSON Content-Type (still 415).
+    - _Requirements: 8.2, 8.9_
+
 ## Notes
 
 - Tasks marked with `*` are optional test-only sub-tasks and can be skipped for a faster MVP. Task 11.1 is intentionally not optional because it is the Requirement 13.6 gate.

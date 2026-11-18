@@ -403,7 +403,7 @@ type AirportStatusResponse =
 
 **System-wide banner flag (Requirements 4.4, 4.5, 4.8).** `nationwide.active` is computed with `nationwideStatus(latestSnapshot)`, the same function the Change_Detector uses. When `active` is true, `nationwide.explanation` is the Explanation from `explain()` for a NATIONWIDE_EVENT built from the latest Snapshot's current count and Affected_ARTCCs, so the banner has text even if the stored NATIONWIDE_EVENT row is more than 24 hours old or an earlier Snapshot raised it. When `active` is false, `explanation` is `null`.
 
-The API never imports a FAA client. Requests mutating state require `Content-Type: application/json` and an `Origin` matching `FRONTEND_URL`, which together with `SameSite=Lax` covers CSRF. If the database throws, the API returns `503` with `Retry-After: 30`, using a 5 s query timeout (Requirement 12.6).
+The API never imports a FAA client. Requests mutating state require an `Origin` matching `FRONTEND_URL`, which together with `SameSite=Lax` covers CSRF. `Content-Type: application/json` is required for every POST and for any request with a non-empty body; an empty-bodied request such as DELETE needs only the matching `Origin` (proxies may forward an empty, non-null body stream). If the database throws, the API returns `503` with `Retry-After: 30`, using a 5 s query timeout (Requirement 12.6).
 
 **Auth details**
 
