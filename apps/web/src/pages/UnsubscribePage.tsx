@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { unsubscribe } from "../api/auth";
+import { Button } from "../components/Button";
 import { ErrorRegion } from "../components/ErrorRegion";
+import { Icon } from "../components/Icon";
+import { LoadingState } from "../components/LoadingState";
+import { PageHeader } from "../components/PageHeader";
 import { errorText, readUnsubscribeParams } from "../lib/url-params";
 
 export function UnsubscribePage() {
@@ -27,18 +31,28 @@ export function UnsubscribePage() {
 
   return (
     <section aria-labelledby="unsubscribe-heading">
-      <h2 id="unsubscribe-heading">Unsubscribe</h2>
+      <PageHeader titleId="unsubscribe-heading" title="Unsubscribe" />
       <ErrorRegion message={error} />
       <div role="status">
-        {airportName !== null ? <p>You will no longer get alerts for {airportName}.</p> : null}
+        {airportName !== null ? (
+          <p>
+            <Icon name="check" /> You will no longer get alerts for {airportName}.
+          </p>
+        ) : null}
       </div>
-      {airportName === null && params !== null ? (
+      {busy ? <LoadingState text="Unsubscribing…" /> : null}
+      {airportName === null && params !== null && !busy ? (
         <>
           <p>Stop ground stop alerts for this airport?</p>
-          <button type="button" onClick={() => void onConfirm()} disabled={busy}>
-            {busy ? "Unsubscribing…" : "Confirm unsubscribe"}
-          </button>
+          <Button variant="primary" onClick={() => void onConfirm()}>
+            Confirm unsubscribe
+          </Button>
         </>
+      ) : null}
+      {!busy && (airportName !== null || error !== null) ? (
+        <p>
+          <a href="/watchlist">Go to your watchlist</a>
+        </p>
       ) : null}
     </section>
   );

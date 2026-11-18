@@ -1,8 +1,13 @@
+import { useState } from "react";
 import type { EventSummary, NationalStatusResponse } from "../api/client";
-import { formatUtc } from "../lib/format-time";
+import { sortAirports } from "../lib/sort-airports";
 import { AirportTable } from "./AirportTable";
+import { Button } from "./Button";
+import { EmptyState } from "./EmptyState";
 import { EventList } from "./EventList";
+import { LoadingState } from "./LoadingState";
 import { StaleDataBanner } from "./StaleDataBanner";
+import { SummaryCard } from "./SummaryCard";
 import { SystemWideBanner } from "./SystemWideBanner";
 
 export interface StatusViewProps {
@@ -13,6 +18,9 @@ export interface StatusViewProps {
 
 export function StatusView({ status, events, loading }: StatusViewProps) {
   const ok = status !== null && status.state === "ok" ? status : null;
+  const [affectedOnly, setAffectedOnly] = useState(false);
+  const sorted = ok === null ? [] : sortAirports(ok.airports);
+  const shown = affectedOnly ? sorted.filter((airport) => airport.groundStop !== null) : sorted;
 
   return (
     <div className="status-view">
@@ -23,16 +31,33 @@ export function StatusView({ status, events, loading }: StatusViewProps) {
         ) : null}
       </div>
 
-      {status === null && loading ? <p>Loading status…</p> : null}
-      {status !== null && status.state === "no_data" ? <p>{status.message}</p> : null}
+      {status === null && loading ? <LoadingState text="Loading status…" /> : null}
+      {status === null && !loading ? <EmptyState text="No status to show yet." /> : null}
+      {status !== null && status.state === "no_data" ? <EmptyState text={status.message} /> : null}
 
       {ok !== null ? (
         <>
-          <p>
-            Data captured{" "}
-            <time dateTime={ok.capturedAt}>{formatUtc(ok.capturedAt)}</time>.
-          </p>
-          <AirportTable airports={ok.airports} />
+          <SummaryCard airports={ok.airports} nationwide={ok.nationwide} capturedAt={ok.capturedAt} />
+          <div role="group" aria-label="Filter airports" className="segment-control">
+            <Button
+              variant="secondary"
+              className="segment-control__option"
+              aria-pressed={!affectedOnly}
+              onClick={() => setAffectedOnly(false)}
+            >
+              {`All (${ok.airports.length})`}
+            </Button>
+            <Button
+              variant="secondary"
+              className="segment-control__option"
+              aria-pressed={affectedOnly}
+              onClick={() => setAffectedOnly(true)}
+            >
+              Affected only
+            </Button>
+          </div>
+          <AirportTable airports={shown} />
+          {shown.length === 0 ? <EmptyState text="No airports have an active ground stop." /> : null}
           <h2>Events in the last 24 hours</h2>
           <EventList events={events} />
         </>

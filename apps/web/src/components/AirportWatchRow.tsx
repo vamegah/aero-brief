@@ -19,14 +19,19 @@ export function AirportWatchRow({ airportId, name, watching, disabled, onAdd, on
       </td>
       <td>
         {watching ? (
-          <button
-            type="button"
-            disabled={disabled}
-            aria-label={`Remove ${name} from watchlist`}
-            onClick={() => onRemove(airportId)}
-          >
-            Remove
-          </button>
+          <>
+            <button type="button" disabled aria-label={`Add ${name} to watchlist (already watching)`}>
+              Add
+            </button>{" "}
+            <button
+              type="button"
+              disabled={disabled}
+              aria-label={`Remove ${name} from watchlist`}
+              onClick={() => onRemove(airportId)}
+            >
+              Remove
+            </button>
+          </>
         ) : (
           <button type="button" disabled={disabled} aria-label={`Add ${name} to watchlist`} onClick={() => onAdd(airportId)}>
             Add

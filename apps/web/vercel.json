@@ -4,6 +4,7 @@
     { "source": "/auth/callback", "destination": "/index.html" },
     { "source": "/unsubscribe", "destination": "/index.html" },
     { "source": "/sign-in", "destination": "/index.html" },
-    { "source": "/watchlist", "destination": "/index.html" }
+    { "source": "/watchlist", "destination": "/index.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

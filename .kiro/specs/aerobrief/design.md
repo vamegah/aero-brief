@@ -683,6 +683,12 @@ These apply to the pure logic in `packages/core` and to the Notifier with in-mem
 
 **Validates: Requirements 5.1**
 
+### Property 36: Status table ordering
+
+*For any* list of airport statuses, `sortAirports(list)` returns a permutation of the input without mutating it. Every airport with an active ground stop comes before every airport without one, and each of the two groups is in ascending order of airport identifier.
+
+**Validates: Requirements 15.6**
+
 ## Error Handling
 
 | Failure | Behavior |
@@ -751,3 +757,147 @@ Availability (99.9%), API p95 under 500 ms, and Alert_Latency p99 under 120 s ar
 ### CI
 
 `.github/workflows/ci.yml` on `pull_request`: install, `tsc --noEmit` per workspace, `vitest --run`, accessibility suite, strict-mode and no-JS check. All steps are required checks.
+
+## Design System and Page Layouts
+
+This section is the design for Requirement 15. It is additive: it changes how the existing frontend looks, and it does not change the DOM structure that the existing tests assert (see Test Compatibility at the end of this section).
+
+### Design Principles
+
+1. **Clarity over decoration.** A visual element earns its place only if it helps a reader find status faster.
+2. **Text is the primary signal.** Every status, banner, and state can be read from its text alone.
+3. **Color is decoration.** Color repeats what the text says and never carries meaning on its own (Requirement 13.2).
+4. **One primary action per view.** Each page shows at most one primary Button. Other actions use the secondary, ghost, or danger variants.
+5. **Every state has a visible representation.** Loading, empty, error, and success each render visible text (Requirement 15.9).
+
+### Design Tokens
+
+Tokens are CSS custom properties in `apps/web/src/styles/tokens.css`. That file already exists (Task 10.6), so Task 16.1 extends it rather than replacing it. Every color token is also listed in `apps/web/src/styles/palette.ts`, because `palette-sync.test.ts` requires each palette entry to appear in `tokens.css` as `--<name>: <hex>;`, and `contrast.test.ts` (Task 10.9) checks every entry in `palettePairs`.
+
+| Category | Tokens | Values |
+|---|---|---|
+| Color (semantic) | surface, surface-raised, border, text-primary, text-muted, accent, warning, danger, success | Hex values chosen in Task 16.1. Names use the existing `color-` prefix. Existing keys (`color-bg`, `color-surface`, `color-text`, `color-text-muted`, `color-border`, `color-link`, `color-focus`, and the `ok`, `warn` and `danger` fg/bg pairs) map onto these roles. A key may be renamed only if `palette.ts`, `tokens.css` and every CSS use change together. Tinted pill and banner backgrounds are derived tokens (for example `color-warning-surface`) and get their own `palettePairs` entries. |
+| Spacing | `--space-1` to `--space-8` | 4, 8, 12, 16, 24, 32, 48, 64 px |
+| Type scale | `--text-xs`, `--text-sm`, `--text-md`, `--text-lg`, `--text-xl`, `--text-2xl` | 12, 14, 16, 20, 24, 32 px |
+| Radius | `--radius-sm`, `--radius-md`, `--radius-lg` | 4, 8, 12 px |
+| Elevation | `--elevation-1`, `--elevation-2` | Level 1 for cards and the sticky table header. Level 2 for the ConfirmDialog. |
+| Motion | `--motion-fast` | `150ms ease-out` for color, background and shadow transitions. Set to `0ms` under `prefers-reduced-motion: reduce`. |
+
+**Icons.** Icons are inline SVG, with no icon package. Inside the status view they are applied as CSS `mask-image` data URIs on an empty `<span aria-hidden="true">`, never as `<svg>` or `<img>` elements, because the Task 10.8 test rejects `svg` and `img` inside `StatusView` (see Test Compatibility). Every icon is decorative and sits next to text that carries the meaning.
+
+### Component Inventory
+
+| Component | Purpose | Notes |
+|---|---|---|
+| NavBar | Site navigation (Requirement 15.2) | Exists since Task 10.10. Restyle only: keep `<nav aria-label="Main">`, the link and button names, and `aria-current="page"`. |
+| Footer | Attribution (Requirement 15.3) | New `<footer>`, rendered by `App.tsx` after `<main>`. Contains "FAA NAS Status API", "MIT" and "Built with Kiro · Kiroween 2026". |
+| PageHeader | Page title, optional subtitle, one action slot | Uses `<h2>`. `App.tsx` keeps the only `<h1>` ("AeroBrief"). |
+| SummaryCard | National summary (Requirement 15.4) | Holds three MetricChips and the "Last updated" time. Sits outside and after the `aria-live` banner region. |
+| MetricChip | Label and value | The value is text, for example "Ground stops: 2". |
+| StatusPill | Status cell content (Requirement 15.5) | Icon span plus the existing text "Ground stop" or "No ground stop reported". |
+| DataTable | Styling for `AirportTable` and `WatchlistTable` | Sticky `thead`, alternating rows and cell padding come from CSS only. One `tbody tr` per airport, as today. |
+| EventCard | One Event (Requirement 15.7) | The content of each existing `<li>` in `EventList`: icon, airport, Explanation unchanged, and a `<time>`. |
+| Banner | Variants `stale`, `nationwide` and `error` | `StaleDataBanner` and `SystemWideBanner` keep their `data-testid` and their place inside the `aria-live` region. The `error` variant styles the existing `ErrorRegion`, whose `role="alert"` text must stay exactly the message (no icon text inside it). |
+| EmptyState | Empty data | Icon plus text, for example the `no_data` message or "No events in the last 24 hours." |
+| LoadingState | Loading data | Icon plus text, for example "Loading status…". It must not add an `aria-live` attribute before the banner region. |
+| Button | Variants `primary`, `secondary`, `danger` and `ghost` | Native `<button>`. A link that looks like a button stays an `<a href>`. |
+| TextInput, FormLabel, FormError | Sign-in form | The label text "Email address" stays. FormError renders through `ErrorRegion`. |
+| ConfirmDialog | Account deletion confirmation | A native `<dialog>` opened with `showModal()`. Escape closes it and focus returns to the trigger. Inside it, a `<div role="group" aria-label="Confirm account deletion">` holds the buttons "Confirm delete account" and "Cancel", because the Task 11.1 watchlist test looks up that group and those names. jsdom may not implement `showModal`, so tests stub it, and the stub must set `open` or the dialog content stays hidden from role queries. |
+
+### Page Layouts
+
+Every page renders `NavBar`, then `<main>` with the `<h1>` "AeroBrief" and the tagline, then the page content, then `Footer`.
+
+**Status** (`/`)
+
+```
+PageHeader       h2 "National status"
+[aria-live]      StaleDataBanner, SystemWideBanner (empty when neither applies)
+[role=alert]     refresh error text
+SummaryCard      Overall: Normal | Ground stops: 0 | Affected ARTCCs: 0 | Last updated 14:05 UTC
+Segment control  [All (20)] [Affected only]       (aria-pressed buttons)
+DataTable        Code | Airport | StatusPill | Watching tag (signed in only)
+h2               Events in the last 24 hours
+EventCards       newest first, or EmptyState
+```
+
+**Watchlist** (`/watchlist`)
+
+```
+PageHeader       h2 "Your watchlist"              MetricChip "3 of 10 airports watched"
+[role=alert]     API error text
+Watched list     <ul> of read-only chips (code and name); removal happens in the table row
+All airports     WatchlistTable (20 rows): Code | Airport | Watching / Not watching | Add (disabled when watched) / Remove
+Account          h3 "Account", Button danger "Delete account" -> ConfirmDialog
+```
+
+**Sign in** (`/sign-in`)
+
+```
+PageHeader       h2 "Sign in"   subtitle "We email you a one-time link. No password."
+Form             FormLabel "Email address", TextInput, Button primary "Email me a sign-in link"
+[role=alert]     send error text
+Success          "Check your inbox" message replaces the form
+```
+
+**Auth callback** (`/auth/callback`)
+
+```
+PageHeader       h2 "Signing in"
+LoadingState     "Signing you in…"        -> redirect to /watchlist on success
+Error            [role=alert] text, link "Request a new sign-in link"
+```
+
+**Unsubscribe** (`/unsubscribe`)
+
+```
+PageHeader       h2 "Unsubscribe"
+LoadingState     "Unsubscribing…"
+Success          "You will no longer get alerts for <airport name>.", link to Watchlist
+Error            [role=alert] text, link to Watchlist
+```
+
+**Not found** (any other path)
+
+```
+PageHeader       h2 "Page not found"
+Text             "There is no page at this address."   link "Go to national status"
+```
+
+`App.tsx` currently renders the Status page for unknown paths. Task 16.12 changes the default case to the Not found page. `/` still renders the Status page.
+
+### States Matrix
+
+| Page | Loading | Empty | Error | Success |
+|---|---|---|---|---|
+| Status | LoadingState "Loading status…" | `no_data` message in EmptyState, with no Stale_Data_Banner (Requirement 6.7). No events: "No events in the last 24 hours." | First load fails: error text in `role="alert"`. Refresh fails: previous data stays and the refresh error shows (Requirement 10.7). Stale data: Stale_Data_Banner. | SummaryCard, table, EventCards |
+| Watchlist | LoadingState "Loading your watchlist…" | Counter "0 of 10 airports watched" and "You are not watching any airports yet." | No Session: "Sign in to see your watchlist." with a sign-in link. A rejected action shows the API text in `role="alert"` and the list is unchanged (Requirement 13.7). | Counter, watched list, table |
+| Sign in | Button disabled with "Sending…" | Empty input is caught by native `required` validation | Send failure or rate limit: text in `role="alert"`, input kept | "Check your inbox" message |
+| Auth callback | LoadingState "Signing you in…" | Missing token: error state | Invalid or expired link: text in `role="alert"` and a new-link link | Redirect to `/watchlist` |
+| Unsubscribe | LoadingState "Unsubscribing…" | Missing parameters: error state | Invalid signature: text in `role="alert"` | Confirmation naming the airport |
+| Not found | None (static) | None | None | Message and link |
+
+### Responsive Breakpoints
+
+| Width | Layout |
+|---|---|
+| 375 px (base) | Single column. NavBar links wrap under the brand. MetricChips stack. Table cells wrap text, so the page does not scroll sideways (Requirement 15.10). |
+| 768 px | MetricChips sit in one row. The watched list becomes a wrapping row of chips. |
+| 1024 px | Wider table columns and more spacing. |
+| 1440 px | Maximum content width. Content is centered and stops growing beyond this. |
+
+### Test Compatibility
+
+The existing suites must keep passing unchanged, except for the sort-order assertion added in Task 16.7. They assert the following, and the design does not require changing any of it:
+
+- **Task 10.8 component tests:**
+  - `StatusView` and `StatusPage` render exactly 20 `tbody tr` rows.
+  - `StatusView` contains no `canvas`, `iframe`, `svg`, `img`, `[role='map']` or `[class*='map' i]`, and its text never contains "map". That is why status view icons are CSS masks, and no class name may contain "map".
+  - The first `[aria-live]` element in `StatusView` is the polite banner region. It is empty when no banner applies, it contains both banners, and both banners come before the table.
+  - The first `[role='alert']` element on the Status page holds exactly the refresh error text.
+  - `WatchlistTable` keeps one `tbody tr` per airport, the texts "Watching" and "Not watching", and the button names "Add Airport XXX to watchlist" and "Remove Airport XXX from watchlist". The Watchlist page relies on the table order (ATL is row 0), so the Task 16.7 sort applies to the status table only.
+  - The sign-in form keeps the label "Email address" and its `role="alert"` text.
+- **Task 11.1 watchlist test:** clicking "Delete account" must reveal a `role="group"` named "Confirm account deletion" that contains "Confirm delete account", and a failed delete shows "Could not delete your account. Try again."
+- **Task 10.9 contrast test and `palette-sync.test.ts`:** every new color is a `palette.ts` entry and appears in `tokens.css` as `--<name>: <hex>;`. Every new pair is in `palettePairs`, and `tokens.css` keeps `--focus-outline` and `:focus-visible`.
+- **Task 11.1 vitest-axe suite:** the axe checks must stay at zero violations. A violation is fixed in the UI, not the test.
+- **App and Task 10.10 and 10.11 tests:** exactly one `<h1>` with the text "AeroBrief". The nav bar keeps its accessible names and `aria-current`. `/watchlist` makes one `/api/watchlist` request on load.

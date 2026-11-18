@@ -435,6 +435,99 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
 - [ ] 15. Bonus prizes
   - [ ] 15.1 Publish public blog post mentioning Kiroween 2026, submit URL to Devpost
   - [ ] 15.2 Post on social with #KiroweenHackathon26 at the start, submit URL to Devpost
+
+- [x] 16. Visual design system (additive, preserves all existing tests)
+  - [x] 16.1 Create design tokens in apps/web/src/styles/tokens.css and a base reset
+    - `tokens.css` already exists from Task 10.6: extend it with the token categories in design.md "Design System and Page Layouts" and add a base reset. Add every new color to `palette.ts` so `palette-sync.test.ts` still passes.
+    - Extend the existing contrast test (Task 10.9) by adding every new foreground/background pair to `palettePairs`.
+    - _Requirements: 15.1, 15.12, 13.5_
+
+  - [x] 16.2 Verify the design-principles steering file exists
+    - Confirm `.kiro/steering/design.md` exists with `inclusion: always` (created with this spec update).
+    - _Requirements: 15.1_
+
+  - [x] 16.3 Implement NavBar and Footer components and mount them in App.tsx
+    - NavBar already exists from Task 10.10. Wrap the existing nav markup for styling only, and do not change its DOM structure or aria attributes.
+    - Footer is new and renders after `<main>` with the three attributions from Requirement 15.3.
+    - _Requirements: 15.2, 15.3, 15.11_
+
+  - [x] 16.4 Implement reusable primitives, each with a unit test
+    - Button (primary, secondary, danger, ghost), TextInput, FormLabel, FormError, StatusPill, Banner (stale, nationwide, error), EmptyState, LoadingState, MetricChip, ConfirmDialog.
+    - Icons are inline SVG with no icon package. Icons used inside `StatusView` are CSS mask data URIs on `aria-hidden` spans (see design.md "Test Compatibility").
+    - _Requirements: 15.5, 15.9, 15.11, 15.12_
+
+  - [x] 16.5 Status page: implement PageHeader, SummaryCard with 3 MetricChips, and the "Last updated" indicator
+    - PageHeader uses `<h2>`; `App.tsx` keeps the only `<h1>`. SummaryCard sits after the `aria-live` banner region.
+    - _Requirements: 15.4, 10.5_
+
+  - [x] 16.6 Status page: restyle the DataTable and add the "All (20) / Affected only" filter
+    - Sticky header, alternating rows, and a StatusPill in the status cell, with one `tbody tr` per airport as today.
+    - Add the "All (20) / Affected only" segment control as a client-side filter using `aria-pressed` buttons. The default view SHALL render 20 rows.
+    - _Requirements: 15.5, 15.6, 10.1_
+
+  - [x] 16.7 Status page: sort ground stops first, then alphabetically by code
+    - Sort only the status table, not `WatchlistTable`, whose tests rely on its current order.
+    - Update the existing 10.8 test to assert the sorted order while preserving the 20-row assertion.
+    - _Requirements: 15.6_
+
+  - [x] 16.8 Status page: render recent events as EventCard components
+    - Each Event stays a list item, newest first, with its Explanation unchanged.
+    - _Requirements: 15.7, 10.3, 5.8_
+
+  - [x] 16.9 Restyle the Banner variants (stale, nationwide, error)
+    - Add an icon, a left border accent, and a surface background. Do not change their DOM position or aria attributes, and keep the `role="alert"` text exactly the message.
+    - _Requirements: 6.4, 10.2, 13.4, 15.1_
+
+  - [x] 16.10 Status page: implement the empty state (no_data) and the loading state
+    - The loading state shows text, never a blank page, and adds no `aria-live` element before the banner region.
+    - _Requirements: 15.9, 6.7_
+
+  - [x] 16.11 Watchlist page: header, counter, watched list, add grid, and account section
+    - PageHeader with the counter chip "N of 10 airports watched", the watched list with Remove buttons, and the add-airports grid with the add control disabled for already-watched airports.
+    - The add-airports grid keeps the `WatchlistTable` DOM (20 `tbody tr` rows, "Watching"/"Not watching" text, existing button names). Add controls stay enabled at 10 airports so the 11th-airport error still shows.
+    - Account section with a ConfirmDialog for delete, keeping the button names "Confirm delete account" and "Cancel".
+    - _Requirements: 15.8, 13.7, 8.9_
+
+  - [x] 16.12 Sign in, Auth callback, Unsubscribe, and 404 pages
+    - Implement with consistent primitives and success, error, and loading states. Change the `App.tsx` default case from the Status page to the Not found page; `/` still renders Status.
+    - _Requirements: 15.9, 15.11, 7.4_
+
+  - [x] 16.13 Responsive layout check
+    - Verify all pages render correctly at 375px, 768px, 1024px, and 1440px. Add a visual regression note in docs (no automated screenshots required).
+    - _Requirements: 15.10_
+
+  - [x] 16.14 Verify the Task 10.9 contrast test passes for all token pairs
+    - Fix failing pairs by adjusting tokens, not by lowering thresholds.
+    - _Requirements: 15.12, 13.5_
+
+  - [x] 16.15 Verify the Task 11.1 vitest-axe suite passes on all 6 pages plus error states
+    - If any violation appears, fix the UI, not the test.
+    - _Requirements: 13.1, 13.6_
+
+  - [x] 16.16 Run the full test suite
+    - Confirm Tasks 10.8, 10.9, and 11.1 all still pass with no test modifications other than the sort-order assertion update in 16.7.
+    - _Requirements: 13.6, 14.7_
+
+  - [x] 16.17 Show "Last updated" once on the Status page
+    - Remove the "Last updated" time from the Status page header and keep it in the SummaryCard only.
+    - _Requirements: 15.4, 10.5_
+
+  - [x] 16.18 Make the watched list read-only chips
+    - Replace the Remove buttons in the Watchlist page's watched list with plain chips (code and name). Removing an airport is done from the table row only, so each airport has one Remove control. Update the 16.11 layout test accordingly; pre-existing tests stay unchanged.
+    - _Requirements: 15.8, 13.3_
+
+  - [x] 16.19 Give disabled controls a dedicated disabled color
+    - Replace the 60% opacity on disabled buttons with disabled text, background and border tokens, added to `palette.ts`, `tokens.css` and `palettePairs` (disabled controls are exempt from WCAG contrast, but pick readable values).
+    - _Requirements: 15.1, 15.12_
+
+  - [x] 16.20 Add an npm test script to apps/web
+    - Add `"test": "vitest --run"` (or the equivalent that runs the web tests from `apps/web`) to `apps/web/package.json` scripts. No dependency changes.
+    - _Requirements: 14.6_
+
+  - [x] 16.21 Widen the border contrast margin
+    - Darken `color-border` so it reaches at least 4.5:1 on `color-bg`, `color-surface` and `color-surface-raised` (currently 4.42:1 on `color-surface`), keeping `palette.ts` and `tokens.css` in sync.
+    - _Requirements: 15.12, 13.5_
+
 ## Notes
 
 - Tasks marked with `*` are optional test-only sub-tasks and can be skipped for a faster MVP. Task 11.1 is intentionally not optional because it is the Requirement 13.6 gate.

@@ -1,18 +1,18 @@
 /*
- * Design tokens (Task 10.6). KEEP IN SYNC with palette.ts: same variable
- * names, same lowercase hex. test/palette-sync.test.ts enforces this.
- *
- * Contrast (hand-computed): normal text >= 4.5:1 (all pairs here are >= 6:1),
- * large text and UI boundaries/focus >= 3:1 (all >= 4.4:1).
+ * Design tokens (Task 10.6, extended in Task 16.1). KEEP IN SYNC with
+ * palette.ts: same variable names, same lowercase hex.
+ * test/palette-sync.test.ts enforces this; test/contrast.test.ts checks every
+ * pair in palettePairs (normal text >= 4.5:1, large text and UI >= 3:1).
  * Color is decoration only: never the sole status signal; always pair with text.
  */
 :root {
+  /* Legacy color keys (still used by app.css) */
   --color-bg: #ffffff;
   --color-surface: #f3f5f7;
   --color-text: #1a1a1a;
   --color-text-muted: #4a4a4a;
   --color-link: #1d4ed8;
-  --color-border: #6b7280;
+  --color-border: #646b78;
   --color-focus: #1d4ed8;
 
   --color-ok-fg: #14532d;
@@ -22,13 +22,131 @@
   --color-danger-fg: #7f1d1d;
   --color-danger-bg: #fee2e2;
 
+  /* Semantic color roles (Task 16.1) */
+  --color-surface-raised: #ffffff;
+  --color-text-primary: #1a1a1a;
+  --color-accent: #1d4ed8;
+  --color-accent-surface: #dbeafe;
+  --color-on-accent: #ffffff;
+  --color-warning: #92400e;
+  --color-warning-surface: #fef9c3;
+  --color-danger: #b91c1c;
+  --color-danger-surface: #fee2e2;
+  --color-on-danger: #ffffff;
+  --color-success: #166534;
+  --color-success-surface: #dcfce7;
+  --color-disabled-fg: #4b5563;
+  --color-disabled-bg: #e5e7eb;
+  --color-disabled-border: #7c8494;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Type scale */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Elevation: 1 = cards and sticky table header, 2 = ConfirmDialog */
+  --elevation-1: 0 1px 2px rgba(26, 26, 26, 0.12), 0 1px 3px rgba(26, 26, 26, 0.08);
+  --elevation-2: 0 4px 8px rgba(26, 26, 26, 0.16), 0 8px 24px rgba(26, 26, 26, 0.12);
+
+  /* Motion */
+  --motion-fast: 150ms ease-out;
+
   /* Visible focus outline */
   --focus-outline-width: 3px;
   --focus-outline-offset: 2px;
   --focus-outline: var(--focus-outline-width) solid var(--color-focus);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+  }
+}
+
+/* Base reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
 :focus-visible {
   outline: var(--focus-outline);
   outline-offset: var(--focus-outline-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

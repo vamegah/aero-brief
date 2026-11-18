@@ -267,3 +267,22 @@ The MVP monitors exactly 20 hardcoded US airports, caps each watchlist at 10 air
 10. THE AeroBrief SHALL store secrets, including the Neon connection string and the Resend API key, in Cloudflare Worker secrets, SHALL NOT commit them to source control, and SHALL NOT write them to logs.
 11. IF any GitHub Actions check for a pull request fails, THEN THE AeroBrief SHALL report a failed status on that pull request.
 12. THE AeroBrief SHALL monitor exactly 20 hardcoded US airports and SHALL retain history for 24 hours only.
+
+### Requirement 15: Visual Design and Product Experience
+
+**User Story:** As a traveler or dispatcher, I want AeroBrief to look and behave like a finished product, so that I can read airport status at a glance and trust what I see.
+
+#### Acceptance Criteria
+
+1. THE Frontend SHALL apply one shared set of design tokens for color, spacing, typography, corner radius, and elevation on every page.
+2. THE Frontend SHALL render a site navigation bar on every page containing a link to the Status page, a link to the Watchlist page, a Sign in link WHILE the visitor has no Session, and a Sign out control WHILE the User has a Session, AND THE Frontend SHALL mark the link of the current page with `aria-current="page"`.
+3. THE Frontend SHALL render a footer on every page containing the data source attribution "FAA NAS Status API", the license "MIT", and the attribution "Built with Kiro · Kiroween 2026".
+4. WHEN the Status page displays a Snapshot, THE Frontend SHALL display a summary card showing the overall national status, the count of Monitored_Airports with an active Ground_Stop, the count of Affected_ARTCCs, and the capture time of the latest Snapshot.
+5. THE Frontend SHALL render the status of each row in the airport status table as a status pill containing a decorative icon and the status text, SHALL use the text as the primary signal and color as decoration only, and SHALL give the pill text and pill boundary contrast ratios that meet WCAG 2.1 Level AA.
+6. WHILE no filter is applied, THE Frontend SHALL render all 20 Monitored_Airports in the airport status table, ordered with every airport that has an active Ground_Stop first and then by airport identifier in ascending alphabetical order within each group.
+7. WHEN the Status page displays the Events of the previous 24 hours, THE Frontend SHALL render each Event as a separate event card containing a decorative icon, the Explanation without altering its text, and the Event time, ordered from most recent to oldest.
+8. WHILE a User with a Session views the Watchlist page, THE Frontend SHALL display a counter in the form "N of 10 airports watched", where N is the number of airports in the Watchlist, and SHALL disable the add control of each airport already in the Watchlist, while keeping the add control of every other airport enabled when the Watchlist holds 10 airports so that Requirement 13.7 still applies.
+9. THE Frontend SHALL define a visible loading state, empty state, and error state for every page, AND WHILE a page is loading its data, THE Frontend SHALL display a loading indicator with text and SHALL NOT render a blank page.
+10. THE Frontend SHALL lay out every page so that all content is readable and every control is operable without horizontal page scrolling at viewport widths from 375 px to 1920 px.
+11. THE Frontend SHALL implement every interactive element as a native `<button>` element or an `<a>` element with an `href`, reachable by keyboard and showing a visible focus indicator.
+12. THE Frontend SHALL give every new foreground and background color pair a contrast ratio of at least 4.5:1 for normal text and at least 3:1 for large text, user interface component boundaries, and focus indicators.

@@ -1,7 +1,7 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { StatusView } from "../../src/components/StatusView";
-import { CAPTURED_TEXT, okStatus } from "./fixtures";
+import { CAPTURED_TEXT, makeAirports, okStatus } from "./fixtures";
 
 function follows(a: Element, b: Element): boolean {
   return (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
@@ -25,8 +25,15 @@ describe("StatusView", () => {
   });
 
   it("renders 20 airport rows and no map", () => {
-    const { container } = render(<StatusView status={okStatus()} events={[]} loading={false} />);
+    const airports = makeAirports().map((airport) => ({
+      ...airport,
+      groundStop: airport.airportId === "SEA" || airport.airportId === "LAX" ? { reasonText: "x" } : null,
+    }));
+    const { container } = render(<StatusView status={okStatus({ airports })} events={[]} loading={false} />);
     expect(container.querySelectorAll("tbody tr")).toHaveLength(20);
+    const ids = Array.from(container.querySelectorAll("tbody tr th")).map((th) => th.textContent);
+    expect(ids.slice(0, 2)).toEqual(["LAX", "SEA"]);
+    expect(ids.slice(2)).toEqual([...ids.slice(2)].sort());
     expect(container.querySelector("canvas, iframe, svg, img, [role='map'], [class*='map' i]")).toBeNull();
     expect(container.textContent?.toLowerCase()).not.toContain("map");
   });

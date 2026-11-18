@@ -1,6 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { requestMagicLink } from "../api/auth";
+import { Button } from "../components/Button";
 import { ErrorRegion } from "../components/ErrorRegion";
+import { FormLabel } from "../components/FormLabel";
+import { Icon } from "../components/Icon";
+import { PageHeader } from "../components/PageHeader";
+import { TextInput } from "../components/TextInput";
 import { errorText } from "../lib/url-params";
 
 export function SignInPage() {
@@ -27,30 +32,37 @@ export function SignInPage() {
 
   return (
     <section aria-labelledby="sign-in-heading">
-      <h2 id="sign-in-heading">Sign in</h2>
+      <PageHeader titleId="sign-in-heading" title="Sign in" subtitle="We email you a one-time link. No password." />
       <ErrorRegion message={error} />
       <div role="status">
         {sentTo !== null ? (
-          <p>
-            If {sentTo} can receive email, a sign-in link is on its way. It expires in 15 minutes and works once.
-          </p>
+          <>
+            <p>
+              <Icon name="check" /> <strong>Check your inbox</strong>
+            </p>
+            <p>
+              If {sentTo} can receive email, a sign-in link is on its way. It expires in 15 minutes and works once.
+            </p>
+          </>
         ) : null}
       </div>
-      <form onSubmit={(e) => void onSubmit(e)} className="form">
-        <label htmlFor="sign-in-email">Email address</label>
-        <input
-          id="sign-in-email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <button type="submit" disabled={busy}>
-          {busy ? "Sending…" : "Email me a sign-in link"}
-        </button>
-      </form>
+      {sentTo === null ? (
+        <form onSubmit={(e) => void onSubmit(e)} className="form">
+          <FormLabel htmlFor="sign-in-email">Email address</FormLabel>
+          <TextInput
+            id="sign-in-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button type="submit" variant="primary" disabled={busy}>
+            {busy ? "Sending…" : "Email me a sign-in link"}
+          </Button>
+        </form>
+      ) : null}
     </section>
   );
 }

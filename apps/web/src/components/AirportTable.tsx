@@ -1,4 +1,5 @@
 import type { AirportSummary } from "../api/client";
+import { StatusPill } from "./StatusPill";
 
 export interface AirportTableProps {
   airports: readonly AirportSummary[];
@@ -22,9 +23,9 @@ export function AirportTable({ airports }: AirportTableProps) {
             <td>{airport.name}</td>
             <td>
               {airport.groundStop !== null ? (
-                <span className="status status--stop">Ground stop</span>
+                <StatusPill variant="active" text="Ground stop" />
               ) : (
-                <span className="status status--clear">No ground stop reported</span>
+                <StatusPill variant="normal" text="No ground stop reported" />
               )}
             </td>
           </tr>

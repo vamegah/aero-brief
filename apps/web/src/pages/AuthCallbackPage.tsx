@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { redeemMagicLink } from "../api/auth";
 import { ErrorRegion } from "../components/ErrorRegion";
+import { LoadingState } from "../components/LoadingState";
+import { PageHeader } from "../components/PageHeader";
 import { errorText, readTokenFromHash } from "../lib/url-params";
 
 const INVALID_LINK_TEXT = "This sign-in link is missing its token. Request a new link.";
@@ -36,9 +38,15 @@ export function AuthCallbackPage() {
 
   return (
     <section aria-labelledby="callback-heading">
-      <h2 id="callback-heading">Signing in</h2>
+      <PageHeader titleId="callback-heading" title="Signing in" />
       <ErrorRegion message={error} />
-      {error === null ? <p>Signing you in…</p> : <a href="/sign-in">Request a new sign-in link</a>}
+      {error === null ? (
+        <LoadingState text="Signing you in…" />
+      ) : (
+        <p>
+          <a href="/sign-in">Request a new sign-in link</a>
+        </p>
+      )}
     </section>
   );
 }

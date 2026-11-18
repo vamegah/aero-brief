@@ -1,4 +1,5 @@
 import { ErrorRegion } from "../components/ErrorRegion";
+import { PageHeader } from "../components/PageHeader";
 import { StatusView } from "../components/StatusView";
 import { useStatus } from "../hooks/use-status";
 
@@ -15,6 +16,7 @@ export function StatusPage() {
 
   return (
     <>
+      <PageHeader title="National status" />
       <ErrorRegion message={message} />
       <StatusView status={status} events={events} loading={loading} />
     </>

@@ -1381,6 +1381,265 @@
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1794961177914
       }
+    ],
+    "16.1 Create design tokens in apps/web/src/styles/tokens.css and a base reset": [
+      {
+        "executionId": "b19e943e-3d74-43b0-9a57-9c6e94b5640a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794963980798
+      },
+      {
+        "executionId": "b19e943e-3d74-43b0-9a57-9c6e94b5640a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794964092838
+      }
+    ],
+    "16.2 Verify the design-principles steering file exists": [
+      {
+        "executionId": "b19e943e-3d74-43b0-9a57-9c6e94b5640a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794964098144
+      }
+    ],
+    "16.3 Implement NavBar and Footer components and mount them in App.tsx": [
+      {
+        "executionId": "b19e943e-3d74-43b0-9a57-9c6e94b5640a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794964098716
+      },
+      {
+        "executionId": "b19e943e-3d74-43b0-9a57-9c6e94b5640a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794964195693
+      }
+    ],
+    "16.4 Implement reusable primitives, each with a unit test": [
+      {
+        "executionId": "b19e943e-3d74-43b0-9a57-9c6e94b5640a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794964197216
+      },
+      {
+        "executionId": "b19e943e-3d74-43b0-9a57-9c6e94b5640a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794964393368
+      }
+    ],
+    "16.5 Status page: implement PageHeader, SummaryCard with 3 MetricChips, and the \"Last updated\" indicator": [
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966068455
+      },
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966264652
+      }
+    ],
+    "16.6 Status page: restyle the DataTable and add the \"All (20) / Affected only\" filter": [
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966265564
+      },
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966386975
+      }
+    ],
+    "16.7 Status page: sort ground stops first, then alphabetically by code": [
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966388132
+      },
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966496583
+      }
+    ],
+    "16.8 Status page: render recent events as EventCard components": [
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966497082
+      },
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966604354
+      }
+    ],
+    "16.9 Restyle the Banner variants (stale, nationwide, error)": [
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966605514
+      },
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966811341
+      }
+    ],
+    "16.10 Status page: implement the empty state (no_data) and the loading state": [
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966812001
+      },
+      {
+        "executionId": "8ccd1683-0d87-4f5e-bbd9-c550fe189b94",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794966912045
+      }
+    ],
+    "16.11 Watchlist page: header, counter, watched list, add grid, and account section": [
+      {
+        "executionId": "2f6d8d34-9172-498a-becd-89261b333f80",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794967018534
+      },
+      {
+        "executionId": "2f6d8d34-9172-498a-becd-89261b333f80",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794967231966
+      }
+    ],
+    "16.12 Sign in, Auth callback, Unsubscribe, and 404 pages": [
+      {
+        "executionId": "2f6d8d34-9172-498a-becd-89261b333f80",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794967232290
+      },
+      {
+        "executionId": "2f6d8d34-9172-498a-becd-89261b333f80",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794967425297
+      }
+    ],
+    "16.13 Responsive layout check": [
+      {
+        "executionId": "2f6d8d34-9172-498a-becd-89261b333f80",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794967426672
+      },
+      {
+        "executionId": "b0dffcc6-f162-4aba-82ad-0eb6544d5cd3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794968345554
+      }
+    ],
+    "16.14 Verify the Task 10.9 contrast test passes for all token pairs": [
+      {
+        "executionId": "ec0e48d7-9a09-4469-aa61-21eaa6b83bbb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794968848465
+      },
+      {
+        "executionId": "ec0e48d7-9a09-4469-aa61-21eaa6b83bbb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969012630
+      }
+    ],
+    "16.15 Verify the Task 11.1 vitest-axe suite passes on all 6 pages plus error states": [
+      {
+        "executionId": "ec0e48d7-9a09-4469-aa61-21eaa6b83bbb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969013965
+      },
+      {
+        "executionId": "ec0e48d7-9a09-4469-aa61-21eaa6b83bbb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969197756
+      }
+    ],
+    "16.16 Run the full test suite": [
+      {
+        "executionId": "ec0e48d7-9a09-4469-aa61-21eaa6b83bbb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969199391
+      },
+      {
+        "executionId": "ec0e48d7-9a09-4469-aa61-21eaa6b83bbb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969606796
+      }
+    ],
+    "16. Visual design system (additive, preserves all existing tests)": [
+      {
+        "executionId": "ec0e48d7-9a09-4469-aa61-21eaa6b83bbb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969606981
+      },
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794970721706
+      }
+    ],
+    "16.17 Show \"Last updated\" once on the Status page": [
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969793805
+      },
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969912348
+      }
+    ],
+    "16.18 Make the watched list read-only chips": [
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794969912835
+      },
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794970030060
+      }
+    ],
+    "16.19 Give disabled controls a dedicated disabled color": [
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794970030776
+      },
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794970157531
+      }
+    ],
+    "16.20 Add an npm test script to apps/web": [
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794970158184
+      },
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794970611598
+      }
+    ],
+    "16.21 Widen the border contrast margin": [
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794970610515
+      },
+      {
+        "executionId": "22f08502-3f67-47c2-81d2-4e5987c1b168",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794970721597
+      }
     ]
   }
 }
