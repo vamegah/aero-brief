@@ -52,4 +52,33 @@ Two `npm audit` findings were resolved without `npm audit fix --force`.
 Notes:
 - Why needed: Cloudflare cron and Workers cannot alert on their own absence. An external check on `GET /api/health` is the only signal that the API is down.
 - In-stack option considered: a Cloudflare Worker cron that pings the API. Rejected because it runs on the same platform it is supposed to watch.
+- Choice: UptimeRobot free plan (5-minute interval, keyword check, email alert). Better Stack is the alternative. Setup is in `docs/production-runbook.md` section 13.5.
+- Checked 2026-11-17: `/api/health` returns 200 `{"status":"ok"}` on both `https://www.aerobriefs.com` and `https://aerobrief-api.vamegah.workers.dev`. It is a constant response (no DB, no secrets), so no code change was made. It does not detect a stopped poller. The optional `"stale":true` keyword monitor on `/api/status/national` covers that.
 - Plan limit: as of 2026-11-16 the free plans do not offer 1-minute checks (Better Stack free: 3 minutes, UptimeRobot free: 5 minutes). A 1-minute interval needs a paid plan. Record the interval actually used in `docs/production-runbook.md` section 13.5.
+
+## 2026-11-17: Live smoke test (Task 13.3), partial
+
+Checked against production (Neon project `bitter-fire-42970215`, branch `production`; API `aerobrief-api.vamegah.workers.dev`; site `www.aerobriefs.com`). Read-only queries only.
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| 1. Poller cron cycle | Pass | `job_runs` has consecutive `poll` rows with `outcome = success` at 22:25, 22:30 and 22:35 UTC (5 min cadence, each with a `snapshot_id`). |
+| 2a. Snapshot stored in Neon | Pass | `snapshots` holds 11 rows; latest `captured_at` 2026-11-17T22:35:29.396Z, matching the latest job run. |
+| 2b. Snapshot via deployed API | Pass | `GET /api/health` returns 200 `{"status":"ok"}`. `GET /api/status/national` returns 200, `state: ok`, `stale: false`, same `capturedAt`, 20-airport list. |
+| 2c. Snapshot via Vercel site | Pass (API path only) | `https://www.aerobriefs.com/` returns 200 and `/api/status/national` through the Vercel rewrite returns the same `capturedAt`. The rendered table was not checked in a browser. |
+| 3. Real email through Resend | Pass (send accepted; inbox receipt pending user confirmation) | Earlier attempt (~22:49 UTC) failed 502 because aerobriefs.com was not verified in Resend. After the user verified the domain, one request at 2026-11-17 23:02:35 UTC: `POST /api/auth/magic-link` (Origin `https://www.aerobriefs.com`, recipient `vamega13@gmail.com`, user-approved) returned 200 `{"ok":true}`. Neon `magic_links` has a new row for that email (id `2b12ae0f-cea6-4818-80ae-33a0c71cfdc3`, created 23:02:37Z, expires 23:17:37Z, `used_at` and `invalidated_at` null), so the handler did not invalidate it after sending. The 22:49 row is invalidated. Inbox delivery is not yet confirmed by the user. |
+
+Remaining to close 13.3:
+- Ask the user to confirm the magic-link email arrived in their inbox (and the link opens the callback page), then close 13.3.
+- The deployed Worker's `MAIL_FROM` var in `wrangler.jsonc` is already `AeroBrief <alerts@aerobriefs.com>`. Which value the running Worker uses was not independently confirmed (Worker logs were not available). The local `.env` still has `MAIL_FROM=AeroBrief <alerts@example.com>`.
+- Optional: load the site in a browser and confirm the table and capture time.
+
+Note: a direct Node connection to Neon from this machine fails with `UNABLE_TO_VERIFY_LEAF_SIGNATURE` (likely local TLS interception). The checks used the Neon MCP tools instead.
+
+## Task 13.4: Resend production domain verified
+
+- aerobriefs.com is verified in Resend. The magic-link email from `AeroBrief <alerts@aerobriefs.com>` reached the inbox (task 13.3).
+- No source, workflow or doc uses `onboarding@resend.dev` as a sender. `example.com` remains only in test fixtures.
+- `apps/api/wrangler.jsonc` and `apps/poller/wrangler.jsonc` both set `MAIL_FROM` to `AeroBrief <alerts@aerobriefs.com>`.
+- `.env.example` documents `MAIL_FROM` with the note that it must be a verified Resend domain (placeholder `alerts@your-domain.com`).
+- Fixed stray references: both `.dev.vars.example` files and the stale placeholder note in `docs/production-runbook.md` now use the aerobriefs.com address.

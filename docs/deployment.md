@@ -16,7 +16,7 @@ Worker config lives in `apps/api/wrangler.jsonc` and `apps/poller/wrangler.jsonc
 1. In Vercel, choose **Add New > Project** and import `vamegah/aero-brief`.
 2. Set **Root Directory** to `apps/web`. Leave the framework preset as Vite.
 3. Under **Environment Variables**, add any `VITE_*` variables the web app reads. The app currently reads none, so this list is empty today. Add variables here only if you introduce them in code.
-4. Edit `apps/web/vercel.json` and replace `<your-subdomain>` in the `/api/:path*` rewrite with your `workers.dev` subdomain (or your API custom domain). Commit and push. Without this, `/api` calls from the site fail.
+4. `apps/web/vercel.json` already rewrites `/api/:path*` to `https://aerobrief-api.vamegah.workers.dev`. Confirm that host matches your deployed API Worker (change it if you use a custom API domain). Without a correct target, `/api` calls from the site fail.
 5. Deploy. Then open **Settings > Domains** to add your domain and follow the DNS instructions Vercel shows.
 6. Set `FRONTEND_URL` in both `wrangler.jsonc` files to the final site URL. It is non-secret and is used in emailed links.
 

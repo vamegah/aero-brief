@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ErrorRegion } from "../components/ErrorRegion";
-import { SignOutButton } from "../components/SignOutButton";
 import { WatchlistTable } from "../components/WatchlistTable";
 import { useStatus } from "../hooks/use-status";
 import { useWatchlist } from "../hooks/use-watchlist";
@@ -55,7 +54,6 @@ export function WatchlistPage() {
         </ul>
       )}
       <h3>Account</h3>
-      <SignOutButton />
       {confirming ? (
         <div role="group" aria-label="Confirm account deletion">
           <p>Delete your account and all your watchlist data? This cannot be undone.</p>

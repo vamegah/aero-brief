@@ -1,4 +1,4 @@
-# AeroBrief production runbook (Tasks 13.2 to 13.5)
+﻿# AeroBrief production runbook (Tasks 13.2 to 13.5)
 
 You run every step in this document. Nothing here is automated. Never paste secret values into chat, commits, issues or screenshots. When a command asks for a value, take it from the provider console or your password manager.
 
@@ -9,13 +9,13 @@ Placeholders used below: `<API_WORKER_URL>` is the API Worker URL printed by `wr
 | # | Where | Problem | Fix |
 |---|---|---|---|
 | 1 | `apps/web/vercel.json` line 3 | `/api/*` rewrite points at `https://aerobrief-api.<your-subdomain>.workers.dev`. | Section 13.2 step 6. |
-| 2 | `apps/api/wrangler.jsonc` and `apps/poller/wrangler.jsonc`, `vars` | `FRONTEND_URL` is `https://aerobrief.example.com` and `MAIL_FROM` is `AeroBrief <alerts@example.com>`. Both are placeholders. | Section 13.2 step 4 and section 13.4. |
+| 2 | `apps/api/wrangler.jsonc` and `apps/poller/wrangler.jsonc`, `vars` | `MAIL_FROM` is set to `AeroBrief <alerts@aerobriefs.com>` (verified in task 13.4). Confirm `FRONTEND_URL` is also real. | Section 13.2 step 4 and section 13.4. |
 | 3 | `.env.example` | It contains what look like real Neon connection strings (host and role password) for `DATABASE_URL`, `TEST_DATABASE_URL` and `DATABASE_URL_UNPOOLED`. The file is not gitignored and the repo has no commits yet. | Before the first commit, replace them with placeholders. Treat that password as exposed to anyone who saw the file and rotate it in the Neon console (Roles, Reset password). |
 | 4 | `.env.example` | `DATABASE_URL_UNPOOLED` is described as "used by Drizzle Kit only", but `packages/db/drizzle.config.ts` reads only `DATABASE_URL` and does not load any `.env` file. | Section 13.2 step 1 sets `DATABASE_URL` in the shell to the unpooled owner URL for the migration command only. |
 | 5 | `.env.example` | `FRONTEND_URL` and `MAIL_FROM` are listed next to the secrets, but the Workers get them from `vars` in `wrangler.jsonc`. Setting the same name as a secret as well causes a binding conflict on deploy. | Set them only in `wrangler.jsonc` (step 4). Do not run `secret put` for them. |
 | 6 | `apps/web/README.md` | The API accepts mutating requests only when `Origin` equals the origin of `FRONTEND_URL` (`apps/api/src/router.ts` line 221). A wrong or `www`-mismatched `FRONTEND_URL` makes every sign-in and watchlist write fail with 403. | `FRONTEND_URL` must equal `<WEB_URL>` exactly. |
 
-`MAIL_FROM` is not hardcoded in any source file. `apps/poller/src/poll.ts` and `apps/api/src/handlers/auth.ts` both read `env.MAIL_FROM`, and a grep of `apps/*/src` and `packages/*/src` for `onboarding@resend.dev` finds nothing. Only the `wrangler.jsonc` placeholder and test fixtures use `example.com`.
+`MAIL_FROM` is not hardcoded in any source file. `apps/poller/src/poll.ts` and `apps/api/src/handlers/auth.ts` both read `env.MAIL_FROM`, and a grep of `apps/*/src` and `packages/*/src` for `onboarding@resend.dev` finds nothing. Only test fixtures use `example.com`.
 
 Secret variable inventory from `.env.example`:
 
@@ -368,50 +368,59 @@ Prove it end to end: the magic-link email from 13.3 step 4 shows the verified-do
 
 ## 13.5 Uptime monitor on `GET /api/health`
 
-Approved deviation: an external monitor (Better Stack or UptimeRobot) is outside the fixed stack. The approval is recorded in `docs/decisions.md` under "2026-11-16: External uptime monitor (Task 13.5)". Nothing is added to the repo.
+Approved deviation: an external monitor is outside the fixed stack. The approval, reason and in-stack alternative are in `docs/decisions.md` under "2026-11-16: External uptime monitor (Task 13.5)". Nothing is added to the repo. Account creation and monitor setup are done by you in the provider dashboard.
 
-Interval caveat: free plans do not offer 1-minute checks (Better Stack free is 3 minutes, UptimeRobot free is 5 minutes, as of 2026-11-16). Check the current plan page. A 1-minute interval needs a paid plan. If you stay on a free plan, write the real interval in the checklist below and in `docs/decisions.md`.
+### What `/api/health` does (checked against production on 2026-11-17)
 
-What to monitor: `GET <WEB_URL>/api/health`. This passes through the Vercel rewrite to the API Worker, so it tests the path real users take. `GET /api/health` needs no auth and makes no database call. It returns 200 and `{"status":"ok"}`. Optionally add a second monitor on `<API_WORKER_URL>/api/health` to tell a Vercel problem from a Worker problem.
+- `GET https://www.aerobriefs.com/api/health` and `GET https://aerobrief-api.vamegah.workers.dev/api/health` both return `200` with body `{"status":"ok"}` (15 bytes).
+- The handler (`apps/api/src/handlers/status.ts`) returns a constant. It makes no database call and reads no env, so it is cheap and exposes no secrets.
+- Unhealthy cases: if the Worker is down or errors, the monitor sees a 5xx or a timeout. If the Worker env is invalid, the router returns 500 before the handler runs. If the Vercel rewrite breaks, only the `www` URL fails. That is why you monitor both URLs.
+- It does not check the database or the poller. A dead cron leaves it green. Cover that with the optional freshness monitor below.
 
-Note that `/api/health` proves the API Worker is up. It does not prove the poller is running. For that, see "Optional: poller freshness" below.
+### Recommended: UptimeRobot free plan
 
-### Better Stack
+Chosen because the free tier gives 5-minute checks, keyword checks and email alerts with no credit card. Better Stack is an acceptable alternative (free tier checks every 3 minutes). Check the current plan page, since limits change.
 
-1. Sign in to Better Stack, Uptime, Monitors, Create monitor.
-2. Monitor type: "Status code" (HTTP). URL: `<WEB_URL>/api/health`. Request method: GET. Expected status code: 200.
-3. Check frequency: 1 minute if your plan allows it, otherwise the smallest available.
-4. Optional: under advanced settings, add a required keyword `ok` to check the body.
-5. Alert contacts: under On-call or Escalation, set who is notified. Add your email, and optionally SMS or the Better Stack app push. Use "Call/SMS/email immediately" for the first step.
-6. Save, then use "Send test alert" or pause the check and confirm a test notification arrives.
+Create two monitors:
 
-### UptimeRobot
+| Name | Type | URL | Interval | Check |
+|---|---|---|---|---|
+| AeroBrief web health | Keyword | `https://www.aerobriefs.com/api/health` | 5 minutes | Alert when keyword `"status":"ok"` does not exist. Case sensitive. HTTP 200 required. |
+| AeroBrief API (workers.dev) health | Keyword | `https://aerobrief-api.vamegah.workers.dev/api/health` | 5 minutes | Same as above. |
 
-1. Sign in to UptimeRobot, Add New Monitor.
-2. Monitor type: HTTP(s). Friendly name `AeroBrief API health`. URL: `<WEB_URL>/api/health`.
-3. Monitoring interval: 1 minute on a paid plan, 5 minutes on the free plan.
-4. Alert contacts to notify: pick or create contacts under My Settings, Alert Contacts (email address, optionally Slack or webhook). Tick them on the monitor.
-5. Optional: keyword monitoring for `ok`.
-6. Create, then confirm the monitor shows Up.
+Steps for each monitor:
 
-### Alert contact steps (either service)
+1. Sign up at uptimerobot.com and confirm your email.
+2. Dashboard, Add New Monitor, Monitor Type: Keyword.
+3. Fill in the name and URL from the table. Method GET. Keyword `"status":"ok"`. Alert when: keyword does not exist.
+4. Monitoring interval: 5 minutes.
+5. Alert contacts: tick your email address (My Settings, Alert Contacts, Add, then click the confirmation link in the verification email).
+6. Create Monitor. It should show Up within a few minutes.
 
-1. Add at least two channels: your email and one other (SMS, mobile app push, or Slack).
-2. Confirm each channel (click the verification email or code).
-3. Trigger a test notification and confirm it arrives within a minute.
-4. Record who gets paged and where the status page URL lives.
+If the free plan only offers a plain HTTP(s) monitor in your region, use HTTP(s). It alerts on any non-2xx/3xx status or timeout, and you lose only the body check.
+
+### Better Stack equivalent
+
+Uptime, Monitors, Create monitor. Alert us when: URL does not contain keyword `"status":"ok"`. Request GET, check frequency at the smallest available (3 minutes on free), on-call contact is your email. Repeat for the second URL.
 
 ### Optional: poller freshness
 
-A dead cron leaves `/api/health` green while data goes stale. The status API sets `stale: true` when the latest snapshot is over 10 minutes old, and the UI shows the stale-data banner. If you want an alert for this, add a keyword monitor on `<WEB_URL>/api/status/national` with "alert when keyword appears" set to `"stale":true`. This is optional and uses the same approved monitor.
+Add a third monitor, Keyword, on `https://www.aerobriefs.com/api/status/national`, keyword `"stale":true`, alert when the keyword exists. The API sets `stale: true` when the latest snapshot is older than 10 minutes. This is the only check that notices a stopped poller. It reads one snapshot from the database per check, so keep the interval at 5 minutes.
+
+### Verify an alert fires
+
+1. After the monitors show Up, edit the web monitor and change the keyword to `"status":"down"`. Save. This makes the check fail while the site is healthy.
+2. Within one interval (up to 5 minutes, plus a retry), a Down alert email should arrive at the confirmed address. Check spam.
+3. Change the keyword back to `"status":"ok"`. Within one interval an Up (recovery) email arrives.
+4. Alternatively, use the provider's "send test notification" option on the alert contact.
 
 ### 13.5 verification checklist
 
-- [ ] Monitor created for `GET <WEB_URL>/api/health`, expecting HTTP 200.
-- [ ] Check interval is 1 minute, or the real interval is written here: ______ and in `docs/decisions.md`.
-- [ ] At least two alert channels are confirmed.
-- [ ] A test alert arrived on every channel.
-- [ ] Monitor shows Up for at least 10 minutes with no false alarms.
-- [ ] Deviation approval for the monitor is recorded in `docs/decisions.md` with date 2026-11-16.
-- [ ] (Optional) second monitor on `<API_WORKER_URL>/api/health`.
-- [ ] (Optional) keyword monitor for `"stale":true` on `/api/status/national`.
+- [ ] UptimeRobot (or Better Stack) account created and email confirmed.
+- [ ] Monitor on `https://www.aerobriefs.com/api/health`, keyword `"status":"ok"`, 5-minute interval, shows Up.
+- [ ] Monitor on `https://aerobrief-api.vamegah.workers.dev/api/health`, same settings, shows Up.
+- [ ] Alert contact email confirmed.
+- [ ] Forced-failure test sent a Down email and a recovery email.
+- [ ] Monitors stayed Up for at least 10 minutes after restoring the keyword.
+- [ ] Interval actually used is recorded in `docs/decisions.md`.
+- [ ] (Optional) `"stale":true` monitor on `/api/status/national`.

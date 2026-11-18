@@ -3,4 +3,4 @@ DATABASE_URL=postgresql://user:pass@host.neon.tech/dbname?sslmode=require
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxx
 UNSUBSCRIBE_SECRET=change-me-to-a-long-random-string
 FRONTEND_URL=http://localhost:5173
-MAIL_FROM=AeroBrief <alerts@example.com>
+MAIL_FROM=AeroBrief <alerts@aerobriefs.com>

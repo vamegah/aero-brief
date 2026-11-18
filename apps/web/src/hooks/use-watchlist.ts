@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { addToWatchlist, deleteAccount, fetchWatchlist, removeFromWatchlist } from "../api/watchlist";
+import { addToWatchlist, deleteAccount, removeFromWatchlist } from "../api/watchlist";
+import { loadWatchlist } from "./shared-watchlist";
 import { errorText } from "../lib/url-params";
 
 export interface UseWatchlistResult {
@@ -29,20 +30,22 @@ export function useWatchlist(): UseWatchlistResult {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetchWatchlist(controller.signal)
+    let active = true;
+    loadWatchlist()
       .then((list) => {
-        if (controller.signal.aborted) return;
+        if (!active) return;
         setWatchlist(list);
         setLoading(false);
       })
       .catch((err: unknown) => {
-        if (controller.signal.aborted) return;
+        if (!active) return;
         if (isUnauthorized(err)) setUnauthorized(true);
         else setError(errorText(err, "Could not load your watchlist. Try again."));
         setLoading(false);
       });
-    return () => controller.abort();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const mutate = useCallback(async (op: () => Promise<string[]>, fallback: string): Promise<void> => {

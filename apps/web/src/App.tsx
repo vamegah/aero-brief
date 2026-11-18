@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { NavBar } from "./components/NavBar";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 import { SignInPage } from "./pages/SignInPage";
 import { StatusPage } from "./pages/StatusPage";
@@ -22,11 +23,15 @@ function pageFor(pathname: string): ReactNode {
 }
 
 export function App() {
+  const pathname = window.location.pathname;
   return (
-    <main>
-      <h1>AeroBrief</h1>
-      <p>FAA ground stop status for 20 major US airports.</p>
-      {pageFor(window.location.pathname)}
-    </main>
+    <>
+      <NavBar pathname={pathname} />
+      <main>
+        <h1>AeroBrief</h1>
+        <p>FAA ground stop status for 20 major US airports.</p>
+        {pageFor(pathname)}
+      </main>
+    </>
   );
 }

@@ -1171,6 +1171,16 @@
         "executionId": "00375093-9f20-4fa2-9be6-7a0da541ea23",
         "chatSessionId": "sess_7e2bfbd8-5cc7-4353-a820-b2aaedef02f4",
         "timestamp": 1794807909334
+      },
+      {
+        "executionId": "f6ae762a-6fc3-4adb-8d61-d32a136dbd1e",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794960786594
+      },
+      {
+        "executionId": "ba575e4c-8e83-4e57-a7a3-44d2035ec91d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794961178011
       }
     ],
     "11.2 Add the accessibility job to CI": [
@@ -1221,6 +1231,16 @@
         "executionId": "16f93fe2-1ba5-4830-b4f8-5e23a2739e74",
         "chatSessionId": "sess_6e8b6f13-5414-4a73-bb63-40d8db636773",
         "timestamp": 1794877339128
+      },
+      {
+        "executionId": "3a8e6933-755f-492f-b92c-f8bcf54f9e1c",
+        "chatSessionId": "sess_71edbe46-d549-438f-a0bc-ca5d26e62de3",
+        "timestamp": 1794953139372
+      },
+      {
+        "executionId": "a02266d9-a744-43f4-b002-e1713b6a925b",
+        "chatSessionId": "sess_71edbe46-d549-438f-a0bc-ca5d26e62de3",
+        "timestamp": 1794954782637
       }
     ],
     "14.1 Write docs/kiro-usage.md (answers Agents, Hooks, Specs, Steering, MCP, PBT questions)": [
@@ -1269,6 +1289,97 @@
         "executionId": "16f93fe2-1ba5-4830-b4f8-5e23a2739e74",
         "chatSessionId": "sess_6e8b6f13-5414-4a73-bb63-40d8db636773",
         "timestamp": 1794877670412
+      }
+    ],
+    "13.3 Live smoke test: one cron cycle, one snapshot visible in DB and UI, one real email delivered": [
+      {
+        "executionId": "cd138ad7-fdd4-4c9f-9e98-c40dd4e999a6",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794954829125
+      },
+      {
+        "executionId": "2d002ae1-ecc8-46a4-8c53-d362937511be",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794956634555
+      }
+    ],
+    "13.4 Verify Resend production domain (not onboarding@resend.dev)": [
+      {
+        "executionId": "5cc05b59-427f-4e17-8e62-274f74d1cdac",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794956822547
+      },
+      {
+        "executionId": "5cc05b59-427f-4e17-8e62-274f74d1cdac",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794956961583
+      }
+    ],
+    "13.5 Add /api/health uptime monitoring (Better Stack or UptimeRobot)": [
+      {
+        "executionId": "269baf50-dfbe-4c75-aeb4-2d1259d29e61",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794957244948
+      },
+      {
+        "executionId": "5a162a7c-3232-49ae-ab41-8364239da2ab",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794958799696
+      }
+    ],
+    "13. Production verification": [
+      {
+        "executionId": "5a162a7c-3232-49ae-ab41-8364239da2ab",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794958800188
+      }
+    ],
+    "14.4 Record <3min demo video on YouTube (working app: dashboard, email, stale banner)": [
+      {
+        "executionId": "6672974a-0cf6-4ae9-9f4e-8f583a1cc631",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794959092243
+      },
+      {
+        "executionId": "8dd2a6a6-9540-4cf4-a167-0068f83f750a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794959300570
+      }
+    ],
+    "14.5 Verify .kiro/ not in .gitignore, flip repo public, submit on Devpost": [
+      {
+        "executionId": "8dd2a6a6-9540-4cf4-a167-0068f83f750a",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794959324083
+      },
+      {
+        "executionId": "f6ae762a-6fc3-4adb-8d61-d32a136dbd1e",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794960663892
+      }
+    ],
+    "10.10 Add a site navigation bar shared by all pages": [
+      {
+        "executionId": "f6ae762a-6fc3-4adb-8d61-d32a136dbd1e",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794960664354
+      },
+      {
+        "executionId": "f6ae762a-6fc3-4adb-8d61-d32a136dbd1e",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794960786328
+      }
+    ],
+    "10.11 Share one watchlist request between the nav bar and the watchlist page": [
+      {
+        "executionId": "ba575e4c-8e83-4e57-a7a3-44d2035ec91d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794961055155
+      },
+      {
+        "executionId": "ba575e4c-8e83-4e57-a7a3-44d2035ec91d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794961177914
       }
     ]
   }

@@ -393,6 +393,17 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
     - Compute ratios for each palette token pair and assert the thresholds.
     - _Requirements: 13.5_
 
+  - [x] 10.10 Add a site navigation bar shared by all pages
+    - In `apps/web/src/components/NavBar.tsx`, render a `<nav aria-label="Main">` inside `App.tsx` with links to Status (`/`) and Watchlist (`/watchlist`), plus Sign in (`/sign-in`) when signed out or a Sign out button when signed in. Mark the current page with `aria-current="page"`.
+    - Sign out calls the existing API sign-out endpoint and returns to `/`. Read session state through the existing API client; no business logic in the component.
+    - Keyboard reachable with a visible focus indicator, using the existing CSS tokens. Add component tests and extend the vitest-axe suite to cover the nav bar.
+    - _Requirements: 7.9, 13.1, 13.3_
+
+  - [x] 10.11 Share one watchlist request between the nav bar and the watchlist page
+    - The nav bar's session check and `WatchlistPage` both call `GET /api/watchlist` on load. Make them share one in-flight request and result (for example a shared hook or context in `apps/web/src/hooks/`), so `/watchlist` triggers exactly one call on load. After a watchlist change or sign-out, the shared state updates. No new dependencies.
+    - Add a test asserting a single `/api/watchlist` request on `/watchlist` load; existing tests and the vitest-axe suite still pass.
+    - _Requirements: 8.1, 10.8_
+
 - [x] 11. Accessibility gate and final CI
   - [x] 11.1 Implement the vitest-axe accessibility suite
     - Run vitest-axe over the four core flows (status view with banners, Stale_Data_Banner, sign-in with Magic_Link, watchlist management) plus error states. Any WCAG 2.1 AA violation fails the test.
@@ -406,12 +417,12 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
 - [x] 12. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 13. Production verification
+- [x] 13. Production verification
   - [x] 13.1 Verify the live FAA API endpoint matches fixtures/airport-events-live.json
-  - [ ] 13.2 Deploy poller + API to Cloudflare and frontend to Vercel; set production secrets
-  - [ ] 13.3 Live smoke test: one cron cycle, one snapshot visible in DB and UI, one real email delivered
-  - [ ] 13.4 Verify Resend production domain (not onboarding@resend.dev)
-  - [ ] 13.5 Add /api/health uptime monitoring (Better Stack or UptimeRobot)
+  - [x] 13.2 Deploy poller + API to Cloudflare and frontend to Vercel; set production secrets
+  - [x] 13.3 Live smoke test: one cron cycle, one snapshot visible in DB and UI, one real email delivered
+  - [x] 13.4 Verify Resend production domain (not onboarding@resend.dev)
+  - [x] 13.5 Add /api/health uptime monitoring (Better Stack or UptimeRobot)
 
 - [~] 14. Contest compliance artifacts
   - [x] 14.1 Write docs/kiro-usage.md (answers Agents, Hooks, Specs, Steering, MCP, PBT questions)
