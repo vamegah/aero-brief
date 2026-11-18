@@ -1935,6 +1935,73 @@
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795026217626
       }
+    ],
+    "21.1 Airport search on the Status page": [
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795029904172
+      },
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795030347398
+      }
+    ],
+    "21.4 Public API reference": [
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795029904735
+      },
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795030349239
+      }
+    ],
+    "21.2 Ground stop durations on the airport page": [
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795030349676
+      },
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795030635862
+      }
+    ],
+    "21.3 CSV download on the airport page": [
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795030636419
+      },
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795030925398
+      }
+    ],
+    "21.5 Checkpoint: run the full test suite": [
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795030928179
+      },
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795031363950
+      }
+    ],
+    "21. Search, durations and CSV export (browser-only, no new dependencies)": [
+      {
+        "executionId": "f5b144b5-0bf2-4db0-ab34-0710eecefd30",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795031364394
+      }
     ]
   }
 }

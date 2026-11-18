@@ -1,10 +1,13 @@
 import { useState } from "react";
 import type { EventSummary, NationalStatusResponse } from "../api/client";
+import { matchesAirportSearch } from "../lib/airport-search";
 import { sortAirports } from "../lib/sort-airports";
 import { AirportTable } from "./AirportTable";
 import { Button } from "./Button";
 import { EmptyState } from "./EmptyState";
 import { EventList } from "./EventList";
+import { FormLabel } from "./FormLabel";
+import { TextInput } from "./TextInput";
 import { LoadingState } from "./LoadingState";
 import { StaleDataBanner } from "./StaleDataBanner";
 import { SummaryCard } from "./SummaryCard";
@@ -20,7 +23,10 @@ export function StatusView({ status, events, loading }: StatusViewProps) {
   const ok = status !== null && status.state === "ok" ? status : null;
   const [affectedOnly, setAffectedOnly] = useState(false);
   const sorted = ok === null ? [] : sortAirports(ok.airports);
-  const shown = affectedOnly ? sorted.filter((airport) => airport.groundStop !== null) : sorted;
+  const [query, setQuery] = useState("");
+  const filtered = affectedOnly ? sorted.filter((airport) => airport.groundStop !== null) : sorted;
+  const shown = filtered.filter((airport) => matchesAirportSearch(airport, query));
+  const searching = query.trim() !== "";
 
   return (
     <div className="status-view">
@@ -56,8 +62,22 @@ export function StatusView({ status, events, loading }: StatusViewProps) {
               Affected only
             </Button>
           </div>
+          <div className="airport-search">
+            <FormLabel htmlFor="airport-search">Search airports</FormLabel>
+            <TextInput
+              id="airport-search"
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              autoComplete="off"
+            />
+          </div>
+          <p className="airport-search__count">{`Showing ${shown.length} of ${ok.airports.length} airports`}</p>
           <AirportTable airports={shown} />
-          {shown.length === 0 ? <EmptyState text="No airports have an active ground stop." /> : null}
+          {shown.length === 0 && searching ? <EmptyState text="No airports match your search." /> : null}
+          {shown.length === 0 && !searching ? (
+            <EmptyState text="No airports have an active ground stop." />
+          ) : null}
           <h2>Events in the last 24 hours</h2>
           <EventList events={events} />
         </>

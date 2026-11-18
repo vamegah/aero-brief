@@ -6,6 +6,7 @@ import {
   type AirportStatusResponse,
   type EventSummary,
 } from "../api/client";
+import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { ErrorRegion } from "../components/ErrorRegion";
 import { EventList } from "../components/EventList";
@@ -14,8 +15,11 @@ import { LoadingState } from "../components/LoadingState";
 import { PageHeader } from "../components/PageHeader";
 import { StaleDataBanner } from "../components/StaleDataBanner";
 import { StatusPill } from "../components/StatusPill";
+import { downloadTextFile, csvFileName } from "../lib/download-file";
+import { CSV_BOM, eventsToCsv } from "../lib/events-to-csv";
 import { selectDisplayEvents } from "../lib/display-window";
 import { formatUtc } from "../lib/format-time";
+import { formatDuration, pairGroundStopDurations } from "../lib/ground-stop-durations";
 import { NotFoundPage } from "./NotFoundPage";
 
 export const AIRPORT_ERROR_TEXT = "Could not load this airport. Reload the page to try again.";
@@ -32,6 +36,12 @@ type State =
   | { kind: "not-found" }
   | { kind: "error" }
   | { kind: "loaded"; status: AirportStatusResponse; events: EventSummary[] };
+
+function durationTexts(events: readonly EventSummary[]): Map<number, string> {
+  const texts = new Map<number, string>();
+  for (const [index, ms] of pairGroundStopDurations(events)) texts.set(index, formatDuration(ms));
+  return texts;
+}
 
 export function AirportPage({ airportId }: { airportId: string }) {
   const [state, setState] = useState<State>({ kind: "loading" });
@@ -93,11 +103,23 @@ export function AirportPage({ airportId }: { airportId: string }) {
               Last updated <time dateTime={ok.capturedAt}>{formatUtc(ok.capturedAt)}</time>
             </p>
           </section>
-          <h3>Last 24 hours</h3>
+          <div className="airport-events-heading">
+            <h3>Last 24 hours</h3>
+            {state.events.length > 0 ? (
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  downloadTextFile(csvFileName(airportId, new Date()), CSV_BOM + eventsToCsv(state.events))
+                }
+              >
+                Download CSV
+              </Button>
+            ) : null}
+          </div>
           {state.events.length === 0 ? (
             <EmptyState text={AIRPORT_EMPTY_EVENTS_TEXT} />
           ) : (
-            <EventList events={state.events} />
+            <EventList events={state.events} durations={durationTexts(state.events)} />
           )}
         </>
       ) : null}

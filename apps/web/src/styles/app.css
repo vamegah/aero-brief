@@ -1,4 +1,4 @@
-﻿body {
+body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
@@ -215,6 +215,12 @@ a {
   margin-left: auto;
 }
 
+.event-card__duration {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
 .event-card__explanation {
   margin: var(--space-2) 0 0;
 }
@@ -248,4 +254,12 @@ button:disabled {
   border-color: var(--color-disabled-border);
   color: var(--color-disabled-fg);
   cursor: not-allowed;
+}
+
+.airport-events-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }

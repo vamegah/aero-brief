@@ -18,13 +18,15 @@ const FALLBACK = { label: "Event", icon: "plane" } as const;
 
 export interface EventCardProps {
   event: EventSummary;
+  /** Optional text such as "Lasted 1 h 20 min"; rendered only when provided. */
+  duration?: string;
 }
 
 /**
  * Content of one EventList item: decorative icon, a text type label, the airport when present,
  * the Explanation exactly as received (own element), and the Event time.
  */
-export function EventCard({ event }: EventCardProps) {
+export function EventCard({ event, duration }: EventCardProps) {
   const { label, icon } = TYPE_PRESENTATION[event.type] ?? FALLBACK;
   return (
     <div className={`event-card ${MODIFIER[event.type] ?? ""}`.trim()}>
@@ -38,6 +40,7 @@ export function EventCard({ event }: EventCardProps) {
           {formatUtc(event.occurredAt)}
         </time>
       </div>
+      {duration !== undefined ? <p className="event-card__duration">{duration}</p> : null}
       <p className="event-card__explanation">{event.explanation}</p>
     </div>
   );

@@ -51,6 +51,41 @@ describe("airportIdFromPath", () => {
   });
 });
 
+describe("AirportPage ground stop durations", () => {
+  const stopEvents = () => [
+    { type: "GROUND_STOP_ENDED", airportId: "ATL", occurredAt: iso(1), explanation: "The ground stop at Atlanta ended." },
+    { type: "GROUND_STOP_STARTED", airportId: "ATL", occurredAt: iso(2 + 20 / 60), explanation: "A ground stop started at Atlanta." },
+  ];
+
+  it("shows the duration on the ended event and leaves the explanation unchanged", async () => {
+    vi.useFakeTimers({ toFake: ["Date"], now: NOW });
+    open("/airport/ATL", {
+      "GET /api/status/airport/ATL": () => json(airportBody()),
+      "GET /api/history/ATL": () => json({ airportId: "ATL", events: stopEvents() }),
+    });
+    await screen.findByText("Lasted 1 h 20 min");
+    expect(screen.getAllByText(/^Lasted /)).toHaveLength(1);
+    expect(screen.getByText("The ground stop at Atlanta ended.")).toBeTruthy();
+  });
+
+  it("shows no duration on the status page", async () => {
+    vi.useFakeTimers({ toFake: ["Date"], now: NOW });
+    open("/", {
+      "GET /api/status/national": () =>
+        json({
+          state: "ok",
+          capturedAt: CAPTURED_AT,
+          stale: false,
+          airports: [{ airportId: "ATL", name: "Atlanta Hartsfield-Jackson", groundStop: null }],
+          nationwide: { active: false, count: 0, artccs: [], explanation: null },
+          events: stopEvents(),
+        }),
+    });
+    await screen.findByText("The ground stop at Atlanta ended.");
+    expect(screen.queryByText(/^Lasted /)).toBeNull();
+  });
+});
+
 describe("AirportPage", () => {
   it("renders the page at /airport/ATL with name, status and last updated", async () => {
     open("/airport/ATL", {

@@ -323,6 +323,18 @@
   }
 }
 
+/* Airport search (Status page). Reuses .form-label and .text-input; no new color pairs. */
+.airport-search {
+  max-width: 24rem;
+  margin: var(--space-3) 0;
+}
+
+.airport-search__count {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+
 /* Segment control (Status filter). Pairs used: text-primary/surface-raised, text-primary/accent-surface,
    border/surface-raised (ui), accent/accent-surface (ui). All already in palettePairs. */
 .segment-control {
