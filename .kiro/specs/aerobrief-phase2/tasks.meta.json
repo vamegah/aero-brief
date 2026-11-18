@@ -11,6 +11,10 @@
     "2.4 Write property test for MVP-look defaults": {
       "status": "passed",
       "lastRunTimestamp": 1795036645805
+    },
+    "3.3 Extend the property test for token contrast": {
+      "status": "passed",
+      "lastRunTimestamp": 1795041230885
     }
   },
   "executionHistory": {
@@ -432,6 +436,11 @@
         "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795039684512
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039999263
       }
     ],
     "3.1 Add the AAA token sets": [
@@ -439,6 +448,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033532526
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795040004427
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795040431507
       }
     ],
     "3.2 Extend the token sync and contrast tests": [
@@ -446,6 +465,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033532646
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795040437518
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795041539892
       }
     ],
     "3.3 Extend the property test for token contrast": [
@@ -453,6 +482,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033532786
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795040438405
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795041541466
       }
     ],
     "3.4 Extend `ThemeController` for the Contrast_Preference": [
@@ -460,6 +499,26 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033532920
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795040439199
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795041544550
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795041999481
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042073123
       }
     ],
     "3.5 Add the \"High contrast\" checkbox to Display settings": [
@@ -467,6 +526,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033533064
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795041551372
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042073583
       }
     ],
     "3.6 Add axe tests for the high-contrast variants": [
@@ -474,6 +543,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033533317
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042074508
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042161422
       }
     ],
     "3.7 Checkpoint: MVP regression with all flags off": [
@@ -481,6 +560,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033533537
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042162231
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042554929
       }
     ],
     "3.8 Checkpoint: high contrast with its flag on": [
@@ -488,6 +577,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033533676
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042163246
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042555362
       }
     ],
     "3.9 Merge high contrast into `main` (local merge, no push)": [
@@ -495,6 +594,11 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033533772
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042555962
       }
     ],
     "4.1 Add the `webhook-sender` line to the structure steering": [
@@ -1006,6 +1110,13 @@
         "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795036222131
+      }
+    ],
+    "2. Dark mode (flag `FEATURE_DARK_MODE`)": [
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039999648
       }
     ]
   }

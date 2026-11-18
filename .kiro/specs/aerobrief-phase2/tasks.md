@@ -83,7 +83,7 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - Run root `npm test` and `npm run typecheck` with every flag off. All MVP tests pass with no existing test file edited. Ask the user if questions arise.
     - _Requirements: 3.1, 3.6_
 
-- [ ] 2. Dark mode (flag `FEATURE_DARK_MODE`)
+- [x] 2. Dark mode (flag `FEATURE_DARK_MODE`)
   - [x] 2.1 Audit the stylesheets for hard-coded colors
     - Search `apps/web/src/app.css`, `primitives.css` and `index.css` for literal colors (hex, `rgb`, `hsl`, named colors) outside `tokens.css`. Write the findings to `docs/theme-audit.md`.
     - Route each literal through an existing token. If none fits, add a new token in a new file `apps/web/src/styles/tokens-phase2.css` with the same light value, and add it to a new typed `extraPalette` in `themes.ts` (Task 2.5). Never edit `tokens.css` or `palette.ts`. The computed light color must stay equal.
@@ -142,48 +142,48 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - Run the dark-mode tests (Properties 2, 3, 4, controller, settings, axe) with `darkMode` on. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [-] 2.13 Merge dark mode into `main` (local merge, no push)
+  - [x] 2.13 Merge dark mode into `main` (local merge, no push)
     - Run only on the owner's instruction, and only before December 4, 2026, 2:00 PM PT. Confirm Tasks 2.11 and 2.12 passed. Check that this feature's commits touch no other feature's code except shared flag and test helpers. Merge the shared setup commits and the dark-mode commits into `main` locally with all flags off. Do not push, tag or deploy.
     - The commits of this section stay one contiguous range so `git revert` of that range removes dark mode alone. The user pushes all four features together at the end.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
 
 - [ ] 3. High contrast (flag `FEATURE_HIGH_CONTRAST`)
-  - [~] 3.1 Add the AAA token sets
+  - [x] 3.1 Add the AAA token sets
     - In `themes.ts` add `hcLightPalette` and `hcDarkPalette`. In `themes.css` add `html[data-theme="hc-light"]` and `html[data-theme="hc-dark"]` blocks, a 3px focus outline (`outline: 3px solid var(--color-focus)`) and thicker borders, with CSS only and no DOM change. Add the `color-focus` token to each high-contrast palette.
     - Extend `themePairs` for the high-contrast variants: every `palettePairs` entry at 7 / 4.5 / 4.5, plus `color-focus` against every `bg` token (4.5).
     - _Requirements: 9.7, 9.8, 9.9, 9.10_
 
-  - [~] 3.2 Extend the token sync and contrast tests
+  - [x] 3.2 Extend the token sync and contrast tests
     - Extend `themes-sync.test.ts` and `themes-contrast.test.ts` to `hc-light` and `hc-dark`.
     - _Requirements: 9.8, 9.9, 9.10_
 
-  - [~] 3.3 Extend the property test for token contrast
+  - [x] 3.3 Extend the property test for token contrast
     - **Property 4: Theme tokens meet their contrast thresholds**
     - Extend `apps/web/test/themes-contrast.pbt.test.ts` to all three variants, the pair-set equality plus focus pairs, and the 7 / 4.5 / 4.5 thresholds. Keep the tag and `numRuns` of 100 or more.
     - **Validates: Requirements 8.8, 9.8, 9.9, 9.10**
 
-  - [~] 3.4 Extend `ThemeController` for the Contrast_Preference
+  - [x] 3.4 Extend `ThemeController` for the Contrast_Preference
     - Mount the controller when either flag is on. Read `aerobrief.contrast` only while `highContrast` is on. Set `data-theme` to `hc-light` or `hc-dark`. Never read `prefers-contrast`. With `highContrast` off and `standard` stored, output equals Task 2.8.
     - Extend `theme-controller.test.tsx`.
     - _Requirements: 9.2, 9.3, 9.4, 9.5, 9.6, 9.7_
 
-  - [~] 3.5 Add the "High contrast" checkbox to Display settings
+  - [x] 3.5 Add the "High contrast" checkbox to Display settings
     - In `DisplaySettings.tsx` add a native checkbox labelled "High contrast" in the same section as the Theme control, or in a section of its own when `darkMode` is off. It stores `aerobrief.contrast` and applies the variant without reload. Extend `display-settings.test.tsx`.
     - _Requirements: 9.1, 9.2, 9.12_
 
-  - [~] 3.6 Add axe tests for the high-contrast variants
+  - [x] 3.6 Add axe tests for the high-contrast variants
     - Create `apps/web/test/a11y/themes/high-contrast.test.tsx` for the five pages in `hc-light` and `hc-dark`, failing on any violation.
     - _Requirements: 9.11_
 
-  - [~] 3.7 Checkpoint: MVP regression with all flags off
+  - [x] 3.7 Checkpoint: MVP regression with all flags off
     - Run root `npm test` and `npm run typecheck` with every flag off. All MVP tests pass unchanged. Ask the user if questions arise.
     - _Requirements: 3.1, 3.6_
 
-  - [~] 3.8 Checkpoint: high contrast with its flag on
+  - [x] 3.8 Checkpoint: high contrast with its flag on
     - Run the high-contrast tests and the dark-mode tests with both theme flags on. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [~] 3.9 Merge high contrast into `main` (local merge, no push)
+  - [-] 3.9 Merge high contrast into `main` (local merge, no push)
     - Run only on the owner's instruction and before the deadline. Confirm Tasks 3.7 and 3.8 passed and dark mode is already merged. Merge this section's commits into `main` locally with all flags off. Do not push, tag or deploy.
     - The commits stay one contiguous range, so `git revert` of that range removes high contrast without touching dark mode.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_

@@ -7,7 +7,7 @@
  *
  * Color is decoration only. Status is always also conveyed by text/label.
  * Fix a failing contrast pair by changing a token here and in themes.css,
- * never by lowering a threshold. High-contrast palettes arrive in Task 3.1.
+ * never by lowering a threshold. The same sync rule applies to the high-contrast palettes below.
  */
 import { palette, type PaletteToken } from "./palette";
 
@@ -62,10 +62,121 @@ export const darkPalette: ThemePalette = {
   "color-event-accent-ended": "#4ade80",
 };
 
-/** Variants with a registered palette so far. `hc-light` and `hc-dark` are added in Task 3.1. */
-export type RegisteredThemeVariant = "light" | "dark";
+/**
+ * High-contrast light (WCAG 2.1 AAA). Text is black on white, borders are near-black.
+ * Constraint: `color-focus` needs 4.5:1 against every background token, including the dark
+ * `color-accent` and `color-danger` fills, so those two are near-black and every surface is
+ * near-white. Tints are barely visible by design; text and borders carry the meaning.
+ */
+export const hcLightPalette: ThemePalette = {
+  "color-bg": "#ffffff",
+  "color-page": "#fefefe",
+  "color-surface": "#fdfdfd",
+  "color-text": "#000000",
+  "color-text-muted": "#262626",
+  "color-link": "#0000cc",
+  "color-border": "#1a1a1a",
+  "color-focus": "#1a6aff",
+  "color-ok-fg": "#003d14",
+  "color-ok-bg": "#fdfffd",
+  "color-warn-fg": "#3d1f00",
+  "color-warn-bg": "#fffefd",
+  "color-danger-fg": "#3d0000",
+  "color-danger-bg": "#fffdfd",
+  // Semantic roles
+  "color-surface-raised": "#ffffff",
+  "color-text-primary": "#000000",
+  "color-accent": "#000010",
+  "color-accent-surface": "#fdfeff",
+  "color-on-accent": "#ffffff",
+  "color-warning": "#3d1f00",
+  "color-warning-surface": "#fffefd",
+  "color-danger": "#070000",
+  "color-danger-surface": "#fffdfd",
+  "color-on-danger": "#ffffff",
+  "color-success": "#003d14",
+  "color-success-surface": "#fdfffd",
+  // Disabled controls
+  "color-disabled-fg": "#4d4d4d",
+  "color-disabled-bg": "#fdfdfd",
+  "color-disabled-border": "#595959",
+  // Summary hero card
+  "color-status-normal": "#004d1a",
+  "color-status-warning": "#5c2e00",
+  "color-status-alert": "#8a0000",
+  "color-chip-bg": "#fdfdfe",
+  "color-chip-text": "#1f1f1f",
+  // Airport table
+  "color-table-head-bg": "#fdfdfd",
+  "color-table-muted": "#404040",
+  "color-table-rule": "#595959",
+  "color-pill-danger-text": "#3d0000",
+  // Event alert cards: decorative left-border accents only, not in palettePairs.
+  "color-event-accent": "#0033cc",
+  "color-event-accent-started": "#b30000",
+  "color-event-accent-ended": "#006600",
+};
+
+/**
+ * High-contrast dark (WCAG 2.1 AAA). Text is white on black, borders are light.
+ * Mirror of the light constraint: surfaces are near-black and the accent and danger fills are
+ * near-white so `color-focus` keeps 4.5:1 against all of them.
+ */
+export const hcDarkPalette: ThemePalette = {
+  "color-bg": "#000000",
+  "color-page": "#000000",
+  "color-surface": "#010101",
+  "color-text": "#ffffff",
+  "color-text-muted": "#e6e6e6",
+  "color-link": "#99ccff",
+  "color-border": "#e6e6e6",
+  "color-focus": "#1a6aff",
+  "color-ok-fg": "#8dffa8",
+  "color-ok-bg": "#000200",
+  "color-warn-fg": "#ffe08a",
+  "color-warn-bg": "#020100",
+  "color-danger-fg": "#ffb3b3",
+  "color-danger-bg": "#070000",
+  // Semantic roles
+  "color-surface-raised": "#000000",
+  "color-text-primary": "#ffffff",
+  "color-accent": "#fffdfd",
+  "color-accent-surface": "#000012",
+  "color-on-accent": "#000000",
+  "color-warning": "#ffe08a",
+  "color-warning-surface": "#020100",
+  "color-danger": "#fffcfc",
+  "color-danger-surface": "#070000",
+  "color-on-danger": "#000000",
+  "color-success": "#8dffa8",
+  "color-success-surface": "#000200",
+  // Disabled controls
+  "color-disabled-fg": "#bfbfbf",
+  "color-disabled-bg": "#010101",
+  "color-disabled-border": "#bfbfbf",
+  // Summary hero card
+  "color-status-normal": "#8dffa8",
+  "color-status-warning": "#ffd24d",
+  "color-status-alert": "#ff9a9a",
+  "color-chip-bg": "#010101",
+  "color-chip-text": "#f0f0f0",
+  // Airport table
+  "color-table-head-bg": "#010101",
+  "color-table-muted": "#d9d9d9",
+  "color-table-rule": "#bfbfbf",
+  "color-pill-danger-text": "#ffb3b3",
+  // Event alert cards: decorative left-border accents only, not in palettePairs.
+  "color-event-accent": "#99ccff",
+  "color-event-accent-started": "#ff9a9a",
+  "color-event-accent-ended": "#8dffa8",
+};
+
+/** Every Theme_Variant has a registered palette. */
+export type RegisteredThemeVariant = "light" | "dark" | "hc-light" | "hc-dark";
 
 export const themePalettes: Readonly<Record<RegisteredThemeVariant, ThemePalette>> = {
   light: palette,
   dark: darkPalette,
+  "hc-light": hcLightPalette,
+  "hc-dark": hcDarkPalette,
 };

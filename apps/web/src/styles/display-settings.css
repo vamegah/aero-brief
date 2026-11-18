@@ -39,3 +39,23 @@
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
+
+.display-settings__contrast {
+  margin-top: var(--space-3);
+}
+
+.display-settings__hint {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.display-settings__contrast {
+  margin-top: var(--space-3);
+}
+
+.display-settings__hint {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}

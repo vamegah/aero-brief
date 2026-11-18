@@ -166,3 +166,113 @@ describe("ThemeController", () => {
     expect(set).not.toHaveBeenCalled();
   });
 });
+
+describe("ThemeController contrast preference", () => {
+  const HC: Features = { ...ALL_FLAGS_OFF, highContrast: true };
+  const BOTH: Features = { ...ALL_FLAGS_OFF, darkMode: true, highContrast: true };
+  const getKeys = (spy: { mock: { calls: unknown[][] } }) => spy.mock.calls.map((c) => c[0]);
+
+  beforeEach(() => {
+    localStorage.clear();
+    delete document.documentElement.dataset.theme;
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    localStorage.clear();
+    delete document.documentElement.dataset.theme;
+  });
+
+  it("stored high with darkMode off gives hc-light", () => {
+    localStorage.setItem("aerobrief.contrast", "high");
+    mount(HC);
+    expect(theme()).toBe("hc-light");
+  });
+
+  it("darkMode on, stored theme dark and contrast high gives hc-dark", () => {
+    stubMatchMedia(false);
+    localStorage.setItem("aerobrief.theme", "dark");
+    localStorage.setItem("aerobrief.contrast", "high");
+    mount(BOTH);
+    expect(theme()).toBe("hc-dark");
+  });
+
+  it.each([["standard"], ["purple"], [""], ["HIGH"]])("contrast value %j gives no hc variant", (v) => {
+    localStorage.setItem("aerobrief.contrast", v);
+    mount(HC);
+    expect(theme()).toBeUndefined();
+  });
+
+  it("highContrast off: the contrast key is never read", () => {
+    stubMatchMedia(true);
+    localStorage.setItem("aerobrief.contrast", "high");
+    const get = vi.spyOn(Storage.prototype, "getItem");
+    mount(ON);
+    expect(getKeys(get)).not.toContain("aerobrief.contrast");
+    expect(theme()).toBe("dark");
+  });
+
+  it("highContrast off with standard stored matches the dark-only output", () => {
+    stubMatchMedia(true);
+    localStorage.setItem("aerobrief.contrast", "standard");
+    mount(ON);
+    expect(theme()).toBe("dark");
+  });
+
+  it("darkMode off: the theme key is never read and the dark query is never used", () => {
+    const mm = vi.fn(() => ({
+      matches: true,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    }));
+    vi.stubGlobal("matchMedia", mm);
+    localStorage.setItem("aerobrief.theme", "dark");
+    localStorage.setItem("aerobrief.contrast", "high");
+    const get = vi.spyOn(Storage.prototype, "getItem");
+    mount(HC);
+    expect(getKeys(get)).not.toContain("aerobrief.theme");
+    expect(mm).not.toHaveBeenCalled();
+    expect(theme()).toBe("hc-light");
+  });
+
+  it("never queries prefers-contrast", () => {
+    const mm = vi.fn(() => ({
+      matches: true,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    }));
+    vi.stubGlobal("matchMedia", mm);
+    localStorage.setItem("aerobrief.contrast", "high");
+    mount(BOTH);
+    mount(HC);
+    const queries = (mm.mock.calls as unknown as unknown[][]).map((c) => String(c[0]));
+    expect(queries.some((q) => q.includes("prefers-contrast"))).toBe(false);
+  });
+
+  it("re-resolves the contrast on the theme change event", () => {
+    mount(HC);
+    expect(theme()).toBeUndefined();
+    localStorage.setItem("aerobrief.contrast", "high");
+    act(() => {
+      window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+    });
+    expect(theme()).toBe("hc-light");
+  });
+
+  it("both flags off: no attribute and nothing read", () => {
+    localStorage.setItem("aerobrief.contrast", "high");
+    const get = vi.spyOn(Storage.prototype, "getItem");
+    const { container } = mount(ALL_FLAGS_OFF);
+    expect(container.innerHTML).toBe("");
+    expect(theme()).toBeUndefined();
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it("removes the attribute on unmount with only highContrast on", () => {
+    localStorage.setItem("aerobrief.contrast", "high");
+    const { unmount } = mount(HC);
+    expect(theme()).toBe("hc-light");
+    unmount();
+    expect(theme()).toBeUndefined();
+  });
+});

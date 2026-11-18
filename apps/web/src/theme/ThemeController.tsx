@@ -26,17 +26,28 @@ function apply(variant: ThemeVariant): void {
   else root.dataset.theme = variant;
 }
 
-/** Applies the resolved theme variant to `<html data-theme>`. Mounted only while darkMode is on. */
-function ActiveThemeController({ highContrast }: { highContrast: boolean }) {
+/**
+ * Applies the resolved theme variant to `<html data-theme>`. Mounted while darkMode or highContrast
+ * is on. The theme key and the dark media query are used only while darkMode is on; the contrast
+ * key is read only while highContrast is on. `prefers-contrast` is never queried.
+ */
+function ActiveThemeController({
+  darkMode,
+  highContrast,
+}: {
+  darkMode: boolean;
+  highContrast: boolean;
+}) {
   useEffect(() => {
-    const mql = typeof window.matchMedia === "function" ? window.matchMedia(DARK_QUERY) : null;
+    const mql =
+      darkMode && typeof window.matchMedia === "function" ? window.matchMedia(DARK_QUERY) : null;
     const update = (): void => {
       apply(
         resolveTheme({
-          darkFlag: true,
+          darkFlag: darkMode,
           contrastFlag: highContrast,
-          storedTheme: readStorage(THEME_KEY),
-          storedContrast: readStorage(CONTRAST_KEY),
+          storedTheme: darkMode ? readStorage(THEME_KEY) : null,
+          storedContrast: highContrast ? readStorage(CONTRAST_KEY) : null,
           systemDark: mql?.matches ?? false,
         }),
       );
@@ -49,12 +60,12 @@ function ActiveThemeController({ highContrast }: { highContrast: boolean }) {
       window.removeEventListener(THEME_CHANGE_EVENT, update);
       delete document.documentElement.dataset.theme;
     };
-  }, [highContrast]);
+  }, [darkMode, highContrast]);
   return null;
 }
 
 export function ThemeController() {
   const { darkMode, highContrast } = useFeatures();
-  if (!darkMode) return null;
-  return <ActiveThemeController highContrast={highContrast} />;
+  if (!darkMode && !highContrast) return null;
+  return <ActiveThemeController darkMode={darkMode} highContrast={highContrast} />;
 }

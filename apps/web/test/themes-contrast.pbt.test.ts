@@ -3,26 +3,31 @@ import { describe, expect, it } from "vitest";
 import { contrastRatio } from "../src/styles/contrast";
 import { MIN_RATIO, palettePairs, type TextSizeClass } from "../src/styles/palette";
 import type { RegisteredThemeVariant } from "../src/styles/themes";
-import { themePairs } from "../src/styles/themes.pairs";
+import { MIN_RATIO_AAA, hcFocusPairs, themePairs } from "../src/styles/themes.pairs";
 
 // Feature: aerobrief-phase2, Property 4: Theme tokens meet their contrast thresholds
-// Validates: Requirements 8.8, 9.9
+// Validates: Requirements 8.8, 9.8, 9.9, 9.10
 
 interface VariantCase {
   readonly variant: RegisteredThemeVariant;
   readonly min: Readonly<Record<TextSizeClass, number>>;
 }
 
-// Task 3.3 adds "hc-light" and "hc-dark" here with MIN_RATIO_AAA.
-const variants: readonly VariantCase[] = [{ variant: "dark", min: MIN_RATIO }];
+const variants: readonly VariantCase[] = [
+  { variant: "dark", min: MIN_RATIO },
+  { variant: "hc-light", min: MIN_RATIO_AAA },
+  { variant: "hc-dark", min: MIN_RATIO_AAA },
+];
 
 const key = (p: { fg: string; bg: string; size: string }): string => `${p.fg}|${p.bg}|${p.size}`;
 
 describe.each(variants)("Property 4: contrast thresholds ($variant)", ({ variant, min }) => {
   const pairs = themePairs(variant);
+  const isHc = variant === "hc-light" || variant === "hc-dark";
 
-  it("has the same (fg, bg, size) set as palettePairs", () => {
-    expect(pairs.map(key).sort()).toEqual(palettePairs.map(key).sort());
+  it("has the expected (fg, bg, size) set (palettePairs, plus focus pairs for high contrast)", () => {
+    const expected = isHc ? [...palettePairs, ...hcFocusPairs] : palettePairs;
+    expect(pairs.map(key).sort()).toEqual(expected.map(key).sort());
   });
 
   it("every randomly chosen pair meets the minimum ratio of its size class", () => {

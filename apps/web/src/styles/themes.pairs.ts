@@ -19,10 +19,31 @@ export interface ThemePair extends PalettePair {
   readonly bgHex: string;
 }
 
-/** Every `palettePairs` entry resolved to the variant's colors. */
+const HIGH_CONTRAST: ReadonlySet<RegisteredThemeVariant> = new Set<RegisteredThemeVariant>([
+  "hc-light",
+  "hc-dark",
+]);
+
+/**
+ * Focus pairs added to the high-contrast variants: `color-focus` (ui, 4.5:1) against every
+ * token that appears as `bg` in `palettePairs`, skipping pairs `palettePairs` already lists.
+ */
+export const hcFocusPairs: readonly PalettePair[] = (() => {
+  const listed = new Set(palettePairs.filter((p) => p.fg === "color-focus").map((p) => `${p.bg}|${p.size}`));
+  const bgs = [...new Set(palettePairs.map((p) => p.bg))];
+  return bgs
+    .filter((bg) => bg !== "color-focus" && !listed.has(`${bg}|ui`))
+    .map((bg): PalettePair => ({ fg: "color-focus", bg, size: "ui" }));
+})();
+
+/**
+ * Every `palettePairs` entry resolved to the variant's colors. High-contrast variants also
+ * include `hcFocusPairs`.
+ */
 export function themePairs(variant: RegisteredThemeVariant): readonly ThemePair[] {
   const colors = themePalettes[variant];
-  return palettePairs.map((p) => ({
+  const base = HIGH_CONTRAST.has(variant) ? [...palettePairs, ...hcFocusPairs] : palettePairs;
+  return base.map((p) => ({
     fg: p.fg,
     bg: p.bg,
     size: p.size,

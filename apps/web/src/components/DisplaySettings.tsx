@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFeatures } from "../features/use-features";
-import { THEME_CHANGE_EVENT, THEME_KEY } from "../theme/ThemeController";
+import { CONTRAST_KEY, THEME_CHANGE_EVENT, THEME_KEY } from "../theme/ThemeController";
 
 type ThemePreference = "system" | "light" | "dark";
 
@@ -51,7 +51,48 @@ function ThemeControl() {
   );
 }
 
-/** "Display settings" section. Renders nothing while both darkMode and highContrast are off. */
+function readContrast(): boolean {
+  try {
+    return window.localStorage.getItem(CONTRAST_KEY) === "high";
+  } catch {
+    return false;
+  }
+}
+
+function ContrastControl() {
+  const [high, setHigh] = useState<boolean>(readContrast);
+
+  const change = (next: boolean): void => {
+    setHigh(next);
+    try {
+      window.localStorage.setItem(CONTRAST_KEY, next ? "high" : "standard");
+    } catch {
+      // Storage is blocked. The choice is not saved, but the controller is still told to re-resolve.
+    }
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+  };
+
+  return (
+    <div className="display-settings__contrast">
+      <label className="display-settings__option">
+        <input
+          type="checkbox"
+          name="aerobrief-contrast"
+          checked={high}
+          aria-describedby="display-settings-contrast-hint"
+          onChange={(event) => change(event.target.checked)}
+        />
+        High contrast
+      </label>
+      <p id="display-settings-contrast-hint" className="display-settings__hint">
+        Stronger colors and thicker outlines
+      </p>
+    </div>
+  );
+}
+
+/** "Display settings" section.
+ Renders nothing while both darkMode and highContrast are off. */
 export function DisplaySettings() {
   const { darkMode, highContrast } = useFeatures();
   if (!darkMode && !highContrast) return null;
@@ -61,7 +102,7 @@ export function DisplaySettings() {
         Display settings
       </h2>
       {darkMode ? <ThemeControl /> : null}
-      {/* Task 3.5 adds the "High contrast" checkbox here, shown when highContrast is on. */}
+      {highContrast ? <ContrastControl /> : null}
     </section>
   );
 }
