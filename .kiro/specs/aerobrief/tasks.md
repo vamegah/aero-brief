@@ -542,7 +542,7 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
     - No vertical or outer borders; white table with 12px radius and shadow; uppercase muted header cells; 16px body cells with a 1px `#e2e8f0` bottom border; airport code 700 weight 1rem `#0f172a`; name column muted `#64748b` 0.875rem; softer status pills (green `#dcfce7` / `#166534` when normal, a matching red pair for ground stops). Table DOM unchanged.
     - _Requirements: 15.5, 15.6, 15.12_
 
-  - [x] 17.4 Event alert cards
+  - [-] 17.4 Event alert cards
     - White card with a 1px `#e2e8f0` border, 4px left border (blue `#3b82f6` default, red `#ef4444` for ground stop started, green `#22c55e` for ended), 8px radius, 16px padding, 12px gap. Header row uses flex `space-between` with a bold title and a muted 0.875rem timestamp.
     - _Requirements: 15.7, 15.12_
 
