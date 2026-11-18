@@ -104,3 +104,21 @@ Note: a direct Node connection to Neon from this machine fails with `UNABLE_TO_V
 **Alternatives not chosen:** Resurrection (no old technology is revived), Skeleton Crew (the app is not a flexible base with two distinct uses), Costume Contest (no spooky UI theme; the design rules say clarity over decoration).
 
 **Not claimed:** The stitching is unusual in how the parts combine, not in any single exotic technology. The FAA feed is public JSON and the design is conventional.
+
+
+## 2026-11-18: Phase 2 Neon branch created (task 1.10)
+
+Created a copy-on-write child branch for Phase 2 schema work. Production was not modified.
+
+| Item | Value |
+| --- | --- |
+| Neon project | `aero-brief` (`bitter-fire-42970215`) |
+| Branch name | `phase-2` |
+| Branch id | `br-odd-feather-bbpy60hl` |
+| Parent branch | `production` (`br-delicate-bar-bbqk6hwk`, default) |
+| Endpoint host | `ep-billowing-union-bbe8q751.c-15.us-east-1.aws.neon.tech` |
+| Production endpoint host (for comparison) | `ep-purple-snow-bb1xmfs9.c-15.us-east-1.aws.neon.tech` |
+
+No connection string or password is recorded here. The branch holds a copy of production data, including users, until task 1.11 deletes the copied users.
+
+2026-11-18: Copied production users deleted and two allowlisted test users seeded on branch phase-2 (verified by read-only counts).

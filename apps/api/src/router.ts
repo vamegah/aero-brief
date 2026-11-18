@@ -1,6 +1,8 @@
-import { createLogger, type LogSink, type Logger } from "@aerobrief/core";
+import { createLogger, type Flags, type LogSink, type Logger } from "@aerobrief/core";
 import { isMalformedPreviousExpiry, parseEnv, type Env } from "./env";
+import { createFlagReader } from "./features";
 import { ApiError, errorResponse } from "./http";
+import { routesPhase2 } from "./routes-phase2";
 
 /** Hand-written router on the Workers fetch handler. No routing framework (design.md, apps/api). */
 
@@ -29,6 +31,8 @@ export interface RouteContext {
   /** Aborted when the 5 s request budget runs out. Pass it to database calls. */
   signal: AbortSignal;
   logger: Logger;
+  /** Feature flags read from the raw env. Set only for Phase 2 routes. */
+  flags?: Flags;
 }
 
 export type Handler = (req: Request, env: Env, ctx: RouteContext) => Promise<Response>;
@@ -40,7 +44,12 @@ export type Route = {
   handler: Handler;
 };
 
+/** A Phase 2 route. It takes part in matching only while `enabled(flags)` is true. */
+export type Phase2Route = Route & { enabled: (flags: Flags) => boolean };
+
 export interface RouterDeps {
+  /** Phase 2 table tried after `routes` finds no match (default: `routesPhase2`). */
+  phase2Routes?: readonly Phase2Route[];
   now?: () => Date;
   /** Looks up an unexpired Session by token hash. Defaults to "no session" (fail closed). */
   resolveSession?: (tokenHash: string, now: Date, signal: AbortSignal) => Promise<Session | null>;
@@ -126,6 +135,11 @@ async function runWithDeadline<T>(ms: number, fn: (signal: AbortSignal) => Promi
   }
 }
 
+/** The response for a path that no route matches. Disabled Phase 2 routes reuse it. */
+export function unknownRouteResponse(): Response {
+  return errorResponse(404, "not_found", "Not found.");
+}
+
 function unavailable(): Response {
   return errorResponse(503, "service_unavailable", "The service is temporarily unavailable. Try again shortly.", {
     "Retry-After": String(RETRY_AFTER_SECONDS),
@@ -177,6 +191,8 @@ export function createFetchHandler(routes: readonly Route[], deps: RouterDeps = 
     ((): Promise<Session | null> => Promise.resolve(null));
   const envCache = new WeakMap<object, Env>();
   const bootLogger = createLogger([], deps.logSink);
+  const phase2Routes = deps.phase2Routes ?? routesPhase2;
+  const readFlags = createFlagReader(bootLogger);
 
   function getEnv(rawEnv: unknown): Env | null {
     if (typeof rawEnv === "object" && rawEnv !== null) {
@@ -212,17 +228,29 @@ export function createFetchHandler(routes: readonly Route[], deps: RouterDeps = 
     const url = new URL(request.url);
     const method = request.method.toUpperCase();
 
-    let route: Route | undefined;
-    let params: Record<string, string> = {};
-    const allowed = new Set<string>();
-    for (const r of routes) {
-      const m = matchPattern(r.pattern, url.pathname);
-      if (m === null) continue;
-      allowed.add(r.method);
-      if (r.method === method && route === undefined) {
-        route = r;
-        params = m;
+    const matchIn = (table: readonly Route[]) => {
+      let found: Route | undefined;
+      let foundParams: Record<string, string> = {};
+      const methods = new Set<string>();
+      for (const r of table) {
+        const m = matchPattern(r.pattern, url.pathname);
+        if (m === null) continue;
+        methods.add(r.method);
+        if (r.method === method && found === undefined) {
+          found = r;
+          foundParams = m;
+        }
       }
+      return { found, foundParams, methods };
+    };
+
+    let { found: route, foundParams: params, methods: allowed } = matchIn(routes);
+    let flags: Flags | undefined;
+    if (route === undefined && allowed.size === 0 && phase2Routes.length > 0) {
+      // Fall through to the Phase 2 table. Flags come from the raw env, not from parseEnv.
+      flags = readFlags(rawEnv);
+      const active = flags;
+      ({ found: route, foundParams: params, methods: allowed } = matchIn(phase2Routes.filter((r) => r.enabled(active))));
     }
     if (route === undefined) {
       if (allowed.size > 0) {
@@ -230,7 +258,7 @@ export function createFetchHandler(routes: readonly Route[], deps: RouterDeps = 
           Allow: [...allowed].sort().join(", "),
         });
       }
-      return errorResponse(404, "not_found", "Not found.");
+      return unknownRouteResponse();
     }
 
     const mutating = method !== "GET";
@@ -257,6 +285,7 @@ export function createFetchHandler(routes: readonly Route[], deps: RouterDeps = 
           if (session === null) return unauthorized();
         }
         const ctx: RouteContext = { params, session, now, body, url, signal, logger };
+        if (flags !== undefined) ctx.flags = flags;
         return matched.handler(request, env, ctx);
       });
     } catch (err) {

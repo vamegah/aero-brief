@@ -12,6 +12,9 @@ export * from "./unsubscribe";
 export * from "./alert-email";
 export * from "./account";
 export * from "./watchlist";
+export { parseFlags } from "./flags";
+export { FLAG_NAMES, flagValueSchema, flagsSchema } from "./schemas/flags";
+export type { Flags, FlagName } from "./schemas/flags";
 
 // change-detector.ts re-exports Snapshot types that schemas.ts already exports,
 // so list its own names explicitly.

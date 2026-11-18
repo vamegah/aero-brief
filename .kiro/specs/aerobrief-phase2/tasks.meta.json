@@ -1,0 +1,867 @@
+{
+  "pbtResults": {
+    "1.2 Write property test for flag parsing": {
+      "status": "passed",
+      "lastRunTimestamp": 1795033872251
+    }
+  },
+  "executionHistory": {
+    "1.1 Implement flag parsing in `packages/core`": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033528576
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033561808
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033722333
+      }
+    ],
+    "1.2 Write property test for flag parsing": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033528758
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033731690
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034116144
+      }
+    ],
+    "1.3 Add the Phase 2 route table and `GET /api/features` to the API": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033528955
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033732252
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034116585
+      }
+    ],
+    "1.4 Add the flag reader to the Poller": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033529141
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033733428
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034116911
+      }
+    ],
+    "1.5 Add `FeaturesProvider` and `useFeatures` to the Frontend": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033529240
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033733975
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034117813
+      }
+    ],
+    "1.6 Add the flags-off guard tests": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033529383
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034198823
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034520848
+      }
+    ],
+    "1.7 Document the flags in the environment examples": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033529529
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033734760
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034118862
+      }
+    ],
+    "1.8 Add the Phase 2 migration target guard": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033529722
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033562406
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033722745
+      }
+    ],
+    "1.9 Guard the production deploy workflow (needs user approval)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033529854
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033562945
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033723477
+      }
+    ],
+    "1.10 Create the Neon branch `phase-2` (needs user approval)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033530016
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034126670
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034188788
+      }
+    ],
+    "1.11 Remove copied production users from the branch and seed test users (needs user approval)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033530131
+      },
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795034199794
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795035768250
+      }
+    ],
+    "1.12 Checkpoint: MVP regression with all flags off": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033530299
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795035768927
+      }
+    ],
+    "2.1 Audit the stylesheets for hard-coded colors": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033530529
+      }
+    ],
+    "2.2 Implement theme resolution in `packages/core`": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033530811
+      }
+    ],
+    "2.3 Write property test for theme totality": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033531030
+      }
+    ],
+    "2.4 Write property test for MVP-look defaults": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033531195
+      }
+    ],
+    "2.5 Add the dark token set": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033531309
+      }
+    ],
+    "2.6 Add the token sync and contrast tests for dark": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033531444
+      }
+    ],
+    "2.7 Write property test for dark token contrast": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033531545
+      }
+    ],
+    "2.8 Add `ThemeController`": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033531757
+      }
+    ],
+    "2.9 Add the \"Display settings\" section with the Theme control": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033531855
+      }
+    ],
+    "2.10 Add axe tests for the dark variant": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033531977
+      }
+    ],
+    "2.11 Checkpoint: MVP regression with all flags off": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033532140
+      }
+    ],
+    "2.12 Checkpoint: dark mode with its flag on": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033532311
+      }
+    ],
+    "2.13 Merge dark mode into `main` (local merge, no push)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033532411
+      }
+    ],
+    "3.1 Add the AAA token sets": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033532526
+      }
+    ],
+    "3.2 Extend the token sync and contrast tests": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033532646
+      }
+    ],
+    "3.3 Extend the property test for token contrast": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033532786
+      }
+    ],
+    "3.4 Extend `ThemeController` for the Contrast_Preference": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033532920
+      }
+    ],
+    "3.5 Add the \"High contrast\" checkbox to Display settings": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033533064
+      }
+    ],
+    "3.6 Add axe tests for the high-contrast variants": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033533317
+      }
+    ],
+    "3.7 Checkpoint: MVP regression with all flags off": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033533537
+      }
+    ],
+    "3.8 Checkpoint: high contrast with its flag on": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033533676
+      }
+    ],
+    "3.9 Merge high contrast into `main` (local merge, no push)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033533772
+      }
+    ],
+    "4.1 Add the `webhook-sender` line to the structure steering": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033533905
+      }
+    ],
+    "4.2 Scaffold the core webhook modules and barrels": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033533995
+      }
+    ],
+    "4.3 Implement Safe_Send_Mode helpers": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033534103
+      }
+    ],
+    "4.4 Write property test for the allowlist filter": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033534212
+      }
+    ],
+    "4.5 Implement the webhook URL validator and masker": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033534330
+      }
+    ],
+    "4.6 Write property test for URL safety": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033534477
+      }
+    ],
+    "4.7 Write property test for URL validation idempotence": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033534594
+      }
+    ],
+    "4.8 Write property test for URL masking": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033534730
+      }
+    ],
+    "4.9 Implement derived webhook secrets": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033534845
+      }
+    ],
+    "4.10 Write property test for secret derivation": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033534975
+      }
+    ],
+    "4.11 Implement signing and verification": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033535093
+      }
+    ],
+    "4.12 Write property test for the signature round trip": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033535204
+      }
+    ],
+    "4.13 Write property test for tamper and replay rejection": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033535327
+      }
+    ],
+    "4.14 Implement the payload schema and builder": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033535470
+      }
+    ],
+    "4.15 Write property test for payload validity and size": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033535597
+      }
+    ],
+    "4.16 Write property test for the payload JSON round trip": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033535729
+      }
+    ],
+    "4.17 Implement the retry policy": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033535842
+      }
+    ],
+    "4.18 Write property test for the retry bound": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033535958
+      }
+    ],
+    "4.19 Implement the failure counter": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033536093
+      }
+    ],
+    "4.20 Write property test for the failure counter": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033536232
+      }
+    ],
+    "4.21 Implement the test-event rate-limit functions": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033536449
+      }
+    ],
+    "4.22 Write property test for the test-event rate limit": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033536576
+      }
+    ],
+    "4.23 Create the `packages/webhook-sender` package": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033536708
+      }
+    ],
+    "4.24 Add the webhook schema, Migration 0004 and its down and grants files": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033536797
+      }
+    ],
+    "4.25 Apply Migration 0004 to the `phase-2` branch (needs user approval)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033537037
+      }
+    ],
+    "4.26 Grant table access to the runtime role (needs user action)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033537249
+      }
+    ],
+    "4.27 Write the Neon branch integration tests for webhooks": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033537365
+      }
+    ],
+    "4.28 Add webhook configuration to the API": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033537544
+      }
+    ],
+    "4.29 Add the webhook repository functions": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033537661
+      }
+    ],
+    "4.30 Add the webhook CRUD routes": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033537761
+      }
+    ],
+    "4.31 Add the test-event route": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033537857
+      }
+    ],
+    "4.32 Add webhook delivery to the Poller": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033537957
+      }
+    ],
+    "4.33 Extend the flags-off guard tests for webhooks": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538056
+      }
+    ],
+    "4.34 Add the Webhooks section to the Watchlist page": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538175
+      }
+    ],
+    "4.35 Add axe tests for the Webhooks section": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538270
+      }
+    ],
+    "4.36 Write the webhook receiver guide": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538359
+      }
+    ],
+    "4.37 Check a real Slack incoming webhook (needs user action)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538460
+      }
+    ],
+    "4.38 Checkpoint: MVP regression with all flags off": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538559
+      }
+    ],
+    "4.39 Checkpoint: webhooks with their flag on": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538667
+      }
+    ],
+    "4.40 Merge webhooks into `main` (local merge, no push)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538757
+      }
+    ],
+    "5.1 Scaffold the core digest modules and barrels": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538860
+      }
+    ],
+    "5.2 Implement due-time selection": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033538972
+      }
+    ],
+    "5.3 Write property test for due-digest selection": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539072
+      }
+    ],
+    "5.4 Implement digest content selection and composition": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539161
+      }
+    ],
+    "5.5 Write property test for digest content selection": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539272
+      }
+    ],
+    "5.6 Write property test for digest composition": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539371
+      }
+    ],
+    "5.7 Implement the digest unsubscribe signature": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539485
+      }
+    ],
+    "5.8 Write property test for the digest unsubscribe signature": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539586
+      }
+    ],
+    "5.9 Add the digest schema, Migration 0005 and its down and grants files": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539678
+      }
+    ],
+    "5.10 Apply Migration 0005 to the `phase-2` branch (needs user approval)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539787
+      }
+    ],
+    "5.11 Grant table access to the runtime role (needs user action)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539891
+      }
+    ],
+    "5.12 Write the Neon branch integration tests for the digest": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033539997
+      }
+    ],
+    "5.13 Add the digest repository functions": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033540109
+      }
+    ],
+    "5.14 Add the digest API routes": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033540224
+      }
+    ],
+    "5.15 Add `runDigest` to the Poller": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033540354
+      }
+    ],
+    "5.16 Write property test for digest idempotency": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033540480
+      }
+    ],
+    "5.17 Register the hourly digest cron": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033540592
+      }
+    ],
+    "5.18 Extend the flags-off guard tests for the digest": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033540709
+      }
+    ],
+    "5.19 Add the Daily digest section to the Watchlist page": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033540812
+      }
+    ],
+    "5.20 Add the digest unsubscribe page": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033540938
+      }
+    ],
+    "5.21 Add axe tests for the digest UI": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033541102
+      }
+    ],
+    "5.22 Run the digest cron locally (needs user action)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033541333
+      }
+    ],
+    "5.23 Checkpoint: MVP regression with all flags off": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033541864
+      }
+    ],
+    "5.24 Checkpoint: digest with its flag on": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033542013
+      }
+    ],
+    "5.25 Merge the digest into `main` (local merge, no push; needs user approval)": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033542142
+      }
+    ],
+    "6.1 Checkpoint: all flags off, full MVP suite": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033542273
+      }
+    ],
+    "6.2 Checkpoint: all flags on, full suite and web build": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033542396
+      }
+    ],
+    "6.3 Add the accessibility suite for every theme variant": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033542582
+      }
+    ],
+    "6.4 Update the README and the API documentation": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033542762
+      }
+    ],
+    "6.5 Update the Kiro usage and submission documents": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033542903
+      }
+    ],
+    "6.6 Write the production enable plan": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033543225
+      }
+    ],
+    "6.7 Final checkpoint: all tests pass": [
+      {
+        "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795033543524
+      }
+    ]
+  }
+}

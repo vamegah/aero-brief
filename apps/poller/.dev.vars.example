@@ -4,3 +4,9 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxx
 UNSUBSCRIBE_SECRET=change-me-to-a-long-random-string
 FRONTEND_URL=http://localhost:5173
 MAIL_FROM=AeroBrief <alerts@aerobriefs.com>
+
+# Phase 2 feature flags. Absent means off. Only the exact value "true" turns a flag on.
+FEATURE_DARK_MODE=false
+FEATURE_HIGH_CONTRAST=false
+FEATURE_DIGESTS=false
+FEATURE_WEBHOOKS=false

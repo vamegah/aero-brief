@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import { FeaturesProvider } from "./features/FeaturesProvider";
 import "./styles/tokens.css";
 import "./styles/app.css";
 import "./styles/primitives.css";
@@ -11,6 +12,8 @@ if (!container) throw new Error("Root element #root not found");
 
 createRoot(container).render(
   <StrictMode>
-    <App />
+    <FeaturesProvider>
+      <App />
+    </FeaturesProvider>
   </StrictMode>,
 );
