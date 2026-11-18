@@ -701,6 +701,12 @@ These apply to the pure logic in `packages/core` and to the Notifier with in-mem
 
 **Validates: Requirements 17.4, 17.5**
 
+### Property 39: Ground stop duration pairing
+
+*For any* list of Events, `pairGroundStopDurations` pairs each GROUND_STOP_STARTED Event with at most one GROUND_STOP_ENDED Event of the same airport, every pair has the started Event no later than the ended Event, every duration equals the time between them and is non-negative, and no ended Event is paired across another ended Event of the same airport.
+
+**Validates: Requirements 18.6**
+
 ## Error Handling
 
 | Failure | Behavior |
@@ -999,3 +1005,43 @@ These items were reviewed and left out. Each one conflicts with `scope.md`, `tec
 | 100,000 concurrent users (NFR-04) | Phase 2; Workers and Vercel scale without MVP work |
 | Retention analytics (success metric) | Needs an analytics tool, which is a new dependency |
 | Monetization and commercial-use review | `scope.md` prohibits monetization |
+
+## Search, Durations and Export
+
+This section is the design for Requirements 18.6, 18.7 and 19. All three run in the browser on data the page has already loaded. None adds an endpoint, a table, a dependency or a stored value.
+
+### Airport search (Requirement 19)
+
+`StatusView` gains a search field above the filter buttons: a native `<input type="search">` with a visible `<label>` "Search airports", kept in local state next to the existing `affectedOnly` state. A pure `matchesAirportSearch(airport, query)` in `apps/web/src/lib/` trims and lowercases the query and matches it against the identifier and the name. The view applies sort, then the "Affected only" filter, then the search, so Requirement 15.6 ordering still holds. A line "Showing N of 20 airports" sits above the table, outside the `aria-live` banner region. When nothing matches, the existing EmptyState pattern shows "No airports match your search." under the table, which keeps its rows-and-cells structure. With an empty query and "All" selected, the table renders 20 rows, so the existing 20-row tests are unaffected.
+
+### Ground stop durations (Requirement 18.6)
+
+A pure `pairGroundStopDurations(events)` in `apps/web/src/lib/` takes the airport page's Events (already filtered to 24 hours) and walks them oldest to newest per airport. Each GROUND_STOP_ENDED Event is paired with the most recent unpaired GROUND_STOP_STARTED Event before it, and the result maps the ended Event to a duration in milliseconds. An ended Event without a started Event in the window gets no duration, because the stop began more than 24 hours ago or before AeroBrief saw it. A small `formatDuration(ms)` renders "Lasted 45 min" or "Lasted 1 h 20 min". EventCard gains an optional `duration` line under the time. The Explanation text is not changed (Requirement 5.8).
+
+### CSV download (Requirement 18.7)
+
+A pure `eventsToCsv(events)` in `apps/web/src/lib/` returns RFC 4180 text with the header `time_utc,type,airport,explanation`. Every field is wrapped in double quotes, and quotes inside a field are doubled. Any field that starts with `=`, `+`, `-` or `@` gets a leading apostrophe to block formula injection. The airport page shows a secondary Button "Download CSV" next to the "Last 24 hours" heading, only when there is at least one Event. Clicking it builds a `Blob`, creates an object URL, clicks a temporary `<a download="aerobrief-<ID>-<YYYY-MM-DD>.csv">` and revokes the URL. No request goes to the API.
+
+### Not adopted from the enterprise requirements document
+
+These items were reviewed and left out, either because `scope.md` or `tech.md` rules them out, or because they would add real complexity to the MVP:
+
+| Item | Reason |
+|---|---|
+| 500+ US airports and international hubs (Eurocontrol, ICAO) | `scope.md`: exactly 20 hardcoded US airports |
+| GDPs, AFPs, closures, METAR/TAF, NOTAMs | New event types, detection rules, explanations and alerts. GDPs remain the first candidate later (see the earlier "Not adopted" table) |
+| FlightAware, OAG, Cirium, ADS-B Exchange fallback | `scope.md` prohibits third-party sources; Requirement 1.4 limits data to the FAA_API. The stale banner stays honest instead |
+| Flight, tail number and route tracking | Needs third-party flight data, which is out of scope |
+| Multi-tenancy, SSO (SAML, OIDC), SCIM, RBAC, audit logging | Organization accounts are a different product. Magic links stay the only identity mechanism |
+| SMS (Twilio), Slack, Teams, PagerDuty, ServiceNow, webhooks | New outbound integrations outside the approved stack; `scope.md` keeps the MVP email-only |
+| Alert routing rules, thresholds, quiet hours, escalation | Need per-user rule storage and delayed or conditional sending |
+| Daily 6:00 AM digest | Needs per-user time zones, a new cron and a new email template |
+| GraphQL, API keys, tiered rate limits, scheduled S3 or SFTP exports | The read-only REST endpoints are already public. Keys, tiers and scheduled exports belong to a paid product, and `scope.md` prohibits monetization |
+| 3-year retention, trend dashboards, ML prediction | `scope.md` limits history to 24 hours |
+| 99.99% SLA, multi-region, read replicas | Beyond the 99.9% target of Requirement 12.1. Workers and Vercel already serve from many locations |
+| Circuit breaker on the FAA API | Already covered: the Poller aborts FAA requests after 10 seconds (Requirement 1.2) and the API never calls the FAA (Requirement 6.1) |
+| SOC 2, ISO 27001, penetration tests, DPAs, regional data storage | Organizational compliance programs, not MVP features |
+| Vault or AWS Secrets Manager | Outside the stack. Secrets stay in Cloudflare Worker secrets (Requirement 14.10), and the rotation script covers rotation |
+| Dark mode | No new dependency is needed, but every color token would need a second AA-checked value and a second set of `palettePairs`. Possible later as a follow-the-system-setting option |
+| WCAG 2.1 AAA | Every text pair would need 7:1, which means a token-wide redesign. The MVP target stays AA (Requirement 13) |
+| Drag-and-drop dashboards, white-labeling | Large UI features for a multi-customer product |

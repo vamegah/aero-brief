@@ -329,3 +329,18 @@ The MVP monitors exactly 20 hardcoded US airports, caps each watchlist at 10 air
 3. IF the identifier in `/airport/<identifier>` is not one of the 20 Monitored_Airports, THEN THE Frontend SHALL show the Not found page.
 4. WHILE the API response for the airport includes the Stale_State indicator, THE Frontend SHALL display the Stale_Data_Banner on the airport page.
 5. THE airport page SHALL define visible loading, empty, and error states, and SHALL request data only from the existing `/api/status/airport/:code` and `/api/history/:code` endpoints.
+6. WHEN the airport page shows a GROUND_STOP_ENDED Event and an earlier GROUND_STOP_STARTED Event for the same airport is also shown, with no other GROUND_STOP_ENDED Event between them, THE Frontend SHALL show on the ended Event the duration between the two Events in hours and minutes (for example "Lasted 1 h 20 min"), and SHALL show no duration otherwise.
+7. WHEN a visitor activates the "Download CSV" control on the airport page, THE Frontend SHALL download, without contacting the API again, a CSV file of the Events shown on the page with the columns `time_utc`, `type`, `airport`, and `explanation`, quoting every field, AND SHALL prefix with an apostrophe every field that begins with `=`, `+`, `-`, or `@`, so that spreadsheet applications do not run it as a formula.
+
+### Requirement 19: Find airports quickly on the Status page
+
+**User Story:** As a dispatcher watching many hubs, I want to type an airport code or city into a search box, so that I can find its status without scanning the whole table.
+
+#### Acceptance Criteria
+
+1. THE Frontend SHALL show a search field labelled "Search airports" above the airport status table.
+2. WHEN the search field contains text, THE Frontend SHALL show only the airports whose identifier or name contains that text, ignoring case and leading or trailing spaces, combined with the "All" or "Affected only" filter, in the order defined by Requirement 15.6.
+3. WHILE the search field is empty and the "All" filter is selected, THE Frontend SHALL show all 20 Monitored_Airports.
+4. THE Frontend SHALL show as visible text the number of airports shown out of 20 (for example "Showing 3 of 20 airports").
+5. IF no airport matches the search text and filter, THEN THE Frontend SHALL keep the table and show the message "No airports match your search.".
+6. THE search SHALL run in the browser on the data already loaded and SHALL make no additional API request.

@@ -15,6 +15,7 @@ On November 13, 2026, a nationwide ground stop halted U.S. flights. The FAA's pu
 - Logistics and cargo dispatchers
 - Travel agencies and corporate travel managers
 - Aviation journalists and analysts
+- Airport authorities and operations teams monitoring inbound traffic
 
 ## Core Value Proposition
 1. **Independent** — stays up when FAA public systems fail

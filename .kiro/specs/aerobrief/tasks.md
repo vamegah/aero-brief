@@ -621,6 +621,29 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
   - [x] 20.7 Checkpoint: run the full test suite
     - Root `npm test` and `npm run typecheck` pass; the web build passes. Ask the user if questions arise.
 
+- [ ] 21. Search, durations and CSV export (browser-only, no new dependencies)
+  - [ ] 21.1 Airport search on the Status page
+    - Add a labelled "Search airports" field above the table, a pure `matchesAirportSearch` in `apps/web/src/lib/` (trimmed, case-insensitive, identifier or name), combined after sort and the "Affected only" filter; "Showing N of 20 airports" text; "No airports match your search." when empty. Keep the table rows, columns and cells; existing tests stay unchanged.
+    - Unit tests for the matcher and the view, and a vitest-axe check in a new file.
+    - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
+
+  - [ ] 21.2 Ground stop durations on the airport page
+    - Pure `pairGroundStopDurations` and `formatDuration` in `apps/web/src/lib/`; EventCard gains an optional duration line used by the airport page. Explanation text unchanged.
+    - Unit tests and a property test tagged `// Feature: aerobrief, Property 39: Ground stop duration pairing` (numRuns >= 100).
+    - _Requirements: 18.6, 5.8_
+
+  - [ ] 21.3 CSV download on the airport page
+    - Pure `eventsToCsv` in `apps/web/src/lib/` (header `time_utc,type,airport,explanation`, all fields quoted, inner quotes doubled, apostrophe prefix for fields starting with `=`, `+`, `-` or `@`). Secondary "Download CSV" Button next to "Last 24 hours", shown only when there are Events; Blob and object URL, file `aerobrief-<ID>-<YYYY-MM-DD>.csv`, no API request.
+    - Unit tests for the CSV text, including quoting and formula-prefix cases, and a component test that clicking triggers a download without a fetch.
+    - _Requirements: 18.7_
+
+  - [ ] 21.4 Public API reference
+    - Write `docs/api.md` describing the public, read-only endpoints (`/api/health`, `/api/status/national`, `/api/status/airport/:code`, `/api/history/:code`) with request examples and response shapes taken from the code, plus the 24-hour window, the stale indicator and the 503 `Retry-After` behavior. State that there are no API keys or rate tiers. Link it from README.md.
+    - _Requirements: 6.1, 11.3, 12.6_
+
+  - [ ] 21.5 Checkpoint: run the full test suite
+    - Root `npm test` and `npm run typecheck` pass; the web build passes. Ask the user if questions arise.
+
 ## Notes
 
 - Tasks marked with `*` are optional test-only sub-tasks and can be skipped for a faster MVP. Task 11.1 is intentionally not optional because it is the Requirement 13.6 gate.
