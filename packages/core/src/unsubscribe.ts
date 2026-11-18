@@ -39,15 +39,51 @@ export async function signUnsubscribe(secret: string, userId: string, airportId:
   return toBase64Url(new Uint8Array(mac));
 }
 
-/** Constant-time verification (Web Crypto `verify` compares the MAC in constant time). */
+const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+
+/** Parses an ISO 8601 instant with an explicit offset; returns null for anything else. */
+export function parseIsoInstant(value: string | undefined): Date | null {
+  if (value === undefined || !ISO_INSTANT.test(value)) return null;
+  const ms = Date.parse(value);
+  return Number.isNaN(ms) ? null : new Date(ms);
+}
+
+/**
+ * Secrets the API accepts for verification: the current one, plus the previous
+ * one only while its expiry is a valid ISO instant strictly after `now`.
+ * A missing, empty, or malformed expiry means the previous secret is ignored.
+ */
+export function acceptedUnsubscribeSecrets(
+  current: string,
+  previous: string | undefined,
+  previousExpiresAt: string | undefined,
+  now: Date,
+): string[] {
+  const secrets = [current];
+  if (previous === undefined || previous === "" || previous === current) return secrets;
+  const expiry = parseIsoInstant(previousExpiresAt);
+  if (expiry !== null && expiry.getTime() > now.getTime()) secrets.push(previous);
+  return secrets;
+}
+
+/**
+ * Constant-time verification (Web Crypto `verify` compares the MAC in constant time).
+ * `secret` may be a single secret or a list; the signature is valid if any secret verifies it.
+ */
 export async function verifyUnsubscribe(
-  secret: string,
+  secret: string | readonly string[],
   userId: string,
   airportId: string,
   sig: string,
 ): Promise<boolean> {
   const sigBytes = fromBase64Url(sig);
   if (sigBytes === null) return false;
-  const key = await importKey(secret, "verify");
-  return crypto.subtle.verify("HMAC", key, sigBytes, message(userId, airportId));
+  const secrets = typeof secret === "string" ? [secret] : secret;
+  let valid = false;
+  // Check every secret (no early exit) so timing does not reveal which one matched.
+  for (const s of secrets) {
+    const key = await importKey(s, "verify");
+    if (await crypto.subtle.verify("HMAC", key, sigBytes, message(userId, airportId))) valid = true;
+  }
+  return valid;
 }

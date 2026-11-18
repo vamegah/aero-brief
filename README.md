@@ -135,7 +135,7 @@ To build the frontend: `npm run build -w apps/web`.
 | API (Cloudflare Worker) | _TODO: fill in after deployment_ |
 | Health check (`/api/health`) | _TODO: fill in after deployment_ |
 
-Deployment steps are in [`docs/production-runbook.md`](docs/production-runbook.md).
+Deployment steps are in [`docs/production-runbook.md`](docs/production-runbook.md). Rotating production secrets is covered in [`docs/secret-rotation.md`](docs/secret-rotation.md).
 
 ## How this was built with Kiro
 

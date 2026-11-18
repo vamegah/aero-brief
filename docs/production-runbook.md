@@ -2,6 +2,8 @@
 
 You run every step in this document. Nothing here is automated. Never paste secret values into chat, commits, issues or screenshots. When a command asks for a value, take it from the provider console or your password manager.
 
+To rotate production secrets after a leak or on a schedule, see [`docs/secret-rotation.md`](secret-rotation.md).
+
 Placeholders used below: `<API_WORKER_URL>` is the API Worker URL printed by `wrangler deploy` (for example `https://aerobrief-api.<subdomain>.workers.dev`). `<WEB_URL>` is the production Vercel URL, with no trailing slash and no path (for example `https://aerobrief.vercel.app` or your custom domain).
 
 ## 0. Read first: repo issues to fix before deploying

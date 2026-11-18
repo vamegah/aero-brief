@@ -1,4 +1,4 @@
-import { airportById, applyWatchlistOp, isMonitoredId, verifyUnsubscribe, type MonitoredId } from "@aerobrief/core";
+import { acceptedUnsubscribeSecrets, airportById, applyWatchlistOp, isMonitoredId, verifyUnsubscribe, type MonitoredId } from "@aerobrief/core";
 import { SubscriptionLimitError, createDb, createRepositories } from "@aerobrief/db";
 import { z } from "zod";
 import type { Env } from "../env";
@@ -139,7 +139,13 @@ export function createWatchlistHandlers(deps: WatchlistDeps = {}): WatchlistHand
       throw new ApiError(400, "invalid_request", "Body must be { userId, airportId, sig }.");
     }
     const { userId, airportId, sig } = parsed.data;
-    const valid = await verifyUnsubscribe(env.UNSUBSCRIBE_SECRET, userId, airportId, sig);
+    const secrets = acceptedUnsubscribeSecrets(
+      env.UNSUBSCRIBE_SECRET,
+      env.UNSUBSCRIBE_SECRET_PREVIOUS,
+      env.UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT,
+      ctx.now,
+    );
+    const valid = await verifyUnsubscribe(secrets, userId, airportId, sig);
     if (!valid || !isMonitoredId(airportId)) {
       throw new ApiError(403, "invalid_signature", "This unsubscribe link is not valid.");
     }

@@ -2,5 +2,9 @@
 DATABASE_URL=postgresql://user:pass@host.neon.tech/dbname?sslmode=require
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxx
 UNSUBSCRIBE_SECRET=change-me-to-a-long-random-string
+# Optional, only during unsubscribe-secret rotation. The previous secret is accepted for
+# verification until the expiry (ISO 8601 with offset, e.g. 2030-01-01T00:00:00Z).
+# UNSUBSCRIBE_SECRET_PREVIOUS=previous-secret-placeholder
+# UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT=2030-01-01T00:00:00Z
 FRONTEND_URL=http://localhost:5173
 MAIL_FROM=AeroBrief <alerts@aerobriefs.com>

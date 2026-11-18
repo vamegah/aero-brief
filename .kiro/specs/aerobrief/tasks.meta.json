@@ -1777,6 +1777,49 @@
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1794977900519
       }
+    ],
+    "19.1 Dual-secret unsubscribe verification in the API": [
+      {
+        "executionId": "faca1ad2-33d4-4fb5-97fb-a345c621ea95",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794978853140
+      },
+      {
+        "executionId": "faca1ad2-33d4-4fb5-97fb-a345c621ea95",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794979113210
+      }
+    ],
+    "19.2 Rotation script scripts/rotate-secrets.ts": [
+      {
+        "executionId": "faca1ad2-33d4-4fb5-97fb-a345c621ea95",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794979120107
+      },
+      {
+        "executionId": "faca1ad2-33d4-4fb5-97fb-a345c621ea95",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794979747107
+      }
+    ],
+    "19.3 Rotation runbook and configuration": [
+      {
+        "executionId": "faca1ad2-33d4-4fb5-97fb-a345c621ea95",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794979754807
+      },
+      {
+        "executionId": "faca1ad2-33d4-4fb5-97fb-a345c621ea95",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794980007380
+      }
+    ],
+    "19. Secret rotation": [
+      {
+        "executionId": "faca1ad2-33d4-4fb5-97fb-a345c621ea95",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1794980007871
+      }
     ]
   }
 }

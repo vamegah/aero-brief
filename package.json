@@ -10,7 +10,8 @@
   ],
   "scripts": {
     "test": "vitest --run",
-    "typecheck": "tsc --noEmit -p tsconfig.json && npm run typecheck --workspaces --if-present"
+    "rotate-secrets": "node scripts/rotate-secrets.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p scripts/tsconfig.json && npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250101.0",

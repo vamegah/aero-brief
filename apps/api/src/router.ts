@@ -1,5 +1,5 @@
 import { createLogger, type LogSink, type Logger } from "@aerobrief/core";
-import { parseEnv, type Env } from "./env";
+import { isMalformedPreviousExpiry, parseEnv, type Env } from "./env";
 import { ApiError, errorResponse } from "./http";
 
 /** Hand-written router on the Workers fetch handler. No routing framework (design.md, apps/api). */
@@ -186,6 +186,12 @@ export function createFetchHandler(routes: readonly Route[], deps: RouterDeps = 
     try {
       const env = parseEnv(rawEnv);
       if (typeof rawEnv === "object" && rawEnv !== null) envCache.set(rawEnv, env);
+      if (isMalformedPreviousExpiry(rawEnv)) {
+        // Never log the value itself.
+        bootLogger.warn("invalid_unsubscribe_previous_expiry", {
+          reason: "UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT is not an ISO time; previous secret ignored",
+        });
+      }
       return env;
     } catch (err) {
       // parseEnv names only the offending keys, never values.
@@ -199,7 +205,9 @@ export function createFetchHandler(routes: readonly Route[], deps: RouterDeps = 
     if (env === null) {
       return errorResponse(500, "internal_error", "The server is not configured correctly.");
     }
-    const logger = createLogger([env.DATABASE_URL, env.RESEND_API_KEY, env.UNSUBSCRIBE_SECRET], deps.logSink);
+    const redacted = [env.DATABASE_URL, env.RESEND_API_KEY, env.UNSUBSCRIBE_SECRET];
+    if (env.UNSUBSCRIBE_SECRET_PREVIOUS !== undefined) redacted.push(env.UNSUBSCRIBE_SECRET_PREVIOUS);
+    const logger = createLogger(redacted, deps.logSink);
 
     const url = new URL(request.url);
     const method = request.method.toUpperCase();

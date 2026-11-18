@@ -287,3 +287,18 @@ The MVP monitors exactly 20 hardcoded US airports, caps each watchlist at 10 air
 11. THE Frontend SHALL implement every interactive element as a native `<button>` element or an `<a>` element with an `href`, reachable by keyboard and showing a visible focus indicator.
 12. THE Frontend SHALL give every new foreground and background color pair a contrast ratio of at least 4.5:1 for normal text and at least 3:1 for large text, user interface component boundaries, and focus indicators.
 13. WHEN a User reaches the Watchlist page directly after redeeming a Magic_Link, THE Frontend SHALL display a dismissible success message "Successfully signed in as <email>." containing the email address returned by the API, SHALL announce it through an ARIA live region without moving keyboard focus, AND SHALL NOT place the email address in the page URL.
+
+### Requirement 16: Rotate secrets safely
+
+**User Story:** As a maintainer, I want one command that rotates the production secrets, so that a leaked secret can be replaced quickly without breaking the live service.
+
+#### Acceptance Criteria
+
+1. WHEN the maintainer runs the rotation script, THE script SHALL rotate the Neon database role password, the Resend API key, and the UNSUBSCRIBE_SECRET, or only the subset selected with an `--only` option.
+2. WHEN the rotation script runs with `--dry-run`, THE script SHALL print the planned steps and SHALL make no change to any external service, Worker secret, or local file.
+3. THE rotation script SHALL NOT print or log the value of any secret, old or new, and SHALL write secret values only to the local `.env`, its gitignored `.env.backup` copy, and the temporary file used for the atomic rewrite of `.env`.
+4. WHEN the rotation script rotates a secret, THE script SHALL update that secret on every Cloudflare Worker that uses it and in the local `.env` file.
+5. WHEN the rotation script rotates the Resend API key, THE script SHALL create the new key, update the Workers, verify that the new key is accepted by Resend, and only then delete the old key.
+6. IF a verification step fails after a secret was changed, THEN THE rotation script SHALL stop, report which secrets were changed and which were not, and SHALL NOT delete any old Resend key.
+7. WHEN the UNSUBSCRIBE_SECRET is rotated, THE API SHALL accept unsubscribe links signed with the previous secret for 30 days after the rotation, and THE Notifier SHALL sign new links only with the current secret.
+8. WHEN the 30-day period after an UNSUBSCRIBE_SECRET rotation has passed, THE API SHALL reject unsubscribe links signed only with the previous secret.

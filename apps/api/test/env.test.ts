@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseEnv } from "../src/env";
+import { isMalformedPreviousExpiry, parseEnv } from "../src/env";
 
 const valid = {
   DATABASE_URL: "postgresql://user:pw@host.neon.tech/db",
@@ -26,5 +26,26 @@ describe("parseEnv", () => {
     expect(message).toContain("RESEND_API_KEY");
     expect(message).toContain("DATABASE_URL");
     expect(message).not.toContain("not-a-url-secret");
+  });
+});
+
+describe("parseEnv optional previous unsubscribe secret", () => {
+  it("is absent by default", () => {
+    const env = parseEnv(valid);
+    expect(env.UNSUBSCRIBE_SECRET_PREVIOUS).toBeUndefined();
+    expect(env.UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT).toBeUndefined();
+  });
+
+  it("keeps a valid ISO expiry", () => {
+    const env = parseEnv({ ...valid, UNSUBSCRIBE_SECRET_PREVIOUS: "old", UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT: "2030-01-01T00:00:00Z" });
+    expect(env.UNSUBSCRIBE_SECRET_PREVIOUS).toBe("old");
+    expect(env.UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT).toBe("2030-01-01T00:00:00Z");
+  });
+
+  it("drops a malformed expiry without failing startup", () => {
+    const raw = { ...valid, UNSUBSCRIBE_SECRET_PREVIOUS: "old", UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT: "next tuesday" };
+    expect(parseEnv(raw).UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT).toBeUndefined();
+    expect(isMalformedPreviousExpiry(raw)).toBe(true);
+    expect(isMalformedPreviousExpiry(valid)).toBe(false);
   });
 });

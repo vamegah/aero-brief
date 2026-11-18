@@ -689,6 +689,12 @@ These apply to the pure logic in `packages/core` and to the Notifier with in-mem
 
 **Validates: Requirements 15.6**
 
+### Property 37: Unsubscribe secret acceptance
+
+*For any* current secret, optional previous secret, expiry and time, the accepted list contains the current secret, plus the previous secret only when the expiry is a valid ISO time strictly after that time. A link signed with a secret in the accepted list verifies, and a link signed with any other secret is rejected.
+
+**Validates: Requirements 16.7, 16.8, 9.8**
+
 ## Error Handling
 
 | Failure | Behavior |
@@ -903,3 +909,39 @@ The existing suites must keep passing unchanged, except for the sort-order asser
 - **Task 10.9 contrast test and `palette-sync.test.ts`:** every new color is a `palette.ts` entry and appears in `tokens.css` as `--<name>: <hex>;`. Every new pair is in `palettePairs`, and `tokens.css` keeps `--focus-outline` and `:focus-visible`.
 - **Task 11.1 vitest-axe suite:** the axe checks must stay at zero violations. A violation is fixed in the UI, not the test.
 - **App and Task 10.10 and 10.11 tests:** exactly one `<h1>` with the text "AeroBrief". The nav bar keeps its accessible names and `aria-current`. `/watchlist` makes one `/api/watchlist` request on load.
+
+## Secret Rotation
+
+This section is the design for Requirement 16. The script runs on the maintainer's machine. Its admin credentials are never stored in CI.
+
+### Script
+
+`scripts/rotate-secrets.ts`, run with `npm run rotate-secrets -- [--dry-run] [--only=neon,resend,unsubscribe] [--confirm-api-deployed] [--env-path <path>]`. The option is `--env-path` because Node reserves `--env-file`. Rotating the unsubscribe secret requires `--confirm-api-deployed` or an interactive "yes". Node 24 runs the TypeScript file directly (built-in type stripping), so the script adds no dependency. It uses only erasable TypeScript syntax and is covered by a strict tsconfig and the repo guard.
+
+Inputs come from the local `.env`, read by the script and validated with Zod:
+
+| Variable | Used for |
+|---|---|
+| `NEON_API_KEY`, `NEON_PROJECT_ID`, `NEON_BRANCH_ID`, `NEON_ROLE_NAME` | Neon role password reset |
+| `RESEND_ADMIN_API_KEY` | Creating and deleting Resend keys (full access; the runtime key stays sending-only) |
+| `RESEND_API_KEY_ID` | The id of the current runtime key, so it can be deleted after rotation |
+| Cloudflare | `wrangler` uses the maintainer's existing `wrangler login` session |
+
+### Order of operations
+
+1. **Preflight.** Validate inputs for the selected steps and print the plan. `--dry-run` stops here, before any subprocess or network call. A real run then confirms `wrangler whoami` works.
+2. **Neon.** Call `POST /api/v2/projects/{project}/branches/{branch}/roles/{role}/reset_password`. The old password stops working at once, so the script immediately replaces the password inside every connection string that uses this role (`DATABASE_URL` and any related URL in `.env`) and runs `wrangler secret put DATABASE_URL` for the API and the Poller. It then verifies with `GET https://www.aerobriefs.com/api/status/national`, which reads the database.
+3. **Resend.** Create a new sending-only key restricted to the `aerobriefs.com` domain, put it on both Workers as `RESEND_API_KEY`, and verify it by sending one email to Resend's test address `delivered@resend.dev`. Only after that succeeds, delete the old key by `RESEND_API_KEY_ID` and store the new id.
+4. **Unsubscribe secret.** Generate 32 random bytes (base64url). On the API, set `UNSUBSCRIBE_SECRET_PREVIOUS` to the old value and `UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT` to the rotation time plus 30 days, then set `UNSUBSCRIBE_SECRET` on the API and the Poller.
+5. **Local file.** Rewrite `.env` atomically (temp file, then rename), changing only the affected lines, after copying the previous file to the gitignored `.env.backup`.
+6. **Report.** List what changed, without values, and any manual follow-ups.
+
+If a step fails, the script stops and reports which secrets are already rotated. It never deletes the old Resend key unless the new key was verified. Secret values reach `wrangler` through stdin, never through command-line arguments, so they don't appear in process listings.
+
+### Dual-secret unsubscribe verification
+
+`verifyUnsubscribe` accepts a list of secrets. The API passes `[UNSUBSCRIBE_SECRET]`, plus `UNSUBSCRIBE_SECRET_PREVIOUS` while `UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT` is in the future. Both new variables are optional. The Poller signs with `UNSUBSCRIBE_SECRET` only. The previous secret is added to the logger's redaction list. The API change must be deployed before the first unsubscribe-secret rotation.
+
+### Pure helpers (unit-tested)
+
+The decisions are pure functions, tested without network or file access: replacing the password inside a Postgres connection string, updating `KEY=value` lines in `.env` text while keeping other lines and comments, building the step plan from `--only`, and deciding whether the previous unsubscribe secret is still valid at a given time.

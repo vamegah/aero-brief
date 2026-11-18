@@ -223,3 +223,36 @@ describe("POST /api/unsubscribe", () => {
     expect(err.status).toBe(400);
   });
 });
+
+describe("POST /api/unsubscribe with a previous secret", () => {
+  const PREVIOUS = "previous_secret_value";
+  const FUTURE = "2025-01-03T00:00:00Z";
+  const PAST = "2025-01-01T00:00:00Z";
+
+  async function unsubscribeWith(over: Partial<Env>): Promise<{ status: number; removed: boolean }> {
+    const { handlers, mocks } = setup(["ATL"]);
+    const sig = await signUnsubscribe(PREVIOUS, "u9", "ATL");
+    try {
+      const res = await handlers.unsubscribe(req, { ...env, ...over }, ctxOf({ session: null, body: { userId: "u9", airportId: "ATL", sig } }));
+      return { status: res.status, removed: mocks.remove.mock.calls.length > 0 };
+    } catch (err) {
+      if (err instanceof ApiError) return { status: err.status, removed: mocks.remove.mock.calls.length > 0 };
+      throw err;
+    }
+  }
+
+  it("accepts a link signed with the previous secret before expiry", async () => {
+    const r = await unsubscribeWith({ UNSUBSCRIBE_SECRET_PREVIOUS: PREVIOUS, UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT: FUTURE });
+    expect(r).toEqual({ status: 200, removed: true });
+  });
+
+  it("rejects it after expiry", async () => {
+    const r = await unsubscribeWith({ UNSUBSCRIBE_SECRET_PREVIOUS: PREVIOUS, UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT: PAST });
+    expect(r).toEqual({ status: 403, removed: false });
+  });
+
+  it("rejects it when the expiry is missing", async () => {
+    const r = await unsubscribeWith({ UNSUBSCRIBE_SECRET_PREVIOUS: PREVIOUS });
+    expect(r).toEqual({ status: 403, removed: false });
+  });
+});

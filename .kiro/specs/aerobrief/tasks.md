@@ -569,6 +569,21 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
     - Decide on presence by content: for non-POST requests, read the body text; when it is empty, accept the request with no body regardless of Content-Type. Keep the JSON Content-Type requirement for POST and for any request with a non-empty body, the size limit, and the invalid-JSON check. Add router regression tests for DELETE with an empty body stream and no Content-Type, DELETE with a non-empty non-JSON body (still 415), and POST without JSON Content-Type (still 415).
     - _Requirements: 8.2, 8.9_
 
+- [x] 19. Secret rotation
+  - [x] 19.1 Dual-secret unsubscribe verification in the API
+    - `verifyUnsubscribe` accepts a list of secrets. The API adds optional `UNSUBSCRIBE_SECRET_PREVIOUS` and `UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT` (ISO time) to its env schema and passes the previous secret only while the expiry is in the future. The Poller keeps signing with `UNSUBSCRIBE_SECRET` only. Add the previous secret to the logger redaction list and to `.dev.vars.example`.
+    - Tests: current secret accepted; previous accepted before expiry and rejected after; missing or malformed expiry means previous is ignored; a property test that a link signed with any secret outside the accepted list is rejected.
+    - _Requirements: 16.7, 16.8, 9.8_
+
+  - [x] 19.2 Rotation script scripts/rotate-secrets.ts
+    - TypeScript run directly by Node 24 (no new dependency), strict tsconfig, added as `npm run rotate-secrets`. Implements the order of operations in design.md "Secret Rotation": preflight and `--dry-run`, `--only`, Neon reset_password plus immediate `wrangler secret put DATABASE_URL` on API and Poller, Resend create, verify with `delivered@resend.dev`, then delete old key, unsubscribe secret with the 30-day previous secret, atomic `.env` rewrite with `.env.backup`, and a value-free report. Secrets go to `wrangler` through stdin and are never printed.
+    - Pure helpers (connection-string password replacement, `.env` line updates, plan building) are unit-tested in `tests/rotate-secrets.test.ts`; external calls are behind injected functions so the flow can be tested with fakes, including the stop-on-failure path. The script is not run against production in this task.
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 16.6_
+
+  - [x] 19.3 Rotation runbook and configuration
+    - Write `docs/secret-rotation.md`: one-time setup (Neon API key and ids, Resend full-access admin key, `RESEND_API_KEY_ID`, `wrangler login`), the deploy-19.1-first rule, how to run a dry run and a real rotation, what to check afterwards, and how to recover from a failed run. Add the new variable names (no values) to `.env.example`.
+    - _Requirements: 16.1, 16.2_
+
 ## Notes
 
 - Tasks marked with `*` are optional test-only sub-tasks and can be skipped for a faster MVP. Task 11.1 is intentionally not optional because it is the Requirement 13.6 gate.
