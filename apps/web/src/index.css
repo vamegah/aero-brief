@@ -121,7 +121,7 @@ main {
   background: var(--color-surface-raised);
   border: 0;
   border-radius: var(--radius-lg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card);
   gap: var(--space-3);
 }
 
@@ -178,7 +178,7 @@ main {
   background: var(--color-surface-raised);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card);
 }
 
 .airport-table caption {

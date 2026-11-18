@@ -3,6 +3,14 @@
     "1.2 Write property test for flag parsing": {
       "status": "passed",
       "lastRunTimestamp": 1795033872251
+    },
+    "2.3 Write property test for theme totality": {
+      "status": "passed",
+      "lastRunTimestamp": 1795036633065
+    },
+    "2.4 Write property test for MVP-look defaults": {
+      "status": "passed",
+      "lastRunTimestamp": 1795036645805
     }
   },
   "executionHistory": {
@@ -203,6 +211,11 @@
         "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795035768927
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036222032
       }
     ],
     "2.1 Audit the stylesheets for hard-coded colors": [
@@ -210,6 +223,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033530529
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036229478
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036522118
       }
     ],
     "2.2 Implement theme resolution in `packages/core`": [
@@ -217,6 +240,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033530811
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036230110
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036522898
       }
     ],
     "2.3 Write property test for theme totality": [
@@ -224,6 +257,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033531030
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036530582
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036847502
       }
     ],
     "2.4 Write property test for MVP-look defaults": [
@@ -231,6 +274,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033531195
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036530976
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036848228
       }
     ],
     "2.5 Add the dark token set": [
@@ -238,6 +291,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033531309
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036531531
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036849025
       }
     ],
     "2.6 Add the token sync and contrast tests for dark": [
@@ -245,6 +308,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033531444
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036863989
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795037900272
       }
     ],
     "2.7 Write property test for dark token contrast": [
@@ -252,6 +325,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033531545
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036864498
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795037668875
       }
     ],
     "2.8 Add `ThemeController`": [
@@ -259,6 +342,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033531757
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036864717
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795038699759
       }
     ],
     "2.9 Add the \"Display settings\" section with the Theme control": [
@@ -266,6 +359,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033531855
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795038701538
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039025071
       }
     ],
     "2.10 Add axe tests for the dark variant": [
@@ -273,6 +376,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033531977
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039026476
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039319677
       }
     ],
     "2.11 Checkpoint: MVP regression with all flags off": [
@@ -280,6 +393,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033532140
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039320445
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039683289
       }
     ],
     "2.12 Checkpoint: dark mode with its flag on": [
@@ -287,6 +410,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033532311
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039321608
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039684182
       }
     ],
     "2.13 Merge dark mode into `main` (local merge, no push)": [
@@ -294,6 +427,11 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033532411
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795039684512
       }
     ],
     "3.1 Add the AAA token sets": [
@@ -861,6 +999,13 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033543524
+      }
+    ],
+    "1. Setup: flags, features endpoint, guards and Neon branch": [
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795036222131
       }
     ]
   }

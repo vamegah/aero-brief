@@ -1,0 +1,12 @@
+/*
+ * Phase 2 tokens (Task 2.1). Loaded after tokens.css and before app.css.
+ * tokens.css and palette.ts are frozen, so new tokens live here.
+ * Shadows are not palette colors: they are not listed in palette.ts or
+ * extraPalette and are not read by the contrast tests.
+ * The values below are the light values. Dark mode (Task 2.5, themes.css)
+ * may redefine them under html[data-theme="dark"].
+ */
+:root {
+  /* Card and table shadow formerly written as a literal in index.css. */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+}

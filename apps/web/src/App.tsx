@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { DisplaySettings } from "./components/DisplaySettings";
 import { Footer } from "./components/Footer";
 import { NavBar } from "./components/NavBar";
 import { AirportPage, airportIdFromPath } from "./pages/AirportPage";
@@ -46,6 +47,7 @@ export function App() {
         <p>FAA ground stop status for 20 major US airports.</p>
         {pageFor(pathname)}
       </main>
+      <DisplaySettings />
       <Footer />
     </>
   );

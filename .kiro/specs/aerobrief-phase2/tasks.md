@@ -20,7 +20,7 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
 
 ## Tasks
 
-- [ ] 1. Setup: flags, features endpoint, guards and Neon branch
+- [x] 1. Setup: flags, features endpoint, guards and Neon branch
   - [x] 1.1 Implement flag parsing in `packages/core`
     - Create `packages/core/src/schemas/flags.ts` (Zod: `"true"` and `"false"` map to booleans, anything else is invalid) and `packages/core/src/flags.ts` exporting `parseFlags(raw: Record<string, string | undefined>): { flags: Flags; warnings: string[] }` and the `Flags` type inferred from the schema.
     - Flags: `FEATURE_DARK_MODE`, `FEATURE_HIGH_CONTRAST`, `FEATURE_DIGESTS`, `FEATURE_WEBHOOKS`. Absent or invalid means off. One warning per invalid flag names the flag and never its value.
@@ -79,70 +79,70 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - Create `packages/db/seed/phase2-test-users.sql` that inserts test Users with allowlisted addresses (`delivered@resend.dev` and addresses the user supplies). Run it on the branch only.
     - _Requirements: 5.2_
 
-  - [-] 1.12 Checkpoint: MVP regression with all flags off
+  - [x] 1.12 Checkpoint: MVP regression with all flags off
     - Run root `npm test` and `npm run typecheck` with every flag off. All MVP tests pass with no existing test file edited. Ask the user if questions arise.
     - _Requirements: 3.1, 3.6_
 
 - [ ] 2. Dark mode (flag `FEATURE_DARK_MODE`)
-  - [~] 2.1 Audit the stylesheets for hard-coded colors
+  - [x] 2.1 Audit the stylesheets for hard-coded colors
     - Search `apps/web/src/app.css`, `primitives.css` and `index.css` for literal colors (hex, `rgb`, `hsl`, named colors) outside `tokens.css`. Write the findings to `docs/theme-audit.md`.
     - Route each literal through an existing token. If none fits, add a new token in a new file `apps/web/src/styles/tokens-phase2.css` with the same light value, and add it to a new typed `extraPalette` in `themes.ts` (Task 2.5). Never edit `tokens.css` or `palette.ts`. The computed light color must stay equal.
     - _Requirements: 3.3, 8.7_
 
-  - [~] 2.2 Implement theme resolution in `packages/core`
+  - [x] 2.2 Implement theme resolution in `packages/core`
     - Create `packages/core/src/theme.ts` with `ThemeVariant`, `ThemeInput` and `resolveTheme(input)`. Total function, never throws. Flag off ignores the stored value. Unknown stored values count as `system` or `standard`. Only the exact value `high` selects high contrast.
     - Export from `packages/core/src/index.ts`.
     - _Requirements: 8.3, 8.4, 8.11, 8.12, 9.3, 9.5, 9.6, 9.7_
 
-  - [~] 2.3 Write property test for theme totality
+  - [x] 2.3 Write property test for theme totality
     - **Property 2: Theme resolution is total**
     - Create `packages/core/test/theme.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 2: Theme resolution is total`. `numRuns` of 100 or more.
     - **Validates: Requirements 8.11, 9.5, 9.6**
 
-  - [~] 2.4 Write property test for MVP-look defaults
+  - [x] 2.4 Write property test for MVP-look defaults
     - **Property 3: Features off or invalid input resolves to the MVP look**
     - Add to `packages/core/test/theme.pbt.test.ts` or a second file `theme-defaults.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 3: Features off or invalid input resolves to the MVP look`. `numRuns` of 100 or more.
     - **Validates: Requirements 8.3, 8.12, 9.3, 9.7**
 
-  - [~] 2.5 Add the dark token set
+  - [x] 2.5 Add the dark token set
     - Create `apps/web/src/styles/themes.ts` (`darkPalette` typed `Record<PaletteToken, string>`, `themePalettes`, `extraPalette` if Task 2.1 needed it), `themes.css` (`html[data-theme="dark"]` block redefining every `--color-*` property, `color-scheme: dark`) and `themes.pairs.ts` (`MIN_RATIO_AAA`, `themePairs(variant)` derived from `palettePairs`).
     - No `prefers-color-scheme` rule anywhere. Fix a failing pair by changing the token, never the threshold.
     - _Requirements: 8.5, 8.7, 8.8_
 
-  - [~] 2.6 Add the token sync and contrast tests for dark
+  - [x] 2.6 Add the token sync and contrast tests for dark
     - Create `apps/web/test/themes-sync.test.ts` (every token in `themes.ts` appears in the matching `themes.css` block with the same hex, mirroring `palette-sync.test.ts`) and `apps/web/test/themes-contrast.test.ts` (every dark pair meets 4.5 / 3 / 3).
     - _Requirements: 8.7, 8.8_
 
-  - [~] 2.7 Write property test for dark token contrast
+  - [x] 2.7 Write property test for dark token contrast
     - **Property 4: Theme tokens meet their contrast thresholds**
     - Create `apps/web/test/themes-contrast.pbt.test.ts` for the `dark` variant first (Task 3.3 extends it). Check the pair set equals `palettePairs`. Tag: `// Feature: aerobrief-phase2, Property 4: Theme tokens meet their contrast thresholds`. `numRuns` of 100 or more.
     - **Validates: Requirements 8.8, 9.9**
 
-  - [~] 2.8 Add `ThemeController`
+  - [x] 2.8 Add `ThemeController`
     - Create `apps/web/src/theme/ThemeController.tsx`, rendered only while `darkMode` is on. It reads `aerobrief.theme`, calls `resolveTheme`, sets `document.documentElement.dataset.theme` (`dark`), removes the attribute for light, and follows `matchMedia("(prefers-color-scheme: dark)")` through script. With the flag off it renders nothing, reads nothing and writes nothing.
     - Import `themes.css` (and `tokens-phase2.css` if present) in `main.tsx` after `tokens.css`.
     - Add `apps/web/test/theme-controller.test.tsx`: stored values, invalid values, a `matchMedia` change, flag off writes nothing and sets no attribute.
     - _Requirements: 8.2, 8.3, 8.4, 8.5, 8.6_
 
-  - [~] 2.9 Add the "Display settings" section with the Theme control
+  - [x] 2.9 Add the "Display settings" section with the Theme control
     - Create `apps/web/src/components/DisplaySettings.tsx`: a `section` titled "Display settings" with a `fieldset`, `legend` "Theme" and three native radios (System, Light, Dark). Selecting an option stores `aerobrief.theme` and applies the variant without reload. Renders nothing when both flags are off.
     - Add one conditional element in `App.tsx` between the page content and `Footer`, so it shows on every page and not in the nav bar. Style with classes in a new CSS file. No DOM change to the nav bar, banners, airport table or live regions.
     - Add `apps/web/test/display-settings.test.tsx`: roles, labels, keyboard use, absent when the flag is off, same on every page.
     - _Requirements: 8.1, 8.2, 8.9, 8.10, 9.12_
 
-  - [~] 2.10 Add axe tests for the dark variant
+  - [x] 2.10 Add axe tests for the dark variant
     - First confirm how `axe.ts` treats the `color-contrast` rule in jsdom and note it in `docs/theme-audit.md`. Create `apps/web/test/a11y/themes/dark.test.tsx` that renders the Status, Airport, Watchlist, Sign-in and unsubscribe pages in a test `FeaturesProvider` with `data-theme="dark"` and fails on any violation.
     - _Requirements: 8.13_
 
-  - [~] 2.11 Checkpoint: MVP regression with all flags off
+  - [x] 2.11 Checkpoint: MVP regression with all flags off
     - Run root `npm test` and `npm run typecheck` with every flag off. All MVP tests pass unchanged. Ask the user if questions arise.
     - _Requirements: 3.1, 3.6_
 
-  - [~] 2.12 Checkpoint: dark mode with its flag on
+  - [x] 2.12 Checkpoint: dark mode with its flag on
     - Run the dark-mode tests (Properties 2, 3, 4, controller, settings, axe) with `darkMode` on. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [~] 2.13 Merge dark mode into `main` (local merge, no push)
+  - [-] 2.13 Merge dark mode into `main` (local merge, no push)
     - Run only on the owner's instruction, and only before December 4, 2026, 2:00 PM PT. Confirm Tasks 2.11 and 2.12 passed. Check that this feature's commits touch no other feature's code except shared flag and test helpers. Merge the shared setup commits and the dark-mode commits into `main` locally with all flags off. Do not push, tag or deploy.
     - The commits of this section stay one contiguous range so `git revert` of that range removes dark mode alone. The user pushes all four features together at the end.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
