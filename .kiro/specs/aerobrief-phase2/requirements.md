@@ -2,617 +2,422 @@
 
 ## Introduction
 
-This document specifies AeroBrief Phase 2. It is post-contest work that lives only on the git branch `phase-2`. The branch `main` is the live Kiroween 2026 submission, and the tag `mvp-contest-2026` (commit fff8374) is the rollback point. Nothing in this spec changes `main`, the tag, or the MVP spec in `.kiro/specs/aerobrief/`. Nothing merges into `main` until Kiroween 2026 judging has finished.
+This document specifies AeroBrief Phase 2, round 1. The work lives on the git branch `phase-2`. The branch `main` is the live Kiroween 2026 submission and the tag `mvp-contest-2026` (commit fff8374) is the rollback point. Nothing here changes the MVP spec in `.kiro/specs/aerobrief/`.
 
-Phase 2 covers ten feature areas that `.kiro/steering/scope.md` allows on `phase-2` only:
+The project owner decided that only four features are built before the Kiroween 2026 deadline (December 4, 2026, 2:00 PM PT). This is the "contest set" that `.kiro/steering/scope.md` allows to merge into `main` before the deadline:
 
-1. More US airports, international hubs, and flight, tail number and route tracking.
-2. Additional data sources (FlightAware, OAG, Cirium, ADS-B Exchange) through licensed APIs only.
-3. SMS, Slack, PagerDuty and outbound webhooks.
-4. History up to 3 years, trend analysis and machine-learning predictions.
-5. Billing tiers.
-6. Organization accounts, single sign-on, user provisioning, roles and audit logs.
-7. Alert routing rules, escalation and daily digests.
-8. API keys and multi-region hosting.
-9. Drag-and-drop dashboards and white-labeling.
-10. Dark mode and WCAG 2.1 AAA.
+1. Dark mode, with a System, Light and Dark toggle.
+2. A high-contrast theme that meets WCAG 2.1 Level AAA.
+3. A daily digest email.
+4. Signed outbound webhooks, with a `text` field that Slack incoming-webhook URLs render without any Slack integration.
 
-The prohibitions that scope.md keeps in Phase 2 stay in force: no scraping of any site, no push notifications to devices, no map view, no native mobile apps, no FAA SWIM, and no user passwords. Single sign-on and magic links are the only ways to sign in.
+Every other Phase 2 item is dropped for now and listed in the appendix "Deferred (after Kiroween judging)".
 
-The first requirements (1 to 9) are cross-cutting. They define how Phase 2 stays reversible: every feature area sits behind its own Feature_Flag that is off by default, every schema change is a separate reversible migration run only against a Neon branch, Phase 2 Workers deploy under separate names, and the existing MVP test suite keeps passing with every flag off. Requirements 10 to 33 specify the feature areas. Requirement 34 states the sign-off gates that block implementation.
+Requirements 1 to 7 are cross-cutting. They keep the four features reversible: each sits behind its own Feature_Flag that is off by default, each schema change is a separate reversible Migration run only against a Neon branch, and the MVP_Test_Suite passes unchanged with every flag off. Requirements 8 and 9 specify the two themes, Requirements 10 to 12 the digest, and Requirements 13 to 18 the webhooks.
 
 ### Assumptions
 
-1. **Flags-off equivalence.** "Behaves exactly as `main`" means that, with every Feature_Flag off, every HTTP response body, status code and header set, every email, every database write, and every rendered DOM produced on `phase-2` equals what `main` produces for the same input, and the MVP test suite passes unchanged.
-2. **Tech stack.** The approved stack in `.kiro/steering/tech.md` still applies. Every technology outside it is listed in the design as a Stack_Deviation, is marked pending, and is not used until the project owner approves it.
-3. **Provider terms are unknown.** The license terms, rate limits and prices of FlightAware, OAG, Cirium, ADS-B Exchange, Eurocontrol and other providers have not been reviewed. Each feature that depends on a provider waits for the review in Requirement 8.
-4. **Watchlist cap.** scope.md lifts the 20-airport limit and the 24-hour history limit on `phase-2`, but not the cap of 10 airports per user Watchlist. The cap stays at 10 for a user. Whether an Organization may have a larger shared watchlist is an open question for the design.
-5. **Alert latency.** The Alert_Latency definition of MVP Assumption 1 is unchanged. Alerts through new channels are measured from the moment the Poller stores the Snapshot to the moment the channel provider accepts the message.
-6. **Time.** All times are UTC unless a requirement says otherwise. Digest times and quiet periods use the time zone chosen by the recipient.
+1. **Flags-off equivalence.** "Behaves as `main`" means that, with every Feature_Flag off, every HTTP response body, status code and header set, every email, every database write, every outbound request and every rendered DOM on `phase-2` equals what `main` produces for the same input, and the MVP_Test_Suite passes with no file edited.
+2. **Tech stack.** The approved stack in `.kiro/steering/tech.md` applies. All four features fit inside it: Resend for email, Cloudflare Workers cron for scheduling, Neon with Drizzle for storage, and Web Crypto for HMAC. No new dependency is added.
+3. **No separate Workers this round.** Local `wrangler dev`, the Neon branch `phase-2` and the automated tests are enough to verify each feature before merge. The scope.md rule that Phase 2 Workers never deploy to the production Workers stays satisfied because no Phase 2 Worker is deployed at all.
+4. **Webhooks are not push notifications.** The scope.md prohibition covers push notifications to devices. A webhook is an HTTPS request from AeroBrief to a URL that the User registers, so it is outside that prohibition.
+5. **Same alert events.** Webhooks fire for the same Events and the same recipients as MVP Requirement 9 alert emails: GROUND_STOP_STARTED and GROUND_STOP_ENDED for Users who watch the airport, and NATIONWIDE_EVENT for Users with at least 1 airport on the Watchlist.
+6. **Time.** All times are UTC. The digest hour is a UTC hour that the User picks.
+7. **Production rollout is separate.** Applying a Migration to the Production_DB and turning a flag on in production are separate steps that the project owner approves. Merging a feature into `main` with its flag off changes nothing for production users.
 
 ## Glossary
 
-Terms of the MVP spec (`.kiro/specs/aerobrief/requirements.md`) keep their meaning. The terms below are added.
+Terms of the MVP spec (`.kiro/specs/aerobrief/requirements.md`) keep their meaning, including Snapshot, Event, Explanation, Watchlist, User, Session, Monitored_Airport, FAA_Event_ID, Alert_Latency, Poller, Notifier, API and Frontend. The terms below are added.
 
-- **Phase2**: The set of features specified in this document, implemented only on the branch `phase-2`.
-- **Feature_Flag**: A named boolean setting that turns one Phase 2 feature area on or off. Every Feature_Flag defaults to off.
-- **Feature_Area**: One of the ten groups in the Introduction, split into the flagged units listed in Requirement 1.
-- **Flags_Off_Mode**: The state in which every Feature_Flag is off.
-- **MVP_Test_Suite**: The Vitest and fast-check tests, the accessibility suite and the repo guard that exist at tag `mvp-contest-2026`.
-- **Phase2_Branch_DB**: The Neon branch named `phase-2`, used for all Phase 2 migrations and data.
+- **Feature_Flag**: A named boolean setting that turns one feature on or off. The four flags are `FEATURE_DARK_MODE`, `FEATURE_HIGH_CONTRAST`, `FEATURE_DIGESTS` and `FEATURE_WEBHOOKS`.
+- **Flags_Off_Mode**: The state in which all four Feature_Flags are off.
+- **MVP_Test_Suite**: The Vitest and fast-check tests, the axe accessibility suite and the repo guard that exist at tag `mvp-contest-2026`.
+- **Features_Endpoint**: The read-only API route `GET /api/features` that reports the state of the four Feature_Flags.
+- **Phase2_Branch_DB**: The Neon branch named `phase-2`, used for every Phase 2 Migration and test.
 - **Production_DB**: The Neon database that `main` uses.
-- **Migration**: One Drizzle schema change file together with its documented down migration.
-- **Phase2_Deployment**: The Cloudflare Workers named `aerobrief-api-phase2` and `aerobrief-poller-phase2`, and the Vercel preview of `phase-2`.
-- **Production_Deployment**: The Workers `aerobrief-api` and `aerobrief-poller` and the Vercel production site.
-- **Safe_Send_Mode**: The mode in which a Phase2_Deployment sends email only to recipients on an allowlist.
-- **Stack_Deviation**: A technology that is outside the approved stack and needs the project owner's approval.
-- **Gate**: A review or approval that must complete before the implementation tasks that depend on it start.
-- **Provider**: A third-party service that supplies data or delivers messages, such as FlightAware, OAG, Cirium, ADS-B Exchange, Eurocontrol, Twilio, Slack or PagerDuty.
-- **Licensed_API**: An API that a Provider offers under a written agreement or published terms, used with a key or contract that AeroBrief holds.
-- **Data_Source**: A Provider whose Licensed_API supplies flight or airport data to the Poller.
-- **Airport_Catalog**: The list of airports AeroBrief can monitor. On `main` it is the 20 hardcoded airports.
-- **Flight**: One scheduled or operated movement of an aircraft between two airports, identified by an airline code, flight number and date.
-- **Tail_Number**: The registration mark of one aircraft.
-- **Route**: An ordered pair of origin and destination airports.
-- **Notification_Channel**: A way AeroBrief delivers an alert: email, SMS, Slack, PagerDuty or Webhook.
-- **Webhook**: An HTTPS endpoint, registered by an Organization, that receives AeroBrief events.
-- **Webhook_Signature**: An HMAC-SHA256 signature over the timestamp and body of a Webhook delivery.
-- **Organization**: A group of Users with a shared account, shared settings and a shared set of Notification_Channels.
-- **Member**: A User who belongs to an Organization.
-- **Role**: One of `viewer`, `dispatcher` or `admin`.
-- **Permission**: One action on one resource type, such as `watchlist:write` or `audit:read`.
-- **SSO**: Single sign-on, where an Organization's identity provider authenticates a Member.
-- **SCIM**: The System for Cross-domain Identity Management protocol that an identity provider uses to create, update and deactivate Members.
-- **Audit_Log**: An append-only record of security-relevant actions in an Organization.
-- **API_Key**: A secret token that identifies an Organization for programmatic API access. Only its hash is stored.
-- **Rate_Limit**: The maximum number of API requests an API_Key may make in a time window.
-- **Routing_Rule**: A condition-and-action pair that decides which Members receive an alert on which Notification_Channel.
-- **Escalation_Policy**: An ordered list of steps that notify further recipients when an alert is not acknowledged within a set time.
-- **Acknowledgement**: A recorded action by a recipient that confirms the alert was seen.
-- **Digest**: A single message that summarizes the Events of a time period.
-- **History_Store**: The Database tables that hold Snapshots and Events beyond 24 hours.
-- **Trend_Report**: A computed summary of Event counts and durations over a chosen period.
-- **Prediction**: A model output that estimates the probability or duration of a disruption, labelled as an estimate.
-- **Plan**: A billing tier, which is a named set of limits and features.
-- **Entitlement**: A limit or feature that a Plan grants to an Organization.
-- **Dashboard**: A saved arrangement of widgets that a Member builds.
-- **Widget**: One panel on a Dashboard.
-- **Brand_Settings**: An Organization's logo, name, colors and sender identity used for white-labeling.
-- **Theme**: A complete set of design tokens: light AA (the default), dark AA, and AAA variants.
-- **AAA_Theme**: The Theme in which every text pair has a contrast ratio of at least 7:1 and every large text pair at least 4.5:1.
-- **Region**: A Cloudflare and Neon location in which AeroBrief runs.
+- **Migration**: One Drizzle migration file that changes the schema for one feature.
+- **Down_Migration**: A SQL file stored with a Migration that restores the schema to its state before that Migration.
+- **Safe_Send_Mode**: The mode in which digest emails and webhook requests go only to recipients on an Allowlist.
+- **Allowlist**: The set of permitted email addresses and webhook host names configured in Worker variables.
+- **Theme_Preference**: The User's stored choice of `system`, `light` or `dark`.
+- **Contrast_Preference**: The User's stored choice of `standard` or `high`.
+- **Theme_Variant**: One of four complete token sets: light AA (the MVP look), dark AA, high-contrast light AAA and high-contrast dark AAA.
+- **Palette_Pair**: A foreground token, a background token and a size class (`normal`, `large` or `ui`) that the Frontend renders together, as listed in `palettePairs`.
+- **Digest**: One email that summarizes the last 24 hours for the recipient's watched airports and for nationwide Events.
+- **Digest_Preference**: A User's opt-in flag and chosen Digest_Hour.
+- **Digest_Hour**: An integer from 0 to 23 that names the UTC hour at which the User wants the Digest.
+- **Digest_Date**: The UTC calendar date on which a Digest is sent.
+- **Webhook**: A registered HTTPS URL, owned by one User, that receives alert Events.
+- **Webhook_Secret**: A per-Webhook secret value, shown once at creation, that signs deliveries.
+- **Webhook_Signature**: The HMAC-SHA256 value, sent in a request header, over the timestamp and body of a delivery.
+- **Webhook_Delivery**: One alert Event posted to one Webhook, identified by a Delivery_ID, including every retry of that post.
+- **Delivery_ID**: A UUID that is the same on every retry of one Webhook_Delivery.
+- **Replay_Window**: The maximum age, 300 seconds, of a delivery timestamp that a receiver should accept.
+- **Unsafe_Host**: A webhook URL host that is an IP literal, `localhost`, a single-label name, or a name under a reserved or internal suffix.
 
 ## Requirements
 
-### Requirement 1: Gate every feature area behind its own flag
+### Requirement 1: Gate each feature behind its own flag
 
-**User Story:** As a maintainer, I want every Phase 2 feature behind its own flag that is off by default, so that I can turn one feature off without affecting the others or the MVP.
-
-#### Acceptance Criteria
-
-1. THE AeroBrief SHALL define one Feature_Flag for each of these units: `FEATURE_EXPANDED_AIRPORTS`, `FEATURE_FLIGHT_TRACKING`, `FEATURE_EXTRA_SOURCES`, `FEATURE_CHANNELS` (SMS, Slack and PagerDuty), `FEATURE_WEBHOOKS`, `FEATURE_EXTENDED_HISTORY`, `FEATURE_TRENDS`, `FEATURE_PREDICTIONS`, `FEATURE_BILLING`, `FEATURE_ORGS`, `FEATURE_SSO`, `FEATURE_SCIM`, `FEATURE_RBAC`, `FEATURE_AUDIT_LOG`, `FEATURE_ALERT_ROUTING`, `FEATURE_ESCALATION`, `FEATURE_DIGESTS`, `FEATURE_API_KEYS`, `FEATURE_MULTI_REGION`, `FEATURE_DASHBOARDS`, `FEATURE_WHITE_LABEL`, `FEATURE_DARK_MODE` and `FEATURE_AAA`.
-2. WHEN a Worker starts, THE Worker SHALL validate every Feature_Flag value with a Zod schema and SHALL read an absent flag as off.
-3. IF a Feature_Flag value is present and is not a recognized boolean string, THEN THE Worker SHALL fail startup with an error that names the flag and SHALL NOT start with a guessed value.
-4. THE AeroBrief SHALL treat every Feature_Flag as off unless its value is explicitly set to on in the environment of that deployment.
-5. WHERE a Feature_Flag depends on another Feature_Flag, THE AeroBrief SHALL treat the dependent flag as off while the flag it depends on is off, and SHALL record the dependency list in one table in the source code.
-6. WHILE a Feature_Flag is off, THE API SHALL answer every request to an endpoint that belongs only to that feature area with the same `404` response as an unknown route.
-7. WHILE a Feature_Flag is off, THE Poller SHALL run no job, make no external request and write no row that belongs only to that feature area.
-8. WHILE a Feature_Flag is off, THE Frontend SHALL render no navigation link, page, control or text that belongs only to that feature area.
-9. THE Frontend SHALL learn the state of each Feature_Flag from the deployment it runs on, and SHALL NOT use a client-side value that a visitor can change to turn a feature on.
-10. FOR ALL combinations of Feature_Flag values, THE flag evaluation function SHALL return a state in which every dependent flag is off whenever one of its dependencies is off (invariant property).
-
-### Requirement 2: Preserve MVP behavior with every flag off
-
-**User Story:** As a maintainer, I want `phase-2` with all flags off to behave exactly as `main`, so that a flag-off rollback returns the contest MVP.
+**User Story:** As a maintainer, I want each of the four features behind its own flag that is off by default, so that I can turn one off without affecting the others or the MVP.
 
 #### Acceptance Criteria
 
-1. WHILE Flags_Off_Mode applies, THE AeroBrief SHALL pass the MVP_Test_Suite on `phase-2` with no test file edited, deleted or skipped for that run.
-2. WHEN a pull request or push targets `phase-2`, THE CI pipeline SHALL run the MVP_Test_Suite in Flags_Off_Mode as a required check.
-3. WHILE Flags_Off_Mode applies, THE AeroBrief SHALL produce HTTP response bodies, status codes, emails, database writes and rendered DOM equal to those that `main` produces for the same input.
-4. THE AeroBrief SHALL implement every change to a repo guard or MVP test so that it takes effect only when the related Feature_Flag is on, or only on the branch `phase-2`, and so that the unchanged test still passes in Flags_Off_Mode.
-5. WHEN a task section of the Phase 2 plan finishes, THE plan SHALL include a checkpoint that runs the MVP_Test_Suite in Flags_Off_Mode.
-6. IF the MVP_Test_Suite fails in Flags_Off_Mode, THEN THE CI pipeline SHALL report a failed status on the pull request or push and SHALL block the merge into `phase-2`.
-7. FOR ALL Feature_Flag states in which every flag is off, THE configuration loaded by each Worker SHALL equal the configuration `main` loads (equivalence property).
+1. THE AeroBrief SHALL define the four Feature_Flags `FEATURE_DARK_MODE`, `FEATURE_HIGH_CONTRAST`, `FEATURE_DIGESTS` and `FEATURE_WEBHOOKS`, each read from a Worker variable.
+2. WHEN a Worker reads its environment, THE Worker SHALL parse each Feature_Flag with a Zod schema that accepts the strings `true` and `false` and reads an absent flag as off.
+3. IF a Feature_Flag variable holds any value other than `true` or `false`, THEN THE Worker SHALL read that flag as off, SHALL log a warning that names the flag and not its value, and SHALL keep serving requests.
+4. THE Worker SHALL parse the Feature_Flags in a function that is separate from the existing `parseEnv` function, so that the result of `parseEnv` for the same input stays equal to its result on `main`.
+5. WHILE `FEATURE_DIGESTS` is off, THE Poller SHALL make no database query, no email request and no outbound request for the digest, and THE API SHALL answer every digest endpoint with the same `404` response as an unknown route.
+6. WHILE `FEATURE_WEBHOOKS` is off, THE Notifier SHALL make no outbound webhook request and no database query for Webhooks, and THE API SHALL answer every webhook endpoint with the same `404` response as an unknown route.
+7. WHILE a Feature_Flag is off, THE Frontend SHALL render no control, page, link, text or attribute that belongs only to that feature.
+8. FOR ALL combinations of the four Feature_Flag values, THE flag evaluation function SHALL return one boolean per flag, and the value for each flag SHALL depend on that flag's own variable only (independence property).
 
-### Requirement 3: Make every schema change reversible and isolated
+### Requirement 2: Report flags to the Frontend through a read-only endpoint
 
-**User Story:** As a maintainer, I want each schema change to be its own reversible migration run only on a Neon branch, so that the production database is never at risk.
+**User Story:** As a maintainer, I want the web app to read the flags from the API, so that a flag turns off without redeploying the Frontend.
 
 #### Acceptance Criteria
 
-1. THE AeroBrief SHALL implement each Phase 2 schema change as its own Migration that touches the tables of one feature area only.
-2. THE AeroBrief SHALL store with each Migration a documented down migration that restores the schema to the state before that Migration.
-3. THE AeroBrief SHALL write each Migration as additive where possible: new tables, new nullable columns, new indexes, and new columns with defaults.
-4. IF a Migration changes or removes an existing MVP column, table, constraint or trigger, THEN THE Migration SHALL be recorded in the design with the reason additive change is not possible and with a data-preserving down migration.
+1. WHILE at least one Feature_Flag is on, THE API SHALL answer `GET /api/features` with status 200 and a JSON body that holds one boolean per Feature_Flag.
+2. WHILE Flags_Off_Mode applies, THE API SHALL answer `GET /api/features` with the same `404` response as an unknown route, so that the route table of `main` is unchanged in behavior.
+3. THE API SHALL answer `GET /api/features` without authentication, with no cookie and no database query, and with the header `Cache-Control: no-store`.
+4. THE API SHALL keep the existing `routes` table in `apps/api/src/routes.ts` unchanged and SHALL register the Phase 2 routes from a separate table, so that the existing route-table test passes unchanged.
+5. WHEN the Frontend starts, THE Frontend SHALL request `/api/features` once and SHALL apply the returned flags to the current page.
+6. IF the request to `/api/features` returns a non-2xx status, does not finish within 3 seconds, fails with a network error or returns a body that fails Zod validation, THEN THE Frontend SHALL treat all four flags as off and SHALL render the MVP application.
+7. WHEN the Frontend renders without a flags provider, THE Frontend SHALL treat all four flags as off, so that every existing component test renders as before.
+8. THE Frontend SHALL accept no flag value from the URL, local storage or a build-time variable in a production build.
+
+### Requirement 3: Preserve MVP behavior and tests with every flag off
+
+**User Story:** As a maintainer, I want `phase-2` with all flags off to behave as `main`, so that turning every flag off returns the contest MVP.
+
+#### Acceptance Criteria
+
+1. WHILE Flags_Off_Mode applies, THE MVP_Test_Suite SHALL pass on `phase-2` with no existing test file edited, deleted or skipped.
+2. WHILE Flags_Off_Mode applies, THE AeroBrief SHALL produce HTTP responses, emails, database writes, outbound requests and rendered DOM equal to those of `main` for the same input.
+3. THE AeroBrief SHALL leave `apps/web/src/styles/tokens.css`, the `palette` object and the `palettePairs` array unchanged in content, so that `palette-sync.test.ts` and `contrast.test.ts` pass unchanged.
+4. THE Frontend SHALL leave the DOM structure of the airport table, the banners, the nav bar and the `aria-live` regions unchanged, as `.kiro/steering/design.md` requires.
+5. THE AeroBrief SHALL list in the appendix "MVP Preservation Matrix" each MVP requirement and each MVP test that a feature touches, and SHALL state how each stays preserved in Flags_Off_Mode.
+6. WHEN a feature section of the plan finishes, THE plan SHALL include one checkpoint that runs the MVP_Test_Suite in Flags_Off_Mode and one checkpoint that runs that feature's tests with its flag on.
+7. WHILE its flag is on, THE feature SHALL leave the MVP behavior that is not named in this document unchanged, including alert emails, the Watchlist cap of 10 airports, the 24-hour history and the 20 Monitored_Airports.
+8. THE AeroBrief SHALL add no runtime dependency and no devDependency for any of the four features.
+9. THE repo guard SHALL keep passing, and the new database schema SHALL declare no column or field whose name contains the word `password`, `passwd` or `pass`.
+
+### Requirement 4: Make schema changes reversible and isolated
+
+**User Story:** As a maintainer, I want each schema change to be its own reversible Migration run only on a Neon branch, so that the Production_DB is never at risk before merge.
+
+#### Acceptance Criteria
+
+1. THE AeroBrief SHALL implement the digest schema and the webhook schema as two separate Migrations, and SHALL implement dark mode and high contrast with no Migration.
+2. THE AeroBrief SHALL store with each Migration a Down_Migration SQL file in `packages/db/migrations/down/` that removes every object that the Migration created and changes nothing else.
+3. THE AeroBrief SHALL write each Migration as additive: new tables, new indexes, new triggers and new functions only, with no change to an MVP table, column, constraint or trigger.
+4. THE MVP tables `airports`, `snapshots`, `events`, `subscriptions`, `alert_log`, `users`, `sessions`, `magic_links`, `job_runs` and `poller_lease` SHALL keep every column, type and constraint.
 5. THE AeroBrief SHALL run Phase 2 Migrations only against the Phase2_Branch_DB.
-6. IF the database connection string given to a Migration command does not identify the Phase2_Branch_DB, THEN THE migration command SHALL stop before it runs any statement and SHALL report which target it refused.
-7. THE AeroBrief SHALL run no Phase 2 Migration against the Production_DB before the merge into `main` is approved.
-8. WHEN a Migration is applied and then its down migration is applied on a copy of the Phase2_Branch_DB, THE resulting schema SHALL equal the schema before the Migration (round-trip property).
-9. THE MVP tables `airports`, `snapshots`, `events`, `subscriptions`, `alert_log`, `users`, `sessions`, `magic_links`, `job_runs` and `poller_lease` SHALL keep every existing column, type and constraint in Flags_Off_Mode.
+6. IF the database URL given to a migration command does not identify the Phase2_Branch_DB, THEN THE migration command SHALL stop before it runs any statement and SHALL report which target it refused.
+7. WHEN a Migration is applied and then its Down_Migration is applied on a copy of the Phase2_Branch_DB, THE resulting schema SHALL equal the schema before the Migration (round-trip property).
+8. THE AeroBrief SHALL document for each Migration the grants that the Worker runtime role needs on the new tables, because the MVP migrations leave grants to a manual step.
+9. WHEN a feature is merged into `main`, THE Migration of that feature SHALL stay unapplied to the Production_DB until the project owner approves that step.
 
-### Requirement 4: Deploy Phase 2 separately from production
+### Requirement 5: Verify before merge with local tooling and send safely
 
-**User Story:** As a maintainer, I want Phase 2 Workers and the Phase 2 web preview to run apart from production, so that experiments never reach live users.
-
-#### Acceptance Criteria
-
-1. THE AeroBrief SHALL deploy the Phase 2 API as the Worker `aerobrief-api-phase2` and the Phase 2 Poller as the Worker `aerobrief-poller-phase2`, using a separate wrangler environment for each.
-2. THE Phase2_Deployment SHALL use its own Worker secrets, its own cron triggers and the Phase2_Branch_DB, and SHALL share no secret value with the Production_Deployment.
-3. THE AeroBrief SHALL leave the workflow `.github/workflows/deploy-workers.yml` unchanged, so that the workflow still deploys only on pushes to `main`.
-4. THE AeroBrief SHALL deploy the Phase2_Deployment from a separate workflow that runs only on the branch `phase-2` and deploys only the Worker names in criterion 1.
-5. IF a deploy job on `phase-2` resolves a Worker name that equals `aerobrief-api` or `aerobrief-poller`, THEN THE deploy job SHALL fail before it deploys.
-6. WHEN Vercel builds a preview of `phase-2`, THE Frontend preview SHALL send `/api/*` requests to the `aerobrief-api-phase2` Worker and SHALL NOT send them to the Production_Deployment API.
-7. THE Vercel production deployment SHALL keep its `/api/*` rewrite to the Production_Deployment API.
-8. THE Phase2_Deployment SHALL NOT use the production `UNSUBSCRIBE_SECRET`, Resend API key or database role.
-9. THE AeroBrief SHALL document in the design the steps that return the system to the contest MVP: turn the flag off, revert the commits of the feature on `phase-2`, or delete the branch.
-
-### Requirement 5: Send no real alerts from Phase 2 environments
-
-**User Story:** As a maintainer, I want the Phase 2 Poller to be unable to email production users, so that testing never reaches real people.
+**User Story:** As a project owner, I want to test the digest and the webhooks without any chance of reaching a real user, so that nothing leaves the test environment before merge.
 
 #### Acceptance Criteria
 
-1. THE Phase2_Deployment SHALL run in Safe_Send_Mode.
-2. WHILE Safe_Send_Mode applies, THE Notifier SHALL send a message only to a recipient address on the allowlist, or to a Resend test address.
-3. IF a recipient is not on the allowlist, THEN THE Notifier SHALL skip that recipient, record the skip with the reason "not allowlisted", and make no call to the Notification_Channel Provider for that recipient.
-4. WHILE Safe_Send_Mode applies, THE Notifier SHALL apply the same allowlist rule to SMS numbers, Slack destinations, PagerDuty services and Webhook URLs.
-5. THE Phase2_Branch_DB SHALL hold no copy of production Users, email addresses or Sessions.
-6. IF the Phase2_Deployment starts without an allowlist value, THEN THE Worker SHALL treat the allowlist as empty and SHALL send no message.
-7. FOR ALL recipient lists and allowlists, THE recipient filter SHALL return only recipients on the allowlist and SHALL never return a recipient that is not on it (invariant property).
+1. THE AeroBrief SHALL verify each feature before merge with the Vitest and fast-check tests, `wrangler dev` using `--test-scheduled` for the cron handler, and the Phase2_Branch_DB, and SHALL deploy no Phase 2 Worker.
+2. THE Phase2_Branch_DB SHALL hold no User, Session or Watchlist row copied from the Production_DB, and THE plan SHALL include a task that removes such rows after the branch is created and seeds test Users with allowlisted addresses.
+3. WHILE `FEATURE_DIGESTS` or `FEATURE_WEBHOOKS` is on and the variable `SAFE_SEND_MODE` is absent or `true`, THE Worker SHALL run in Safe_Send_Mode.
+4. WHILE Safe_Send_Mode applies, THE Notifier SHALL send a Digest only to an email address on the Allowlist or to the Resend test address `delivered@resend.dev`.
+5. WHILE Safe_Send_Mode applies, THE Notifier SHALL post a webhook only to a URL whose host is on the Allowlist of webhook hosts.
+6. IF a recipient or host is not on the Allowlist, THEN THE Notifier SHALL make no call to Resend or to the webhook URL and SHALL record the skip with the reason `not_allowlisted`.
+7. IF the Allowlist variable is absent or empty, THEN THE Notifier SHALL treat the Allowlist as empty and SHALL send no digest and no webhook request.
+8. THE Notifier SHALL leave alert emails (MVP Requirement 9) outside Safe_Send_Mode, so that alert email behavior stays equal to `main`.
+9. FOR ALL recipient lists and Allowlists, THE recipient filter SHALL return only recipients that are on the Allowlist and SHALL never return a recipient that is not on it (invariant property).
 
-### Requirement 6: Keep feature areas independently removable
+### Requirement 6: Merge one feature at a time and roll back by flag or revert
 
-**User Story:** As a maintainer, I want each feature area implemented in its own commits, so that I can remove one without touching the others.
-
-#### Acceptance Criteria
-
-1. THE Phase 2 plan SHALL contain one task section per Feature_Area, ordered from lowest risk to highest risk.
-2. THE Phase 2 plan SHALL state the dependencies between task sections, including that Organization accounts come before RBAC, SSO, SCIM and the Audit_Log, that API keys come before customer-facing Webhooks, and that billing comes last and waits for the legal review in Requirement 8.
-3. THE AeroBrief SHALL implement each Feature_Area in commits that touch no code of another Feature_Area, except through the shared flag, migration and test helpers.
-4. WHEN a Feature_Flag is turned off and the commits of its Feature_Area are reverted on `phase-2`, THE remaining Feature_Areas SHALL build and pass their tests.
-5. IF a Feature_Area fails its checkpoint, THEN THE maintainer SHALL turn its flag off and revert its commits on `phase-2`, without reverting any other Feature_Area.
-
-### Requirement 7: Enforce the merge embargo and prohibitions
-
-**User Story:** As a project owner, I want nothing from Phase 2 to reach `main` until judging ends, and I want the prohibited items to stay out, so that the contest build is safe.
+**User Story:** As a project owner, I want each feature to merge into `main` on its own and to be removable, so that a failing feature never blocks or damages the others.
 
 #### Acceptance Criteria
 
-1. THE AeroBrief SHALL merge no Phase 2 commit into `main` and SHALL move no tag `mvp-contest-2026` until Kiroween 2026 judging has finished and the project owner has approved the merge.
-2. THE AeroBrief SHALL fetch data only from the FAA_API and from Licensed_APIs of Providers that completed the Requirement 8 review, and SHALL NOT scrape any site.
-3. THE AeroBrief SHALL include no push notifications to devices, no map view, no native mobile app, no FAA SWIM integration and no user password.
-4. THE AeroBrief SHALL authenticate Users only with Magic_Links and, for Organizations that enable it, SSO.
-5. THE repo guard SHALL fail the build if a database schema file declares a password-like column, a package manifest lists a push-notification or map library, or a source file imports a SWIM client.
-6. IF a request would break a prohibition in this requirement, THEN THE AeroBrief team SHALL refuse it and name the prohibition, and SHALL NOT implement a partial or workaround version.
+1. THE plan SHALL contain one task section per feature, ordered by merge order, and each section SHALL hold the flag, the Migration where one exists, the implementation, the tests, a Flags_Off_Mode checkpoint, a flags-on checkpoint and a merge task.
+2. THE AeroBrief SHALL implement each feature in commits that touch no code of another feature, except the shared flag helpers and shared test helpers.
+3. THE plan SHALL allow a feature to merge into `main` only after its tests pass with its flag off and with its flag on.
+4. THE plan SHALL merge no feature into `main` after December 4, 2026, 2:00 PM PT, and SHALL hold `main` frozen from that moment until Kiroween 2026 judging has finished.
+5. IF a feature fails after merge, THEN THE maintainer SHALL turn its flag off, or revert that feature's commits with `git revert`, and the other features SHALL still build and pass their tests.
+6. THE tag `mvp-contest-2026` SHALL stay unmoved and SHALL remain the fallback for the whole submission.
+7. THE plan SHALL mark every task that creates a resource, changes a production workflow or touches the Production_DB as "needs user approval", and SHALL schedule no push, tag move or deploy, because the project owner pushes all four features together at the end.
+8. THE plan SHALL include a task, marked "needs user approval", that adds `if: github.ref == 'refs/heads/main'` to the job of `.github/workflows/deploy-workers.yml`, so that a manual dispatch from another branch cannot deploy the production Workers.
 
-### Requirement 8: Complete legal, licensing and cost gates before dependent work
+### Requirement 7: Keep the scope prohibitions
 
-**User Story:** As a project owner, I want provider licenses and data terms reviewed before any dependent code, so that AeroBrief never uses data it may not use.
-
-#### Acceptance Criteria
-
-1. THE Phase 2 plan SHALL contain a Gate task for the license and terms review of each Provider: FlightAware, OAG, Cirium, ADS-B Exchange, Eurocontrol, and every other international data Provider the design names.
-2. THE Phase 2 plan SHALL contain a Gate task for the review of the FAA data terms for commercial use, and SHALL place it before every billing implementation task.
-3. THE Phase 2 plan SHALL contain a Gate task for the review of the terms of each message Provider that sends on behalf of AeroBrief: the SMS Provider, Slack and PagerDuty.
-4. THE Phase 2 plan SHALL contain a Gate task for data-protection review of Organization data, SSO and SCIM data, and Audit_Log data, covering what is stored, the retention period, deletion on request and the regions where data is held.
-5. THE design SHALL record, for each Provider, a cost estimate taken from the Provider's official published pricing with a source link, and SHALL state "unknown" where the Provider publishes no price.
-6. WHILE the Gate of a Provider has not completed, THE AeroBrief SHALL hold no implementation task that calls that Provider's API outside a test double, and SHALL hold no Provider key or contract in any environment.
-7. IF a Provider's terms forbid a planned use, THEN THE project owner SHALL decide whether to drop the use or the Provider, and THE plan SHALL mark the dependent tasks as blocked until that decision is recorded.
-8. THE Phase 2 plan SHALL mark each task that is blocked on a Gate or an approval, and SHALL name the blocker.
-
-### Requirement 9: Control stack deviations
-
-**User Story:** As a project owner, I want every technology outside the approved stack flagged and approved before use, so that the stack does not drift.
+**User Story:** As a project owner, I want the prohibited items to stay out, so that the contest build stays inside its boundaries.
 
 #### Acceptance Criteria
 
-1. THE design SHALL list every Stack_Deviation in a table with these columns: technology, feature, why needed, in-stack option considered, and status.
-2. THE design SHALL mark every Stack_Deviation as pending until the project owner approves it in writing in the spec or in the conversation.
-3. WHILE a Stack_Deviation is pending, THE AeroBrief SHALL add no package, SDK, account or service for it, and SHALL implement only the parts of its feature that run on the approved stack.
-4. IF the project owner declines a Stack_Deviation, THEN THE design SHALL name the in-stack fallback or SHALL mark the dependent feature as dropped.
-5. THE design SHALL list at least these candidates: an SMS Provider, the Slack API, the PagerDuty Events API, FlightAware AeroAPI, OAG, Cirium, ADS-B Exchange, Eurocontrol or ICAO data, a billing Provider, an SSO and SCIM Provider or SAML library, a machine-learning runtime, a multi-region database option, and a drag-and-drop approach.
-6. THE repo guard SHALL fail the build if a package manifest lists a dependency that is on the pending list.
+1. THE AeroBrief SHALL include no scraping of any site, no FAA SWIM integration, no push notification to a device, no map view, no native mobile app and no user password in any of the four features.
+2. THE AeroBrief SHALL authenticate Users only with Magic_Links.
+3. THE webhook sender SHALL call no Slack API and no PagerDuty API, and SHALL import no Slack or PagerDuty SDK.
+4. IF a request would break a boundary in `.kiro/steering/scope.md`, THEN THE AeroBrief team SHALL refuse it, name the boundary, and implement no partial or workaround version.
 
-### Requirement 10: Expand the airport catalog
+### Requirement 8: Offer dark mode with a System, Light and Dark choice
 
-**User Story:** As a dispatcher, I want AeroBrief to cover more US airports and international hubs, so that I can monitor my whole network.
+**User Story:** As a user, I want a dark theme that follows my system setting or my own choice, so that I can read AeroBrief comfortably in low light.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_EXPANDED_AIRPORTS` is on, THE Airport_Catalog SHALL contain every airport in a catalog file in `packages/core`, and the catalog SHALL include the 20 MVP airports unchanged.
-2. WHILE `FEATURE_EXPANDED_AIRPORTS` is off, THE Airport_Catalog SHALL contain exactly the 20 MVP airports.
-3. THE Airport_Catalog SHALL record for each airport its identifier, name, country, region or ARTCC where one applies, and the Data_Source that covers it.
-4. WHEN the Poller normalizes an FAA_API response and `FEATURE_EXPANDED_AIRPORTS` is on, THE Poller SHALL store a status entry for each airport in the Airport_Catalog that the FAA_API covers.
-5. WHERE an airport is outside FAA coverage, THE Poller SHALL fill its status only from a Data_Source whose Gate has completed, and SHALL record the Data_Source name on the status entry.
-6. WHEN the Frontend shows an airport that has no status because no Data_Source covers it, THE Frontend SHALL show the text "No data source for this airport".
-7. WHILE `FEATURE_EXPANDED_AIRPORTS` is on, THE Frontend SHALL let a User search the catalog by identifier, name and country.
-8. THE API SHALL return the same Watchlist cap of 10 airports per User for the expanded catalog.
-9. IF an airport identifier is not in the active Airport_Catalog, THEN THE API SHALL reject a request to add it to a Watchlist with a validation error and SHALL leave the Watchlist unchanged.
-10. FOR ALL Airport_Catalog files, THE catalog validator SHALL accept the file only if every identifier is unique and every entry has a name and a country (invariant property).
+1. WHERE `FEATURE_DARK_MODE` is on, THE Frontend SHALL show a native radio group labelled "Theme" with the options "System", "Light" and "Dark", in a section that is outside the nav bar and the footer.
+2. WHEN a User selects an option, THE Frontend SHALL store the Theme_Preference in local storage under the key `aerobrief.theme` and SHALL apply the resulting Theme_Variant without reloading the page.
+3. WHERE `FEATURE_DARK_MODE` is on and the stored value is absent or not one of `system`, `light` and `dark`, THE Frontend SHALL use `system`.
+4. WHILE the Theme_Preference is `system`, THE Frontend SHALL use the dark Theme_Variant when the browser reports `prefers-color-scheme: dark` and the light Theme_Variant otherwise, and SHALL follow a change of that setting without a reload.
+5. THE Frontend SHALL apply a Theme_Variant by setting one attribute on the `html` element from script, and SHALL NOT use a CSS `prefers-color-scheme` media query in any style rule, so that Flags_Off_Mode renders the MVP look.
+6. WHILE `FEATURE_DARK_MODE` is off, THE Frontend SHALL ignore any stored Theme_Preference, SHALL set no theme attribute and SHALL write nothing to local storage.
+7. THE Frontend SHALL define the dark token set in new files and SHALL register every dark color token and every dark Palette_Pair in a typed module that mirrors `palette.ts` and `palettePairs`.
+8. FOR ALL Palette_Pairs in `palettePairs`, THE dark token set SHALL give a contrast ratio of at least 4.5:1 for `normal`, at least 3:1 for `large` and at least 3:1 for `ui` (WCAG 2.1 Level AA).
+9. THE Frontend SHALL keep every status readable from its text, so that dark mode changes only color and never the meaning or wording of a status.
+10. THE Frontend SHALL use only the `fieldset`, `legend`, `input type="radio"` and `label` elements for the Theme control, reachable by keyboard with a visible focus indicator.
+11. FOR ALL combinations of Theme_Preference, system setting, Contrast_Preference and flag values, THE theme resolution function SHALL return exactly one Theme_Variant (totality property).
+12. FOR ALL inputs in which `FEATURE_DARK_MODE` and `FEATURE_HIGH_CONTRAST` are both off, THE theme resolution function SHALL return the light AA Theme_Variant (flag-off property).
+13. THE axe accessibility suite SHALL run the Status, Airport, Watchlist, Sign-in and unsubscribe pages in the dark Theme_Variant and SHALL fail on any violation.
 
-### Requirement 11: Track flights, tail numbers and routes
+### Requirement 9: Offer a high-contrast theme that meets WCAG 2.1 Level AAA
 
-**User Story:** As an airline operations user, I want to follow a flight, a tail number or a route, so that I can see whether a disruption affects it.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_FLIGHT_TRACKING` is on, THE API SHALL let a signed-in User follow one Flight, one Tail_Number or one Route.
-2. THE AeroBrief SHALL obtain Flight, Tail_Number and Route data only from a Data_Source whose Gate has completed.
-3. WHEN a User follows a Flight, Tail_Number or Route, THE API SHALL validate the identifier with a Zod schema and SHALL reject an invalid identifier with a validation error.
-4. WHEN a followed Flight's origin or destination airport has an active Ground_Stop, THE Notifier SHALL send one alert per followed item per Event, naming the Flight, Tail_Number or Route.
-5. THE API SHALL limit each User to 10 followed items in total across Flights, Tail_Numbers and Routes.
-6. THE Frontend SHALL show for each followed item its status as text, the airports involved, the Data_Source name and the time of the last update.
-7. IF the Data_Source is unavailable, THEN THE Frontend SHALL show the last stored status with a stale notice and the time of the last update, and SHALL NOT show an empty or error-only page.
-8. THE Poller SHALL query a Data_Source only for items that at least one User follows, to stay within the Data_Source's rate limits and cost.
-9. FOR ALL sets of followed items and Events, THE alert recipient selector SHALL return each User at most once per Event (idempotence property).
-
-### Requirement 12: Add licensed data sources
-
-**User Story:** As a dispatcher, I want AeroBrief to use more than one data source, so that I can still see status when the FAA feed is wrong or down.
+**User Story:** As a user with low vision, I want an opt-in high-contrast theme, so that I can read every status without strain.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_EXTRA_SOURCES` is on, THE Poller SHALL fetch data from each enabled Data_Source on that Data_Source's schedule, using only its Licensed_API with a key held in a Worker secret.
-2. THE Poller SHALL validate each Data_Source response with a Zod schema before it writes anything, and SHALL record a failed poll with a reason when validation fails.
-3. THE Poller SHALL make requests to a Data_Source only within that Data_Source's published rate limits.
-4. WHEN two Data_Sources report different statuses for one airport, THE Poller SHALL apply a documented precedence rule, SHALL store both reports with their Data_Source names, and SHALL show the Data_Source that decided the status.
-5. WHEN the FAA_API poll fails and another Data_Source reports status for an airport, THE API SHALL return that status labelled with the Data_Source name and the capture time.
-6. THE Frontend SHALL show the Data_Source name next to any status that does not come from the FAA_API.
-7. IF a Data_Source returns a response that violates its terms of use, such as redistribution of data that the license forbids, THEN THE API SHALL NOT expose that data field to any User.
-8. THE AeroBrief SHALL scrape no web page of any Data_Source or other site.
-9. FOR ALL pairs of Data_Source reports for one airport, THE precedence function SHALL return the same winner regardless of the order of the two reports (confluence property).
+1. WHERE `FEATURE_HIGH_CONTRAST` is on, THE Frontend SHALL show a native checkbox labelled "High contrast" in the same section as the Theme control, or in a section of its own when `FEATURE_DARK_MODE` is off.
+2. WHEN a User changes the checkbox, THE Frontend SHALL store the Contrast_Preference in local storage under the key `aerobrief.contrast` and SHALL apply the resulting Theme_Variant without reloading the page.
+3. WHERE `FEATURE_HIGH_CONTRAST` is on and the stored value is absent or not one of `standard` and `high`, THE Frontend SHALL use `standard`.
+4. THE Frontend SHALL NOT turn on high contrast from `prefers-contrast` or any other system setting.
+5. WHILE the Contrast_Preference is `high` and `FEATURE_DARK_MODE` is on, THE Frontend SHALL combine high contrast with the resolved light or dark mode and SHALL use the high-contrast light or the high-contrast dark Theme_Variant accordingly.
+6. WHILE the Contrast_Preference is `high` and `FEATURE_DARK_MODE` is off, THE Frontend SHALL use the high-contrast light Theme_Variant.
+7. WHILE the Contrast_Preference is `standard` or `FEATURE_HIGH_CONTRAST` is off, THE Frontend SHALL render the same Theme_Variant that it renders when the high-contrast feature does not exist, and SHALL change no token value.
+8. FOR ALL Palette_Pairs in `palettePairs`, THE high-contrast light and high-contrast dark token sets SHALL give a contrast ratio of at least 7:1 for `normal`, at least 4.5:1 for `large` and at least 4.5:1 for `ui`.
+9. THE Frontend SHALL derive the high-contrast Palette_Pairs from `palettePairs`, so that every pair that exists in the AA look exists in each AAA Theme_Variant.
+10. THE Frontend SHALL give the focus outline in each high-contrast Theme_Variant a width of at least 3px and a contrast ratio of at least 4.5:1 against every surface it appears on.
+11. WHILE `FEATURE_HIGH_CONTRAST` is on, THE axe accessibility suite SHALL run the Status, Airport, Watchlist, Sign-in and unsubscribe pages in the high-contrast light and high-contrast dark Theme_Variants and SHALL fail on any violation.
+12. THE Frontend SHALL give the "Theme" and "High contrast" controls the same stored keys and behavior on every page.
 
-### Requirement 13: Deliver alerts by SMS, Slack and PagerDuty
+### Requirement 10: Let a User opt in to a daily digest
 
-**User Story:** As a dispatcher, I want alerts by SMS, Slack and PagerDuty, so that I see a ground stop in the tool my team already watches.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_CHANNELS` is on, THE Notifier SHALL deliver an alert through each Notification_Channel that the recipient has verified and enabled.
-2. WHEN a User adds an SMS number, THE API SHALL send a verification code to that number and SHALL enable the number only after the User submits the correct code within 15 minutes.
-3. WHEN a User or an Organization admin connects Slack or PagerDuty, THE API SHALL store the credential in encrypted form and SHALL send a test message before it enables the channel.
-4. THE Notifier SHALL include in each message on any Notification_Channel the airport name, the Event type, the Explanation unaltered, and the Event time in UTC to the minute.
-5. THE Notifier SHALL deduplicate deliveries per FAA_Event_ID, Event type, recipient and Notification_Channel, so that a retried poll sends no second message on the same channel.
-6. IF a Provider rejects a message or does not respond within 10 seconds, THEN THE Notifier SHALL retry up to 2 more times and SHALL record one final outcome of "handed off" or "failed".
-7. THE Notifier SHALL limit SMS messages to 20 per User per day, and SHALL record the skipped messages with the reason "daily SMS limit".
-8. WHEN a recipient replies STOP to an SMS or removes the Slack app or PagerDuty integration, THE API SHALL disable that Notification_Channel for that recipient.
-9. IF a message body exceeds the channel's length limit, THEN THE Notifier SHALL shorten the Explanation by a documented rule that keeps the airport name and Event type, and SHALL include a link to the full Explanation.
-10. THE Notifier SHALL NOT send a message when the latest Snapshot is older than 10 minutes, as MVP Requirement 6.8 states for email.
-11. FOR ALL Events and channel length limits, THE message formatter SHALL return text within the limit that contains the airport name and Event type (invariant property).
-
-### Requirement 14: Send signed outbound webhooks
-
-**User Story:** As an integrator, I want AeroBrief to post events to my HTTPS endpoint with a signature, so that I can verify each request came from AeroBrief.
+**User Story:** As a user, I want to choose a daily digest and the hour it arrives, so that I get a summary without checking the site.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_WEBHOOKS` is on, THE API SHALL let an Organization admin register a Webhook URL, and SHALL accept only URLs that use HTTPS and whose host is not a private, loopback or link-local address.
-2. WHEN an Event occurs that matches a Webhook subscription, THE Notifier SHALL send one HTTP POST with a JSON body to the Webhook URL.
-3. THE Notifier SHALL sign each delivery with a Webhook_Signature using a per-Webhook secret, and SHALL send the timestamp and the signature in request headers.
-4. THE AeroBrief SHALL generate each Webhook secret with at least 32 random bytes, show it once at creation, and store only an encrypted or hashed form.
-5. IF the Webhook endpoint returns a non-2xx status or does not respond within 10 seconds, THEN THE Notifier SHALL retry with increasing delays up to 5 attempts and SHALL record the final outcome.
-6. IF a Webhook fails on 20 consecutive deliveries, THEN THE Notifier SHALL disable that Webhook and SHALL notify the Organization admins.
-7. THE Notifier SHALL include a unique delivery identifier in each Webhook delivery, and SHALL send the same identifier on every retry of that delivery.
-8. THE Notifier SHALL deliver customer-facing Webhooks only after `FEATURE_API_KEYS` and `FEATURE_ORGS` are on.
-9. FOR ALL Webhook bodies, secrets and timestamps, THE signature verifier SHALL accept a delivery signed by `sign(secret, timestamp, body)` and SHALL reject a delivery whose body, timestamp or signature was changed (round-trip property).
-10. FOR ALL Webhook URLs, THE URL validator SHALL reject every URL whose host resolves to a private, loopback or link-local range (error condition property).
+1. WHERE `FEATURE_DIGESTS` is on, THE Frontend SHALL show on the Watchlist page a section "Daily digest" with a checkbox "Send me a daily digest", a select of the 24 UTC hours labelled "Send at (UTC)" and one primary Button "Save digest settings".
+2. THE API SHALL expose `GET /api/digest` and `PUT /api/digest` to a signed-in User, and SHALL store the Digest_Preference in a new table that has one row per User.
+3. WHEN a User saves the Digest_Preference, THE API SHALL validate the body with a Zod schema that requires a boolean `enabled` and an integer `hour` from 0 to 23, and SHALL store the values with the time of the change.
+4. IF the body of `PUT /api/digest` is invalid, THEN THE API SHALL return a 400 validation error and SHALL leave the stored Digest_Preference unchanged.
+5. THE API SHALL default the Digest_Preference to `enabled` false for a User who has no stored row.
+6. WHEN a User deletes the account, THE API SHALL delete the Digest_Preference and every digest delivery record of that User in the same operation that deletes the account.
+7. THE Frontend SHALL show the saved state and any error as visible text, and SHALL announce the result of a save in an ARIA live region without moving focus.
+8. WHILE the Watchlist of the User holds 0 airports, THE Frontend SHALL show the text "Add an airport to receive a digest" next to the checkbox.
 
-### Requirement 15: Offer API keys with rate limits
+### Requirement 11: Send one digest per User per day
 
-**User Story:** As an integrator, I want an API key for my Organization, so that my systems can read AeroBrief data programmatically within clear limits.
+**User Story:** As a user, I want one digest at my chosen hour, so that I learn what happened in the last 24 hours at my airports.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_API_KEYS` is on, THE API SHALL let an Organization admin create, list and revoke API_Keys.
-2. WHEN an API_Key is created, THE API SHALL show the full key once and SHALL store only a hash of it.
-3. WHEN a request carries an API_Key, THE API SHALL authenticate the Organization, apply that key's Rate_Limit and SHALL record the request count.
-4. IF a request carries a revoked, unknown or malformed API_Key, THEN THE API SHALL reject it with an authentication error and SHALL serve no data.
-5. IF an API_Key exceeds its Rate_Limit, THEN THE API SHALL reject the request with HTTP status 429 and a `Retry-After` header that gives the seconds until the window resets.
-6. THE API SHALL give each API_Key the Rate_Limit of the Organization's Plan, and a fixed default Rate_Limit while `FEATURE_BILLING` is off.
-7. THE API SHALL give an API_Key read access only to the endpoints that serve stored data, and no access to watchlist, account or admin endpoints.
-8. THE API SHALL accept an API_Key only in a request header, and SHALL NOT accept it in a URL query string.
-9. THE API SHALL NOT write an API_Key value to any log.
-10. FOR ALL request sequences with timestamps, THE rate limiter SHALL allow at most the configured number of requests in any window and SHALL allow a request again once the window has passed (invariant property).
+1. WHERE `FEATURE_DIGESTS` is on, THE Poller SHALL run the digest job on a cron trigger at minute 0 of every UTC hour.
+2. WHEN the digest job runs at a UTC hour H, THE Poller SHALL select each User whose Digest_Preference is enabled, whose Digest_Hour is H or is up to 3 hours earlier than H, and who has no digest delivery record for the current Digest_Date.
+3. THE Poller SHALL skip a User whose Digest_Preference was last changed after the scheduled instant (Digest_Date at the Digest_Hour), so that a User who enables the digest after that instant waits until the next Digest_Date.
+4. THE Poller SHALL skip a User whose Watchlist holds 0 airports.
+5. THE Poller SHALL claim one delivery record per User and Digest_Date with an insert that fails on a duplicate, and SHALL send the Digest only when the claim succeeds.
+6. THE Poller SHALL send each Digest through Resend with an idempotency key derived from the User identifier and the Digest_Date.
+7. THE Digest SHALL list, for each watched airport, its current status as text and its Events from the last 24 hours, and SHALL list the NATIONWIDE_EVENT Events from the last 24 hours, each with the Explanation unaltered and the Event time in UTC to the minute.
+8. WHEN no Event occurred in the last 24 hours for the User's airports and no NATIONWIDE_EVENT occurred, THE Poller SHALL still send the Digest, and the Digest SHALL state "No disruptions at your airports in the last 24 hours" followed by the current status of each watched airport.
+9. IF the latest Snapshot is older than 10 minutes or is missing, THEN THE Digest SHALL include a notice that gives the capture time of the latest Snapshot and states that the data may be out of date.
+10. IF Resend rejects a Digest or does not respond within 10 seconds, THEN THE Poller SHALL retry up to 2 more times and SHALL record one final outcome of `handed_off` or `failed` for that User and Digest_Date.
+11. IF the Poller selects a User and the send fails, THEN THE Poller SHALL leave the failed claim in place and SHALL NOT send a second Digest for that Digest_Date.
+12. THE Digest SHALL contain no raw FAA code, a link to the Watchlist page, and the digest unsubscribe link of Requirement 12.
+13. IF a database error or an email error occurs for one User, THEN THE Poller SHALL log the error without the email address and SHALL continue with the remaining Users.
+14. FOR ALL sets of Digest_Preferences, delivery records and run instants, THE due-user selection function SHALL return each User at most once, SHALL return no User whose record for that Digest_Date exists, and SHALL return no User outside the 3-hour catch-up window (invariant property).
+15. FOR ALL sequences of digest job runs on one Digest_Date, THE Poller SHALL send at most one Digest per User (idempotence property).
+16. FOR ALL Digest inputs, THE Digest composer SHALL return text and HTML that contain every airport name, every Explanation and every Event time of the input, and SHALL return a subject of at most 100 characters (invariant property).
 
-### Requirement 16: Keep history up to 3 years
+### Requirement 12: Let a recipient unsubscribe from the digest with a signed link
 
-**User Story:** As an analyst, I want AeroBrief to keep history for up to 3 years, so that I can study past disruptions.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_EXTENDED_HISTORY` is on, THE History_Store SHALL keep each Event and each daily Snapshot summary for 3 years (1,095 days) from its creation.
-2. WHILE `FEATURE_EXTENDED_HISTORY` is off, THE AeroBrief SHALL keep and serve history for 24 hours only, as MVP Requirement 11 states.
-3. WHEN the cleanup job runs and `FEATURE_EXTENDED_HISTORY` is on, THE Poller SHALL delete every History_Store record older than 3 years and SHALL leave every newer record unchanged.
-4. THE API SHALL serve history through paged endpoints with a documented maximum page size and SHALL reject a query range longer than 3 years with a validation error.
-5. THE Poller SHALL store the full-resolution Snapshots for 24 hours and SHALL roll older data into the History_Store as Events and hourly or daily summaries, so that storage stays bounded.
-6. WHEN a User requests history older than 24 hours and `FEATURE_EXTENDED_HISTORY` is off, THE API SHALL return an empty result for that portion, as MVP Requirement 11.7 states.
-7. THE Frontend SHALL show a CSV export of a chosen history range that applies the formula-injection rule of MVP Requirement 18.7.
-8. IF a cleanup run fails, THEN THE Poller SHALL keep all records unchanged by that run, SHALL record the failure and SHALL retry at the next scheduled interval.
-9. THE design SHALL state the retention rule for personal data inside history and SHALL state the effect of a User deleting an account on the History_Store.
-10. FOR ALL records and times, THE retention partition function SHALL assign a record to "keep" if its age is at most the retention period and to "delete" otherwise, and SHALL assign each record to exactly one of the two sets (invariant property).
-
-### Requirement 17: Report trends
-
-**User Story:** As an analyst, I want trend reports, so that I can see which airports have the most and longest ground stops.
+**User Story:** As a recipient, I want a one-click link in the digest that stops it, so that I control my mail without signing in.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_TRENDS` is on, THE API SHALL return a Trend_Report for a chosen airport and period that holds the count of ground stops, the total and median duration, and the count per hour of day and per day of week.
-2. THE Trend_Report SHALL be computed only from stored Events.
-3. WHEN a ground stop has a start Event and no end Event, THE Trend_Report SHALL count it and SHALL report its duration as open, and SHALL NOT invent an end time.
-4. THE Frontend SHALL show each Trend_Report with a text table and a text summary, and SHALL give any chart the same data in a table.
-5. THE API SHALL return a Trend_Report within 2 seconds at the 95th percentile for a period of up to 1 year.
-6. IF the chosen period is longer than the stored history, THEN THE API SHALL return the report for the stored part and SHALL state the actual covered period.
-7. FOR ALL lists of Events, THE trend function SHALL return counts that sum to the number of distinct ground stops in the list (invariant property).
-8. FOR ALL lists of Events, THE trend function SHALL return the same result for any ordering of the input list (confluence property).
+1. THE Digest SHALL contain one unsubscribe link whose signature is the base64url HMAC-SHA256 of the text `digest.` followed by the User identifier, keyed with the unsubscribe secret.
+2. THE signature SHALL differ from every per-airport unsubscribe signature of MVP Requirement 9.8 for the same User, so that a link of one kind never verifies as the other kind.
+3. WHEN the API receives `POST /api/digest/unsubscribe` with a valid signature, THE API SHALL set `enabled` to false for that User and SHALL return a confirmation.
+4. WHEN the API receives a valid digest unsubscribe request for a User whose Digest_Preference is already disabled, THE API SHALL return the same confirmation (idempotence property).
+5. IF the signature is missing, malformed or invalid, THEN THE API SHALL return status 403 and SHALL change nothing.
+6. THE API SHALL verify the signature against the current unsubscribe secret and against the previous secret while its expiry has not passed, as `acceptedUnsubscribeSecrets` does for the per-airport link.
+7. THE Frontend SHALL show a page for the digest unsubscribe link that states in text whether the digest was stopped, and SHALL render no such page while `FEATURE_DIGESTS` is off.
+8. FOR ALL User identifiers and secrets, signing then verifying a digest signature SHALL return true, and verifying it after any change to the User identifier or the signature SHALL return false (round-trip property).
+9. THE Digest SHALL carry no `List-Unsubscribe` header, because the signed link in the body is the only unsubscribe mechanism.
 
-### Requirement 18: Offer labelled predictions
+### Requirement 13: Let a User register a few signed webhooks
 
-**User Story:** As a dispatcher, I want an estimate of how likely a ground stop is and how long it may last, so that I can prepare, knowing it is only an estimate.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_PREDICTIONS` is on and `FEATURE_EXTENDED_HISTORY` is on, THE API SHALL return a Prediction for an airport.
-2. THE Frontend SHALL label every Prediction with the text "Estimate, not an FAA forecast", the model version, the time the Prediction was made and the data it used.
-3. THE API SHALL return a Prediction only when the History_Store holds at least the minimum number of Events that the design states for that airport.
-4. IF the History_Store holds fewer Events than that minimum, THEN THE API SHALL return the message "Not enough history for an estimate" and no number.
-5. THE AeroBrief SHALL train and evaluate each model offline on stored Events and SHALL record the evaluation metrics with the model version.
-6. THE AeroBrief SHALL NOT send an alert or change an Event based on a Prediction.
-7. THE AeroBrief SHALL use no personal data as a model input.
-8. IF the model runtime is unavailable, THEN THE API SHALL return the last stored Prediction with its time, or the message "Estimate unavailable".
-9. FOR ALL inputs, THE Prediction function SHALL return a probability between 0 and 1 inclusive, and a duration that is zero or greater (invariant property).
-
-### Requirement 19: Offer billing tiers
-
-**User Story:** As a project owner, I want billing tiers, so that AeroBrief can cover provider costs after the contest.
+**User Story:** As an integrator, I want to register a URL that receives AeroBrief alerts, so that my own tools and my Slack channel hear about ground stops.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_BILLING` is on, THE AeroBrief SHALL define Plans with named Entitlements, including the maximum number of Members, API_Keys, Notification_Channels, followed items, Dashboard count, history range and the Rate_Limit.
-2. THE AeroBrief SHALL implement billing only after the FAA commercial-use review and the license review of each Data_Source used by a paid feature have completed.
-3. WHEN an Organization's Plan changes, THE API SHALL apply the new Entitlements to that Organization from the time the billing Provider confirms the change.
-4. WHEN an Organization exceeds an Entitlement, THE API SHALL reject the action that exceeds it with an error that names the Entitlement and the Plan that includes more, and SHALL leave existing data unchanged.
-5. IF the billing Provider's webhook cannot be verified, THEN THE API SHALL reject it and SHALL NOT change any Plan.
-6. THE AeroBrief SHALL store no card number and no card data, and SHALL hand payment entry to the billing Provider's hosted page.
-7. THE Frontend SHALL show the Organization's current Plan, its Entitlements and its use of each Entitlement as text.
-8. WHILE `FEATURE_BILLING` is off, THE AeroBrief SHALL apply no Entitlement limit other than the limits that `main` applies.
-9. IF a payment fails, THEN THE API SHALL keep the Organization's data, SHALL move the Organization to the free Plan after a documented grace period, and SHALL notify the Organization admins.
-10. FOR ALL Plans and usage counts, THE entitlement check function SHALL allow an action if and only if the usage after the action is within the Plan's Entitlement (invariant property).
+1. WHERE `FEATURE_WEBHOOKS` is on, THE Frontend SHALL show on the Watchlist page a section "Webhooks" that lists the User's webhooks, a form to add one, and a delete control for each.
+2. THE API SHALL let a signed-in User register at most 3 webhooks, and SHALL enforce that limit in the database so that two concurrent requests cannot exceed it.
+3. IF a User already has 3 webhooks, THEN THE API SHALL reject another registration with a validation error and SHALL leave the existing webhooks unchanged.
+4. WHEN a User registers a URL that passes the validation of Requirement 14, THE API SHALL generate the Webhook_Secret and SHALL return it once in the response of that request.
+5. THE API SHALL return the Webhook_Secret in no later response, and THE Frontend SHALL show it once with the text that it cannot be shown again.
+6. THE API SHALL return for each webhook only its identifier, its host name, its creation time, its state (`active` or `disabled`) and its last delivery outcome, and SHALL NOT return the full URL after creation.
+7. THE API SHALL write neither the full URL nor the Webhook_Secret to any log.
+8. WHEN a User deletes a webhook, THE API SHALL delete that webhook and its delivery records.
+9. WHEN a User deletes the account, THE API SHALL delete every webhook and every delivery record of that User in the same operation.
+10. THE API SHALL derive each Webhook_Secret from a master secret held in the Worker secret `WEBHOOK_MASTER_SECRET` and from the webhook identifier, and SHALL store no copy of the Webhook_Secret in the database.
+11. THE Webhook_Secret SHALL carry at least 32 bytes of derived output, shown as `whsec_` followed by base64url text.
+12. IF `FEATURE_WEBHOOKS` is on and `WEBHOOK_MASTER_SECRET` is missing or shorter than 32 characters, THEN THE Worker SHALL answer the webhook endpoints with a 503 error that names the missing variable and SHALL send no webhook.
+13. THE API SHALL store the full URL as plain text in the database, because the sender needs it to post, and SHALL mask the URL in every API response and every error message by showing the host name only.
 
-### Requirement 20: Provide organization accounts
+### Requirement 14: Reject unsafe webhook URLs
 
-**User Story:** As a team lead, I want an Organization account, so that my team shares settings, channels and billing.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_ORGS` is on, THE API SHALL let a signed-in User create an Organization and SHALL make that User its first admin.
-2. WHEN an admin invites an email address, THE API SHALL send a single-use invitation link that expires after 7 days, and SHALL add the invited User as a Member when the link is redeemed.
-3. THE API SHALL let a User belong to more than one Organization, and SHALL scope every Organization resource to exactly one Organization.
-4. IF a request names an Organization resource that belongs to a different Organization than the caller's, THEN THE API SHALL return the same response as for a missing resource.
-5. WHEN an admin removes a Member, THE API SHALL end that Member's access to the Organization's resources at once and SHALL keep the Member's personal account.
-6. WHEN an Organization is deleted, THE API SHALL delete the Organization's settings, Members' links, API_Keys, Webhooks, Dashboards and Brand_Settings, and SHALL delete the Audit_Log only after its retention period.
-7. THE API SHALL keep at least one admin in every Organization, and SHALL reject an action that removes or demotes the last admin.
-8. IF an invitation link is expired, used or unknown, THEN THE API SHALL reject it and SHALL add no Member.
-9. WHILE `FEATURE_ORGS` is off, THE API SHALL behave as `main` for personal accounts, with the same Watchlist cap of 10 airports.
-
-### Requirement 21: Sign in with SSO
-
-**User Story:** As an Organization admin, I want my Members to sign in through our identity provider, so that access follows our central account rules.
+**User Story:** As a maintainer, I want unsafe webhook targets rejected, so that AeroBrief cannot be used to reach internal or private services.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_SSO` is on and `FEATURE_ORGS` is on, THE API SHALL let an Organization admin configure one identity provider connection for the Organization.
-2. WHEN a Member signs in through the Organization's SSO connection and the identity provider returns a valid, signed assertion, THE API SHALL create a Session for that Member.
-3. THE API SHALL verify the signature, issuer, audience, validity period and the request identifier of every assertion, and SHALL accept each assertion once.
-4. IF an assertion fails verification, is expired, or was already used, THEN THE API SHALL reject it and SHALL create no Session.
-5. THE API SHALL map an assertion to a Member by the verified email address and the Organization's verified domain.
-6. WHERE an Organization enforces SSO, THE API SHALL reject Magic_Link sign-in for email addresses on that Organization's verified domain.
-7. THE API SHALL NOT accept, store or prompt for a password on any sign-in path.
-8. WHEN an admin turns SSO enforcement on, THE API SHALL require the admin to confirm a successful SSO test sign-in first, so that the admin is not locked out.
-9. THE API SHALL record each SSO sign-in success and failure in the Audit_Log when `FEATURE_AUDIT_LOG` is on.
+1. WHEN a User submits a webhook URL, THE API SHALL parse it with the WHATWG URL parser and SHALL accept it only when the scheme is `https`.
+2. IF the URL has a username or password, a port other than 443, a fragment, or a length over 2048 characters, THEN THE API SHALL reject it with a validation error.
+3. IF the host is an Unsafe_Host, THEN THE API SHALL reject the URL with a validation error. An Unsafe_Host is an IPv4 literal in any notation that the URL parser normalizes to dotted decimal, an IPv6 literal, `localhost` or any name ending in `.localhost`, a name with a single label, and a name ending in `.local`, `.internal`, `.lan`, `.home.arpa`, `.test`, `.invalid` or `.example`.
+4. IF the URL host ends with a trailing dot, THEN THE API SHALL reject the URL.
+5. THE webhook sender SHALL run the same validation again before each request, so that a stored row that fails the validation is never contacted.
+6. THE webhook sender SHALL send each request with the redirect mode `manual` and SHALL treat any 3xx response as a failed attempt without following it.
+7. THE webhook sender SHALL ignore the response body, SHALL cancel it without reading it, and SHALL store only the numeric status code and an error kind.
+8. THE webhook sender SHALL abort an attempt that takes longer than 5 seconds.
+9. THE webhook sender SHALL return no response detail from the target to the User or to the logs.
+10. THE URL validator SHALL be a pure function in `packages/core` that takes a string and returns either the normalized URL or a reason code.
+11. FOR ALL strings, THE URL validator SHALL return a normalized URL only when the scheme is `https`, the host is not an Unsafe_Host and the port is 443 (safety property).
+12. FOR ALL IPv4 addresses written in dotted, decimal, hexadecimal, octal or mixed notation, and for ALL IPv6 addresses, THE URL validator SHALL return a reason code (error-condition property).
+13. FOR ALL valid normalized URLs that the validator returns, validating the returned value again SHALL return the same value (idempotence property).
 
-### Requirement 22: Provision users with SCIM
+### Requirement 15: Sign every webhook delivery
 
-**User Story:** As an identity administrator, I want our identity provider to create and deactivate AeroBrief Members automatically, so that departures lose access without manual work.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_SCIM` is on and `FEATURE_SSO` is on, THE API SHALL expose a SCIM endpoint for the Organization that accepts requests carrying the Organization's SCIM bearer token.
-2. THE API SHALL store only a hash of each SCIM bearer token, show it once at creation and let an admin rotate it.
-3. WHEN the identity provider creates a user, THE API SHALL create a Member with the Role `viewer` unless the SCIM group mapping assigns another Role.
-4. WHEN the identity provider deactivates a user, THE API SHALL end all Sessions of that Member in the Organization and SHALL block new sign-in for that Member within 60 seconds.
-5. IF a SCIM request has no bearer token, an unknown token or an invalid body, THEN THE API SHALL reject it with the SCIM error format and SHALL change no Member.
-6. THE API SHALL apply each SCIM create or update request idempotently, so that sending the same request twice leaves one Member.
-7. THE API SHALL record each SCIM action in the Audit_Log when `FEATURE_AUDIT_LOG` is on.
-8. THE API SHALL return `404` for the SCIM endpoint WHILE `FEATURE_SCIM` is off.
-9. FOR ALL sequences of SCIM create, update and deactivate requests, THE provisioning function SHALL leave at most one Member per external identifier in the Organization (invariant property).
-
-### Requirement 23: Enforce roles and permissions
-
-**User Story:** As an Organization admin, I want viewer, dispatcher and admin roles, so that each Member can do only what the job needs.
+**User Story:** As an integrator, I want to verify that a request came from AeroBrief and is fresh, so that I can ignore forged and replayed requests.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_RBAC` is on and `FEATURE_ORGS` is on, THE API SHALL assign each Member exactly one Role: `viewer`, `dispatcher` or `admin`.
-2. THE API SHALL grant the Role `viewer` read access to status, history and Dashboards, and no write access to Organization settings.
-3. THE API SHALL grant the Role `dispatcher` the Permissions of `viewer` plus the Permissions to manage Watchlists, followed items, Routing_Rules, Escalation_Policies, Acknowledgements and Dashboards.
-4. THE API SHALL grant the Role `admin` every Permission, including Members, Roles, SSO, SCIM, API_Keys, Webhooks, Notification_Channels, billing, Brand_Settings and Audit_Log read access.
-5. WHEN a request needs a Permission that the caller's Role lacks, THE API SHALL reject it with an authorization error and SHALL change nothing.
-6. THE API SHALL check the Permission on the server for every Organization endpoint, and SHALL NOT rely on the Frontend to hide a control.
-7. THE Frontend SHALL show a control only to a Member whose Role has its Permission, and SHALL show a text reason in place of a disabled control that the Member lacks the Permission for.
-8. WHILE `FEATURE_RBAC` is off and `FEATURE_ORGS` is on, THE API SHALL treat every Member as an admin.
-9. WHEN an admin changes a Member's Role, THE API SHALL apply the new Role to that Member's next request.
-10. FOR ALL Roles and Permissions, THE permission check function SHALL grant `admin` every Permission, and SHALL grant `dispatcher` a superset of the Permissions of `viewer` (invariant property).
-11. FOR ALL Roles, Permissions and Organization identifiers, THE permission check function SHALL deny any Permission on an Organization of which the caller is not a Member (error condition property).
+1. THE webhook sender SHALL send each delivery as an HTTP POST with the header `Content-Type: application/json`, a JSON body of at most 4096 bytes, and the headers `X-AeroBrief-Delivery`, `X-AeroBrief-Timestamp` and `X-AeroBrief-Signature`.
+2. THE webhook sender SHALL set `X-AeroBrief-Timestamp` to the current Unix time in seconds, and SHALL set `X-AeroBrief-Signature` to `v1=` followed by the lowercase hexadecimal HMAC-SHA256 of the text `<timestamp>.<body>` keyed with the Webhook_Secret.
+3. THE webhook sender SHALL set `X-AeroBrief-Delivery` to the Delivery_ID, and SHALL send the same Delivery_ID on every retry of one Webhook_Delivery.
+4. THE webhook sender SHALL compute a new timestamp and a new signature for each attempt, so that every attempt falls inside the Replay_Window.
+5. THE AeroBrief SHALL provide a pure verify function in `packages/core` that takes the secret, the timestamp, the body, the signature header and the current time, and that returns true only when the signature matches and the timestamp is within 300 seconds of the current time.
+6. THE verify function SHALL compare signatures in constant time.
+7. THE AeroBrief SHALL document in `docs/` the header names, the signed text, the Replay_Window and a verification example in TypeScript.
+8. FOR ALL secrets, timestamps and bodies, THE verify function SHALL accept the signature that the sign function produced for the same inputs when the current time is within the Replay_Window (round-trip property).
+9. FOR ALL secrets, timestamps and bodies, THE verify function SHALL reject the delivery after any change to the body, the timestamp, the signature or the secret (error-condition property).
+10. FOR ALL signatures that are valid at timestamp T, THE verify function SHALL reject them when the current time is more than 300 seconds after T or more than 300 seconds before T (replay property).
 
-### Requirement 24: Keep an audit log
+### Requirement 16: Retry failed webhook deliveries and disable failing webhooks
 
-**User Story:** As a security officer, I want a tamper-evident record of who did what, so that I can investigate an incident.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_AUDIT_LOG` is on and `FEATURE_ORGS` is on, THE API SHALL write one Audit_Log entry for each of these actions: sign-in and sign-out, failed sign-in, Role change, Member add and remove, SSO and SCIM configuration change, API_Key create and revoke, Webhook create, change and delete, Notification_Channel change, Routing_Rule and Escalation_Policy change, Plan change, Brand_Settings change, and Audit_Log export.
-2. THE Audit_Log entry SHALL contain the time in UTC, the acting Member or system actor, the action, the target resource, the outcome and the request identifier.
-3. THE Audit_Log entry SHALL NOT contain a secret, a token, an API_Key value or a full message body.
-4. THE AeroBrief SHALL make the Audit_Log append-only, so that no API endpoint and no Worker code updates or deletes an entry before its retention period ends.
-5. THE AeroBrief SHALL chain each entry to the previous entry of the same Organization with a hash, so that a change to an earlier entry is detectable.
-6. THE API SHALL let a Member with the Permission `audit:read` list and export the Audit_Log of that Member's Organization only.
-7. THE AeroBrief SHALL keep Audit_Log entries for the retention period that the data-protection review in Requirement 8 sets, and SHALL delete older entries.
-8. IF writing an Audit_Log entry fails, THEN THE API SHALL fail the action that the entry records and SHALL change nothing.
-9. FOR ALL lists of entries, THE chain verifier SHALL accept an unmodified chain and SHALL report the first entry whose content or position was changed (round-trip property).
-
-### Requirement 25: Route alerts with rules
-
-**User Story:** As a dispatcher, I want rules that decide who gets which alert on which channel, so that the right person is notified.
+**User Story:** As an integrator, I want AeroBrief to retry briefly and then stop calling a dead endpoint, so that a broken receiver neither loses alerts too easily nor receives endless requests.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_ALERT_ROUTING` is on, THE Notifier SHALL evaluate the Organization's Routing_Rules for each Event before it sends any message.
-2. THE Routing_Rule SHALL consist of conditions on airport, Event type, ARTCC or region, followed item and time window, and an action that names recipients and Notification_Channels.
-3. WHEN more than one Routing_Rule matches an Event, THE Notifier SHALL apply the rule with the lowest priority number first and SHALL send each recipient at most one message per Notification_Channel per Event.
-4. IF no Routing_Rule matches an Event, THEN THE Notifier SHALL use each recipient's own Watchlist and enabled Notification_Channels, as MVP Requirement 9 states.
-5. THE API SHALL validate each Routing_Rule with a Zod schema and SHALL reject a rule that names a recipient outside the Organization.
-6. THE Frontend SHALL show a preview that lists which recipients and channels a rule would notify for a sample Event.
-7. WHILE `FEATURE_ALERT_ROUTING` is off, THE Notifier SHALL use only each recipient's own Watchlist and email, as `main` does.
-8. FOR ALL Routing_Rule sets and Events, THE routing function SHALL return a set of deliveries with no duplicate recipient and channel pair (invariant property).
-9. FOR ALL Routing_Rule sets and Events, THE routing function SHALL return the same deliveries for any ordering of rules that have different priority numbers (confluence property).
+1. WHEN the Poller stores a Snapshot that yields alert Events, THE Notifier SHALL create one Webhook_Delivery for each active webhook of each recipient, after the alert emails of those Events have been handed off or recorded.
+2. THE Notifier SHALL start the first attempt of each Webhook_Delivery within 120 seconds of the Snapshot being stored.
+3. THE Notifier SHALL claim one delivery record per Event key, Event type and webhook with an insert that fails on a duplicate, and SHALL send only when the claim succeeds, so that a retried poll sends no second delivery for the same Event.
+4. IF an attempt ends with a network error, a timeout, status 408, status 429 or a status of 500 or higher, THEN THE Notifier SHALL retry, up to 3 attempts in total, with a wait of 2 seconds before the second attempt and 8 seconds before the third.
+5. IF an attempt ends with any other non-2xx status, including a 3xx status, THEN THE Notifier SHALL stop and record the delivery as failed without a retry.
+6. WHEN an attempt ends with a 2xx status, THE Notifier SHALL record the delivery as `delivered`.
+7. THE Notifier SHALL record for each Webhook_Delivery one final outcome (`delivered`, `failed` or `skipped`), the number of attempts, the last status code or error kind, and the completion time.
+8. THE Notifier SHALL log each final outcome with the Delivery_ID, the webhook identifier and the host name, and SHALL log no URL, secret or response detail.
+9. IF a webhook has 5 consecutive Webhook_Deliveries with the final outcome `failed`, THEN THE Notifier SHALL set that webhook to `disabled` with a reason and a time, and SHALL send it no further delivery.
+10. WHEN a Webhook_Delivery ends with the outcome `delivered`, THE Notifier SHALL reset the consecutive failure count of that webhook to 0.
+11. THE Notifier SHALL leave the consecutive failure count unchanged for a delivery with the outcome `skipped`.
+12. THE Frontend SHALL show a disabled webhook with the text "Disabled after repeated failures" and the time of the last outcome.
+13. WHILE the latest Snapshot is older than 10 minutes or is missing, THE Notifier SHALL send no webhook, as MVP Requirement 6.8 states for alert emails.
+14. IF a webhook attempt throws or fails, THEN THE Notifier SHALL leave alert email delivery, its records and its outcomes unchanged.
+15. FOR ALL sequences of attempt results, THE retry function SHALL stop after at most 3 attempts and SHALL return a final outcome (bound property).
+16. FOR ALL sequences of final outcomes, THE failure counter SHALL equal the number of consecutive `failed` outcomes at the end of the sequence, and SHALL disable the webhook exactly when that number reaches 5 (invariant property).
+17. WHEN a webhook is set to `disabled`, THE Notifier SHALL send no email and no other notification about it, and THE Frontend SHALL show the disabled state of Acceptance Criterion 12 on the Watchlist page.
+18. WHEN a User re-enables a `disabled` webhook with the Watchlist page control "Re-enable", THE API SHALL set the state to `active`, reset the consecutive failure count to 0 and clear the disabled reason and time.
+19. IF a User re-enables a webhook that is already `active`, THEN THE API SHALL return the same result and change nothing (idempotence property).
 
-### Requirement 26: Escalate unacknowledged alerts
+### Requirement 17: Send a payload that a Slack incoming webhook can render
 
-**User Story:** As a duty manager, I want an alert that nobody acknowledged to go to the next person, so that no ground stop is missed.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_ESCALATION` is on and `FEATURE_ALERT_ROUTING` is on, THE Notifier SHALL start the Escalation_Policy of a Routing_Rule when it sends the first message for an Event.
-2. THE Escalation_Policy SHALL consist of ordered steps, and each step SHALL name recipients, Notification_Channels and a wait time of 1 to 120 minutes.
-3. WHEN the wait time of a step ends and no recipient has recorded an Acknowledgement, THE Notifier SHALL send the messages of the next step.
-4. WHEN a recipient records an Acknowledgement, THE Notifier SHALL stop the Escalation_Policy for that Event.
-5. WHEN the Event ends before a step runs, THE Notifier SHALL cancel the remaining steps for that Event and SHALL record the cancellation.
-6. THE Notifier SHALL start each escalation step within 60 seconds of its due time.
-7. THE Notifier SHALL deduplicate escalation messages per Event, step, recipient and Notification_Channel.
-8. IF the latest Snapshot is older than 10 minutes when a step is due, THEN THE Notifier SHALL defer the step until a fresh Snapshot confirms the Event is still active.
-9. THE Frontend SHALL show for each open escalation its current step, the time of the next step and the Acknowledgement state as text.
-10. FOR ALL Escalation_Policies, Event start times and Acknowledgement times, THE escalation scheduler SHALL return the steps due at a given time such that no step is due before the sum of the wait times of the earlier steps, and no step is due after an Acknowledgement or event end (invariant property).
-
-### Requirement 27: Send daily digests
-
-**User Story:** As a manager, I want a daily digest of what happened, so that I get the overview without reading every alert.
+**User Story:** As an integrator, I want a `text` field in the payload, so that I can paste a Slack incoming-webhook URL and see a readable message.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_DIGESTS` is on, THE Poller SHALL send each subscribed recipient one Digest per day at the local time the recipient chose, in the recipient's chosen time zone.
-2. THE Digest SHALL list the Events of the previous 24 hours for the recipient's Watchlist and followed items, each with its Explanation unaltered, and SHALL state "No disruptions" when there are none.
-3. THE Notifier SHALL send at most one Digest per recipient per local calendar day, including after a cron retry.
-4. WHEN a time zone has a daylight-saving change, THE Poller SHALL send the Digest once on that day.
-5. THE Digest SHALL include a link that turns off Digests for that recipient and displays a confirmation.
-6. THE Notifier SHALL send a Digest only through the channels the recipient enabled for Digests.
-7. IF the latest Snapshot is older than 10 minutes at the Digest time, THEN THE Notifier SHALL send the Digest with a stale-data notice and the capture time of the latest Snapshot.
-8. FOR ALL time zones and dates, THE digest scheduler SHALL return exactly one send time per local calendar day (invariant property).
+1. THE webhook sender SHALL send a JSON payload with the fields `id`, `type`, `createdAt`, `data` and `text`, validated by a Zod schema in `packages/core/src/schemas/` before it sends.
+2. THE `type` field SHALL be `ground_stop.started`, `ground_stop.ended` or `nationwide.event`, matching the Event type, or `TEST` for the test event of Requirement 18.
+3. THE `data` field SHALL hold the FAA_Event_ID or Event key, the airport identifier and airport name (or null for a nationwide Event), the Event time in ISO 8601 UTC, and the Explanation unaltered.
+4. THE `text` field SHALL be one plain-language line that holds the airport name, the Event type in words, the Explanation and the Event time in UTC to the minute, and SHALL contain no raw FAA code.
+5. THE `id` field SHALL equal the Delivery_ID.
+6. THE webhook sender SHALL escape in the `text` field the characters `&`, `<` and `>` as Slack incoming webhooks require, and SHALL not use Slack-specific markup.
+7. THE webhook sender SHALL send no Slack-specific field, so that the same payload works for any receiver.
+8. FOR ALL valid Events, THE payload builder SHALL return a payload that passes the Zod schema, whose serialized size is at most 4096 bytes, and whose `text` contains the airport name or the words "nationwide" (invariant property).
+9. FOR ALL valid payloads, serializing to JSON and parsing the result with the Zod schema SHALL produce an equal payload (round-trip property).
 
-### Requirement 28: Host in multiple regions
+### Requirement 18: Send a test event to a webhook
 
-**User Story:** As an operator, I want AeroBrief to keep serving when one region fails, so that availability holds during a regional outage.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_MULTI_REGION` is on, THE API SHALL serve read requests from the Neon read replica nearest to the request, and SHALL send all writes to the primary.
-2. WHILE a read replica lags behind the primary by more than 30 seconds, THE API SHALL read from the primary or SHALL return the stale indicator of MVP Requirement 6.2.
-3. IF the primary is unreachable, THEN THE API SHALL keep serving stored data from a replica with the stale indicator and SHALL return a service-unavailable response with a 30-second retry indication for writes.
-4. THE Poller SHALL run in exactly one Region at a time, and SHALL use the existing lease so that two Regions never poll at once.
-5. WHEN the Poller's Region fails, THE standby Region SHALL take the lease after the lease expires, and SHALL start polling within 10 minutes.
-6. THE AeroBrief SHALL meet an availability of 99.95% per calendar month for the API, measured as in MVP Requirement 12.1, once `FEATURE_MULTI_REGION` is on.
-7. THE AeroBrief SHALL keep each Organization's data in the Region set for that Organization when the data-protection review requires it.
-8. WHILE `FEATURE_MULTI_REGION` is off, THE API SHALL use the single Neon endpoint of `main`.
-
-### Requirement 29: Build Dashboards with drag and drop
-
-**User Story:** As a dispatcher, I want to arrange my own Dashboard, so that I see my airports and reports in the order I need.
+**User Story:** As an integrator, I want to send one sample delivery to my webhook, so that I can check my URL, my signature check and my Slack channel before a real alert arrives.
 
 #### Acceptance Criteria
 
-1. WHERE `FEATURE_DASHBOARDS` is on, THE Frontend SHALL let a Member create, rename, arrange and delete Dashboards that hold Widgets.
-2. THE Frontend SHALL offer these Widgets: airport status, watchlist, recent Events, nationwide status, and, when the matching flags are on, Trend_Report and Prediction.
-3. WHEN a Member drags a Widget and drops it in a new position, THE Frontend SHALL save the new order and SHALL show it after a reload.
-4. THE Frontend SHALL provide a keyboard alternative for every drag action: a Member can focus a Widget, press a key to pick it up, move it with arrow keys, and press a key to drop or cancel.
-5. WHEN a Widget is picked up, moved, dropped or cancelled, THE Frontend SHALL announce the action and the new position in an ARIA live region.
-6. THE Frontend SHALL also provide "Move up" and "Move down" buttons for every Widget, so that arrangement needs no drag gesture.
-7. THE Frontend SHALL save a Dashboard only through the API, and SHALL limit a Member to 10 Dashboards and 12 Widgets per Dashboard.
-8. THE Frontend SHALL implement drag and drop with native browser APIs and no new runtime dependency, unless the project owner approves a dependency as a Stack_Deviation.
-9. THE Frontend SHALL show an Organization-shared Dashboard to the Members whom the Role allows to see it.
-10. FOR ALL Widget lists and move operations, THE reorder function SHALL return a list that holds the same Widgets, each once, with the moved Widget at the target position (invariant property).
-11. FOR ALL Widget lists, moving a Widget to a position and then back to its original position SHALL return the original list (round-trip property).
+1. WHERE `FEATURE_WEBHOOKS` is on, THE Frontend SHALL show a button "Send test event" for each webhook of the User, and SHALL show the result as visible text and in an ARIA live region.
+2. THE API SHALL expose `POST /api/webhooks/:id/test` to the signed-in owner of the webhook and SHALL answer an unknown or foreign webhook identifier with `404`.
+3. WHEN a User requests a test event, THE API SHALL send one payload with `type` `TEST`, a new Delivery_ID as `id`, a `data` field that states it is a test, and a `text` field that begins with "TEST:" and states that no real disruption occurred.
+4. THE API SHALL send the test event through the same URL validation (Requirement 14), signing (Requirement 15), 5-second timeout, redirect refusal, payload schema (Requirement 17) and Safe_Send_Mode checks as a real delivery.
+5. THE API SHALL make one attempt for a test event, SHALL NOT retry, and SHALL return to the User the outcome (`delivered` or `failed`) with the numeric status code or the error kind, and no response body.
+6. THE API SHALL allow at most 1 test event per webhook in any 60-second period, SHALL enforce that limit in the database, and IF the limit is reached THEN THE API SHALL return status 429 with the number of seconds to wait.
+7. THE API SHALL NOT count a test event toward the consecutive failure count, SHALL NOT disable a webhook because of it, and SHALL NOT apply the stale-data gate to it.
+8. IF a webhook is `disabled`, THEN THE API SHALL still accept a test event for it, so that the User can check the endpoint before re-enabling it.
+9. FOR ALL sequences of test event request times for one webhook, THE rate-limit function SHALL allow a request only when at least 60 seconds have passed since the last allowed request (invariant property).
 
-### Requirement 30: Support white-labeling
+## Appendix A: MVP Preservation Matrix
 
-**User Story:** As an Organization admin, I want our logo, name and colors on AeroBrief pages and emails, so that our team sees one consistent brand.
+Each row names an MVP requirement or test that a feature touches and how it stays preserved in Flags_Off_Mode. "Flags on" means the feature under test is on.
 
-#### Acceptance Criteria
+| MVP item | Touched by | Preserved in Flags_Off_Mode by | Extra check with the flag on |
+| --- | --- | --- | --- |
+| Req 9 (alert emails), `notifier.test.ts`, `recipients.pbt.test.ts`, `reprocess.pbt.test.ts` | Webhooks, digest | `notify()` stays unchanged. Webhooks run in a separate function that the Poller calls only when the flag is on. | Alert emails still go once per User per Event, with the same recipients. |
+| Req 6.8 (no alerts on stale data), `stale-gate.pbt.test.ts` | Webhooks, digest | Stale gate stays in `notify()`. | Webhooks apply the same 10-minute gate (Req 16.13). The digest states the staleness instead (Req 11.9). |
+| Req 8 (Watchlist, cap of 10), `watchlist-cap.test.ts` | Digest, webhooks | No change to the `subscriptions` table or trigger. | The digest and webhooks read the Watchlist and never write to it. |
+| Req 7 (no passwords), repo guard, `schema.test.ts` | Digest, webhooks | New columns use names such as `secret_version`, never `password` or `pass`. | The repo guard scans the new schema. |
+| Req 9.8 (per-airport unsubscribe), `unsubscribe*.test.ts` | Digest | `signUnsubscribe` and `verifyUnsubscribe` stay unchanged. The digest uses new functions with the prefix `digest.`. | Req 12.2 proves the two signature kinds never cross-verify. |
+| Req 13 (accessibility), the axe suite in `apps/web/test/a11y/` | Both themes, digest, webhooks | Existing axe tests run unchanged against the light AA look. | New axe tests cover each Theme_Variant and the new Watchlist sections. |
+| Req 15 and `.kiro/steering/design.md` (tokens, palette, DOM structure), `palette-sync.test.ts`, `contrast.test.ts` | Both themes | `tokens.css`, `palette` and `palettePairs` stay byte-identical. New token sets live in new files. | New tests check each new token set against the pairs derived from `palettePairs`. |
+| Req 15.2 (nav bar), `nav-bar.test.tsx` | Both themes | The nav bar DOM stays unchanged. The theme controls render in a separate section. | The section has its own tests. |
+| Req 15.12 (new color pairs pass AA) | Dark mode | Same rule, applied to the dark token set. | Dark pairs are checked in `contrast` tests. |
+| Req 14 (stack, scope), `ci.yml` | All | No new dependency. | CI keeps running type checks, tests and axe. |
+| Route table, `routes.test.ts`, `router.test.ts` | Flags, digest, webhooks | `routes` stays unchanged. Phase 2 routes live in a separate table and answer `404` while their flag is off. | Each new route has its own tests. |
+| `env.test.ts`, `parseEnv` | Flags | Flags are parsed by a separate function. `parseEnv` output for the same input stays equal. | Flag parsing has its own tests. |
+| `dispatcher.test.ts`, poller cron strings in `wrangler.jsonc` | Digest | The existing cron cases stay unchanged. The new cron case returns at once while the flag is off. | The `wrangler.jsonc` string and the `index.ts` string match. |
+| Req 16 (secret rotation), `rotate-secrets.test.ts` | Digest, webhooks | The rotation script is unchanged. | The digest uses `UNSUBSCRIBE_SECRET` and its previous-secret window. `WEBHOOK_MASTER_SECRET` is outside the script (see the design). |
+| Req 11 and 14.12 (24-hour history, 20 airports) | Digest | No change. | The digest reads only stored Events from the last 24 hours. |
+| `deploy-workers.yml` | Deploy guard task | Behavior on `main` pushes stays unchanged. | A manual dispatch from another branch skips the job. |
 
-1. WHERE `FEATURE_WHITE_LABEL` is on and `FEATURE_ORGS` is on, THE Frontend SHALL apply an Organization's Brand_Settings to the pages that a Member of that Organization views.
-2. THE API SHALL accept a logo only as PNG, SVG or WebP, up to 512 KB, and SHALL sanitize SVG so that it holds no script, no external reference and no event handler.
-3. THE Frontend SHALL map Brand_Settings colors onto existing design tokens and SHALL NOT use a brand color that fails the contrast rule of Requirement 31 for its pairing.
-4. IF a submitted brand color pair fails the contrast ratio of the active Theme, THEN THE API SHALL reject the Brand_Settings with a message that names the failing pair and the ratio.
-5. THE Notifier SHALL use the Organization's display name in the body of emails sent to its Members, and SHALL keep the sender domain AeroBrief controls unless the Organization completes sender-domain verification.
-6. THE Frontend SHALL keep the data source attribution "FAA NAS Status API" and the license text of MVP Requirement 15.3 on every page of a white-labeled view, unless a Data_Source license allows removing an attribution.
-7. THE Frontend SHALL NOT change the DOM structure of the airport table, banners, navigation bar or `aria-live` region for branding, and SHALL restyle with tokens and class names only.
-8. WHILE `FEATURE_WHITE_LABEL` is off, THE Frontend SHALL show the AeroBrief brand on every page.
-9. FOR ALL foreground and background color pairs in Brand_Settings, THE brand validator SHALL accept the pair only if its contrast ratio meets the threshold of the active Theme (invariant property).
+## Appendix B: Deferred (after Kiroween judging)
 
-### Requirement 31: Offer a dark mode
+These items are out of this round. Their requirements and flags are removed from the active set. Each stays on `phase-2` until judging has finished and the project owner re-opens it.
 
-**User Story:** As a user who works at night, I want a dark theme, so that the page is comfortable to read in low light.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_DARK_MODE` is on, THE Frontend SHALL offer the dark Theme through a visible control with a text label, and SHALL default to the setting of the visitor's operating system until the visitor chooses a Theme.
-2. THE Frontend SHALL store the visitor's chosen Theme in the browser and, for a signed-in User, in the User's settings.
-3. THE Frontend SHALL define the dark Theme as a second set of values for the existing design tokens in `apps/web/src/styles/tokens.css`, and SHALL list every dark color token and every dark color pair in `palette.ts` and `palettePairs`.
-4. THE Frontend SHALL give every dark Theme text pair a contrast ratio of at least 4.5:1, and every large text pair, component boundary and focus indicator at least 3:1.
-5. THE Frontend SHALL keep the DOM structure of the airport table, banners, navigation bar and `aria-live` region unchanged for the dark Theme.
-6. THE Frontend SHALL show status, banners and states through text in the dark Theme, with color as decoration only.
-7. THE Frontend SHALL use no new runtime dependency and no icon package for the dark Theme, and SHALL keep inline SVG and CSS `mask-image` icons.
-8. WHILE `FEATURE_DARK_MODE` is off, THE Frontend SHALL render the default Theme and the default `tokens.css` values with no Theme control.
-9. FOR ALL color pairs in `palettePairs` of the dark Theme, THE contrast function SHALL return a ratio at or above the pair's required threshold (invariant property).
-
-### Requirement 32: Meet WCAG 2.1 AAA as an opt-in theme
-
-**User Story:** As a user with low vision, I want a higher-contrast theme that meets AAA, so that text is easier to read.
-
-#### Acceptance Criteria
-
-1. WHERE `FEATURE_AAA` is on, THE Frontend SHALL offer the AAA_Theme as an opt-in choice with a visible text label.
-2. THE AAA_Theme SHALL give every normal text pair a contrast ratio of at least 7:1, and every large text pair at least 4.5:1.
-3. THE AAA_Theme SHALL give every component boundary and focus indicator a contrast ratio of at least 3:1.
-4. THE Frontend SHALL provide the AAA_Theme in a light and a dark variant when `FEATURE_DARK_MODE` is on, and every pair of both variants SHALL appear in `palettePairs`.
-5. THE Frontend SHALL give each AAA success criterion that is not a color-contrast criterion an assessment in the design, with one of the results "met", "met by Theme" or "not applicable", and SHALL name the user-facing content that does not meet it.
-6. WHEN a pull request is opened or updated and `FEATURE_AAA` is on in the test run, THE CI pipeline SHALL run the accessibility suite against the AAA_Theme and SHALL fail the build on a contrast violation.
-7. THE Frontend SHALL keep the default Theme at WCAG 2.1 AA with unchanged tokens WHILE `FEATURE_AAA` is off, as MVP Requirement 13 states.
-8. THE Frontend SHALL NOT change the DOM structure of the airport table, banners, navigation bar or `aria-live` region for the AAA_Theme.
-9. FOR ALL color pairs in the AAA_Theme, THE contrast function SHALL return a ratio at or above 7:1 for normal text pairs and 4.5:1 for large text pairs (invariant property).
-
-### Requirement 33: Protect Organization and audit data
-
-**User Story:** As an Organization admin, I want my Organization's data protected and deletable, so that I can meet my own data-protection duties.
-
-#### Acceptance Criteria
-
-1. THE AeroBrief SHALL encrypt stored third-party credentials, including Slack tokens, PagerDuty keys, SMS Provider identifiers, Webhook secrets and SSO secrets, and SHALL keep the encryption key in a Worker secret.
-2. THE AeroBrief SHALL store API_Keys, SCIM tokens and Magic_Link tokens only as hashes.
-3. WHEN an Organization admin requests an export of the Organization's data, THE API SHALL return a machine-readable export of the Organization's settings, Members, Routing_Rules, Dashboards and Audit_Log within the Permissions of that admin.
-4. WHEN a Member requests deletion of the Member's personal account, THE API SHALL delete the Member's personal data and SHALL replace the Member's identity in retained Audit_Log entries with a pseudonymous identifier if the data-protection review requires retention.
-5. THE AeroBrief SHALL log no secret, token, key, assertion, phone number or full email address in operational logs.
-6. THE API SHALL scope every database query for Organization data by Organization identifier, and the Database SHALL enforce that scope by constraint or policy where the stack supports it.
-7. IF an Organization's data is requested for a Region other than the Organization's own Region while `FEATURE_MULTI_REGION` is on, THEN THE API SHALL serve it only through the Organization's Region.
-
-### Requirement 34: Hold implementation behind sign-off gates
-
-**User Story:** As a project owner, I want each risky feature to wait for its sign-off, so that I approve cost, legal and stack decisions before code depends on them.
-
-#### Acceptance Criteria
-
-1. THE Phase 2 plan SHALL place each Gate task before the first implementation task of every feature that depends on it.
-2. THE Phase 2 plan SHALL list, for each Feature_Area, the Gates and Stack_Deviation approvals it needs.
-3. WHILE a Gate or approval is open, THE plan SHALL show the dependent tasks as blocked and SHALL allow work only on parts of the feature that need no blocked technology, Provider or key.
-4. WHEN the project owner records a Gate decision, THE plan SHALL record the date, the decision and the owner's name in the spec.
-5. THE design SHALL record the open questions that need the project owner's decision, and SHALL NOT assume an answer for any of them.
+- More US airports: needs a data-model change for the 20-airport assumption and is not part of the contest set.
+- International hubs: needs a non-FAA data source and a license review.
+- Flight, tail number and route tracking: needs a licensed flight data source.
+- Additional data sources (FlightAware, OAG, Cirium, ADS-B Exchange): need a licensed API, a key or contract, and a terms review.
+- SMS: needs a paid provider and a terms review.
+- Slack API (apps, OAuth): outside the stack and not needed, because the signed webhook with a `text` field already works with a Slack incoming-webhook URL.
+- PagerDuty: needs an outside SDK or API and a terms review.
+- History up to 3 years: needs a storage and retention redesign and a data-protection review.
+- Trend analysis: depends on extended history.
+- Machine-learning predictions: depends on extended history and needs a runtime outside the stack.
+- Billing tiers: waits for a review of the FAA data terms and each provider license.
+- Organization accounts: not needed by the four features and a large data-model change.
+- Single sign-on: depends on organization accounts and needs a protocol library.
+- User provisioning (SCIM): depends on organization accounts and single sign-on.
+- Roles: depends on organization accounts.
+- Audit logs: depends on organization accounts and a data-protection review.
+- Alert routing rules: depends on more notification channels.
+- Escalation: depends on routing rules and acknowledgement.
+- API keys: not needed by the four features and needs a rate-limit design.
+- Multi-region hosting: needs a database and Workers design outside this round.
+- Drag-and-drop dashboards: needs a library outside the approved stack.
+- White-labeling: depends on organization accounts.
+- Encryption at rest for webhook URLs: the URLs are stored as plain text for now and are masked in all API output. Encryption needs a key-management design.
+- Rotation of `WEBHOOK_MASTER_SECRET`: the rotation script does not cover it. Rotating it invalidates every Webhook_Secret, so Users must re-copy their secrets. A versioned derivation needs its own design.
+- Separate `aerobrief-*-phase2` Workers and a Phase 2 deploy workflow: not needed, because local `wrangler dev`, the Neon branch and automated tests are enough before merge.
