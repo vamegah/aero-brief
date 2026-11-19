@@ -1,6 +1,8 @@
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   check,
+  date,
   index,
   integer,
   jsonb,
@@ -235,5 +237,45 @@ export const webhookDeliveries = pgTable(
   (t) => [
     unique("webhook_deliveries_webhook_id_event_key_event_type_unique").on(t.webhookId, t.eventKey, t.eventType),
     check("webhook_deliveries_outcome_check", sql`${t.outcome} IN ('pending','delivered','failed','skipped')`),
+  ],
+);
+
+// ---------------------------------------------------------------------------
+// Phase 2: daily digest (migration 0005_digest)
+// ---------------------------------------------------------------------------
+
+/** A User's digest preference. No row means disabled; the default hour 7 is a UI preselection only. */
+export const digestPreferences = pgTable(
+  "digest_preferences",
+  {
+    userId: uuid("user_id")
+      .primaryKey()
+      .references(() => users.id, { onDelete: "cascade" }),
+    enabled: boolean("enabled").default(false).notNull(),
+    /** UTC hour of day, 0 to 23. */
+    hour: smallint("hour").notNull(),
+    updatedAt: ts("updated_at").defaultNow().notNull(),
+  },
+  (t) => [check("digest_preferences_hour_check", sql`${t.hour} BETWEEN 0 AND 23`)],
+);
+
+/** One claim per (user, digest date). The primary key is the claim key. */
+export const digestDeliveries = pgTable(
+  "digest_deliveries",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    digestDate: date("digest_date").notNull(),
+    /** claimed | handed_off | failed | skipped */
+    status: text("status").default("claimed").notNull(),
+    attempts: smallint("attempts").default(0).notNull(),
+    skipReason: text("skip_reason"),
+    claimedAt: ts("claimed_at").defaultNow().notNull(),
+    completedAt: ts("completed_at"),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.digestDate] }),
+    check("digest_deliveries_status_check", sql`${t.status} IN ('claimed','handed_off','failed','skipped')`),
   ],
 );

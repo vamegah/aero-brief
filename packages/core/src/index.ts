@@ -27,3 +27,4 @@ export { normalizeResponse } from "./normalize";
 export * from "./webhooks";
 export * from "./safe-send";
 export * from "./schemas/webhook-payload";
+export * from "./digest";

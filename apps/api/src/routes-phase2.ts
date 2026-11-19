@@ -1,5 +1,6 @@
 import type { Flags } from "@aerobrief/core";
 import { anyFlagOn, featuresHandler } from "./features";
+import { createDigestHandlers } from "./handlers/digest";
 import { createWebhookHandlers } from "./handlers/webhooks";
 import type { Phase2Route } from "./router";
 
@@ -11,6 +12,8 @@ import type { Phase2Route } from "./router";
  */
 const webhooks = createWebhookHandlers();
 const webhooksOn = (f: Flags): boolean => f.FEATURE_WEBHOOKS;
+const digest = createDigestHandlers();
+const digestsOn = (f: Flags): boolean => f.FEATURE_DIGESTS;
 
 export const routesPhase2: readonly Phase2Route[] = [
   { method: "GET", pattern: "/api/features", auth: "none", enabled: anyFlagOn, handler: featuresHandler },
@@ -30,5 +33,14 @@ export const routesPhase2: readonly Phase2Route[] = [
     auth: "session",
     enabled: webhooksOn,
     handler: webhooks.testWebhook,
+  },
+  { method: "GET", pattern: "/api/digest", auth: "session", enabled: digestsOn, handler: digest.getDigest },
+  { method: "PUT", pattern: "/api/digest", auth: "session", enabled: digestsOn, handler: digest.putDigest },
+  {
+    method: "POST",
+    pattern: "/api/digest/unsubscribe",
+    auth: "none",
+    enabled: digestsOn,
+    handler: digest.unsubscribeDigest,
   },
 ];

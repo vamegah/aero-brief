@@ -10,6 +10,7 @@ import { sessionRepository } from "./sessions";
 import { insertSnapshotQuery, snapshotRepository } from "./snapshots";
 import { subscriptionRepository } from "./subscriptions";
 import { userRepository } from "./users";
+import { digestRepository } from "../digest";
 import { webhookRepository } from "../webhooks";
 
 export * from "./alert-log";
@@ -60,6 +61,7 @@ export function createRepositories(db: Db) {
     subscriptions: subscriptionRepository(db),
     alertLog: alertLogRepository(db),
     webhooks: webhookRepository(db),
+    digest: digestRepository(db),
     async storePollResult(input: StorePollResultInput): Promise<StoredEvent[]> {
       const { snapshotStmt, eventsStmt, jobStmt } = storePollResultBatch(db, input);
       if (eventsStmt === null) {

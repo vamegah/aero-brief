@@ -14,7 +14,8 @@
     // Must match the strings in src/index.ts character for character.
     "crons": [
       "*/5 * * * *", // poll
-      "*/30 * * * *" // cleanup
+      "*/30 * * * *", // cleanup
+      "0 * * * *" // digest
     ]
   }
 }

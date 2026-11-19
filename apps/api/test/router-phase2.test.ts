@@ -56,6 +56,9 @@ describe("Phase 2 fall-through", () => {
       "DELETE /api/webhooks/:id",
       "POST /api/webhooks/:id/reenable",
       "POST /api/webhooks/:id/test",
+      "GET /api/digest",
+      "PUT /api/digest",
+      "POST /api/digest/unsubscribe",
     ]);
   });
 

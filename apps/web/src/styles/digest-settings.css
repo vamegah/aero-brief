@@ -1,0 +1,43 @@
+/* Daily digest section of the Watchlist page (Task 5.19). Tokens only. */
+.digest-settings {
+  max-width: 960px;
+  margin: var(--space-5) auto 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.digest-settings__form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.digest-settings__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.digest-settings__select {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.digest-settings__hint,
+.digest-settings__error,
+.digest-settings__status,
+.digest-settings__live {
+  margin: var(--space-1) 0;
+  font-size: var(--text-sm);
+}
+
+.digest-settings__hint {
+  color: var(--color-text-muted);
+}

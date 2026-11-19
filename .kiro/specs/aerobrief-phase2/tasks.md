@@ -188,7 +188,7 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - The commits stay one contiguous range, so `git revert` of that range removes high contrast without touching dark mode.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
 
-- [ ] 4. Signed webhooks (flag `FEATURE_WEBHOOKS`)
+- [x] 4. Signed webhooks (flag `FEATURE_WEBHOOKS`)
   - [x] 4.1 Add the `webhook-sender` line to the structure steering
     - Add one line to `.kiro/steering/structure.md` under the directory layout: `packages/webhook-sender/` for the signed webhook sender (side effects allowed, `fetch` injected); `packages/core` stays pure; `apps/api` and `apps/poller` import it; `apps/web` must not.
     - This edit is made on `phase-2` and merges with this feature. Change nothing else in the file.
@@ -368,101 +368,101 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - Run Properties 5, 11 to 21, the sender, API, Poller, component and axe tests with `webhooks` on, plus the branch integration tests. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [-] 4.40 Merge webhooks into `main` (local merge, no push)
+  - [x] 4.40 Merge webhooks into `main` (local merge, no push)
     - Run only on the owner's instruction and before December 4, 2026, 2:00 PM PT. Confirm Tasks 4.37, 4.38 and 4.39 are done and that dark mode and high contrast are merged. Merge this section's commits (including the `structure.md` line) into `main` locally with all flags off. Do not apply Migration 0004 to the production database, push, tag or deploy.
     - The commits stay one contiguous range, so `git revert` of that range removes webhooks without touching the themes. The migration stays unapplied to production until the owner approves that step.
     - _Requirements: 4.9, 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
 
 - [ ] 5. Daily digest (flag `FEATURE_DIGESTS`)
-  - [~] 5.1 Scaffold the core digest modules and barrels
+  - [x] 5.1 Scaffold the core digest modules and barrels
     - Create stub modules `packages/core/src/digest/{due,content,unsubscribe}.ts` (each `export {}` until filled), `packages/core/src/digest/index.ts` with an `export *` for each, and export the barrel from `packages/core/src/index.ts`.
     - _Requirements: 11.2, 11.7, 12.1_
 
-  - [~] 5.2 Implement due-time selection
+  - [x] 5.2 Implement due-time selection
     - In `digest/due.ts` implement `selectDueDigests({ now, prefs, claimedKeys, watchlistCounts })` with offsets 0 to 3 hours, `digestDate` taken from `scheduledAt`, and the drop rules (updated after scheduled instant, empty Watchlist, claimed key).
     - _Requirements: 11.2, 11.3, 11.4, 11.14_
 
-  - [~] 5.3 Write property test for due-digest selection
+  - [x] 5.3 Write property test for due-digest selection
     - **Property 6: Due-digest selection**
     - Create `packages/core/test/digest-due.pbt.test.ts`. Include midnight catch-up (hour 23 run missed). Tag: `// Feature: aerobrief-phase2, Property 6: Due-digest selection`. `numRuns` of 100 or more.
     - **Validates: Requirements 11.2, 11.3, 11.4, 11.14**
 
-  - [~] 5.4 Implement digest content selection and composition
+  - [x] 5.4 Implement digest content selection and composition
     - In `digest/content.ts` implement `selectDigestContent` (events in the 24 hours before `now` for watched airports plus `NATIONWIDE_EVENT`, time ordered, Explanation unaltered) and `composeDigest` (subject cut to 100 characters, text and HTML with escaping, the "No disruptions at your airports in the last 24 hours" line plus current status per airport, the stale notice when the latest Snapshot is missing or older than 10 minutes, Watchlist link, unsubscribe link, no raw FAA code).
     - _Requirements: 11.7, 11.8, 11.9, 11.12, 11.16_
 
-  - [~] 5.5 Write property test for digest content selection
+  - [x] 5.5 Write property test for digest content selection
     - **Property 8: Digest content selection**
     - Create `packages/core/test/digest-content.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 8: Digest content selection`. `numRuns` of 100 or more.
     - **Validates: Requirements 11.7**
 
-  - [~] 5.6 Write property test for digest composition
+  - [x] 5.6 Write property test for digest composition
     - **Property 9: Digest composition**
     - Create `packages/core/test/digest-compose.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 9: Digest composition`. `numRuns` of 100 or more.
     - **Validates: Requirements 11.7, 11.8, 11.9, 11.12, 11.16**
 
-  - [~] 5.7 Implement the digest unsubscribe signature
+  - [x] 5.7 Implement the digest unsubscribe signature
     - In `digest/unsubscribe.ts` implement `signDigestUnsubscribe(userId, secret)` and `verifyDigestUnsubscribe(userId, sig, secrets)` over the text `digest.` plus the User id, HMAC-SHA256, base64url. Leave `signUnsubscribe` and `verifyUnsubscribe` unchanged.
     - _Requirements: 12.1, 12.2, 12.6, 12.8_
 
-  - [~] 5.8 Write property test for the digest unsubscribe signature
+  - [x] 5.8 Write property test for the digest unsubscribe signature
     - **Property 10: Digest unsubscribe signature round trip and separation**
     - Create `packages/core/test/digest-unsubscribe.pbt.test.ts`. Include that a digest signature never verifies under `verifyUnsubscribe`. Tag: `// Feature: aerobrief-phase2, Property 10: Digest unsubscribe signature round trip and separation`. `numRuns` of 100 or more.
     - **Validates: Requirements 12.1, 12.2, 12.8**
 
-  - [~] 5.9 Add the digest schema, Migration 0005 and its down and grants files
+  - [x] 5.9 Add the digest schema, Migration 0005 and its down and grants files
     - Add the Drizzle tables `digest_preferences` and `digest_deliveries`. Write `packages/db/migrations/0005_digest.sql` (additive only), its journal entry, `migrations/down/0005_digest.down.sql` (drop `digest_deliveries`, then `digest_preferences`) and `migrations/grants/0005_digest.grants.sql`. No column name contains `password`, `passwd` or `pass`. Do not run it here.
     - _Requirements: 3.9, 4.1, 4.2, 4.3, 4.4, 4.8, 10.2, 10.6_
 
-  - [~] 5.10 Apply Migration 0005 to the `phase-2` branch (needs user approval)
+  - [x] 5.10 Apply Migration 0005 to the `phase-2` branch (needs user approval)
     - Ask the user to approve. Run `scripts/migrate-phase2.ts` against the branch only, after the guard passes.
     - _Requirements: 4.5, 4.6, 4.9_
 
-  - [~] 5.11 Grant table access to the runtime role (needs user action)
+  - [x] 5.11 Grant table access to the runtime role (needs user action)
     - The user runs `0005_digest.grants.sql` in Neon on the `phase-2` branch with their runtime role name. Wait for confirmation before the integration tests.
     - _Requirements: 4.8_
 
-  - [~] 5.12 Write the Neon branch integration tests for the digest
+  - [x] 5.12 Write the Neon branch integration tests for the digest
     - Run only through `assertPhase2Target`: Migration then down gives an equal schema snapshot; the claim insert with `ON CONFLICT DO NOTHING` succeeds once per User and date; deleting a User removes preferences and deliveries; the runtime role has the grants.
     - _Requirements: 4.7, 10.6, 11.5_
 
-  - [~] 5.13 Add the digest repository functions
+  - [x] 5.13 Add the digest repository functions
     - In `packages/db/src/digest.ts` add: read and upsert preferences (`updated_at = now()`), set `enabled` false, load enabled preferences with Watchlist counts and claimed keys for candidate dates, claim a delivery, and record the final status with attempts and completion time. Add unit tests with a fake client.
     - _Requirements: 10.2, 10.3, 10.5, 11.5, 11.10, 12.3_
 
-  - [~] 5.14 Add the digest API routes
+  - [x] 5.14 Add the digest API routes
     - Add `GET /api/digest` (default `{ enabled: false, hour: 7 }`), `PUT /api/digest` (Zod: boolean `enabled`, integer `hour` 0 to 23; 400 and no write on invalid), and `POST /api/digest/unsubscribe` (verify with `acceptedUnsubscribeSecrets`; 200 and idempotent, 403 and no change on a bad signature) to `routes-phase2.ts`. While the flag is off each returns the unknown-route 404.
     - Add `apps/api/test/digest.test.ts`.
     - _Requirements: 1.5, 10.2, 10.3, 10.4, 10.5, 12.3, 12.4, 12.5, 12.6_
 
-  - [~] 5.15 Add `runDigest` to the Poller
+  - [x] 5.15 Add `runDigest` to the Poller
     - Create `apps/poller/src/digest.ts` with `runDigest(env, now)`: parse flags and return at once, before any database, Resend or outbound call, when `digests` is off. Otherwise load data, call `selectDueDigests`, claim each due User, apply Safe_Send_Mode (`not_allowlisted` skipped row), compose, send through Resend with `Idempotency-Key: digest/<userId>/<digestDate>`, retry up to 2 more times after a rejection or a 10-second timeout with waits of 1 and 3 seconds, and record `handed_off` or `failed`. A failed claim stays in place. A per-User error is logged without the email address and the loop continues. No `List-Unsubscribe` header.
     - Add `apps/poller/test/digest.test.ts` with fakes for Resend and the claim store.
     - _Requirements: 1.5, 5.4, 5.6, 5.7, 11.1, 11.2, 11.5, 11.6, 11.10, 11.11, 11.13, 12.9_
 
-  - [~] 5.16 Write property test for digest idempotency
+  - [x] 5.16 Write property test for digest idempotency
     - **Property 7: Digest idempotency**
     - Create `apps/poller/test/digest-idempotency.pbt.test.ts` running random sequences of `runDigest` over one Digest_Date against an in-memory claim store that rejects duplicate keys. Tag: `// Feature: aerobrief-phase2, Property 7: Digest idempotency`. `numRuns` of 100 or more.
     - **Validates: Requirements 11.5, 11.15**
 
-  - [~] 5.17 Register the hourly digest cron
+  - [x] 5.17 Register the hourly digest cron
     - Add `"0 * * * *"` to `apps/poller/wrangler.jsonc` and `export const DIGEST_CRON = "0 * * * *"` plus a `case` in `apps/poller/src/index.ts` that calls `runDigest`. Existing cron cases stay unchanged. Add `apps/poller/test/digest-cron.test.ts` asserting the strings match, the new case calls `runDigest`, and a run with the flag off makes no call. `dispatcher.test.ts` runs unchanged.
     - _Requirements: 1.5, 11.1_
 
-  - [~] 5.18 Extend the flags-off guard tests for the digest
+  - [x] 5.18 Extend the flags-off guard tests for the digest
     - With all flags off: `/api/digest` and `/api/digest/unsubscribe` return a body and headers equal to those of an unknown path; `runDigest` makes zero database, Resend and fetch calls; the digest unsubscribe page does not render.
     - _Requirements: 1.5, 3.1, 3.2_
 
-  - [~] 5.19 Add the Daily digest section to the Watchlist page
+  - [x] 5.19 Add the Daily digest section to the Watchlist page
     - Create `apps/web/src/api/digest.ts` and `apps/web/src/components/DigestSettings.tsx`, rendered only while `digests` is on: section "Daily digest", checkbox "Send me a daily digest", select "Send at (UTC)" of 24 hours preselecting 07:00, one primary Button "Save digest settings", the text "Add an airport to receive a digest" when the Watchlist is empty, and the saved state and errors as visible text with a new `aria-live` region and no focus move.
     - Add `apps/web/test/digest-settings.test.tsx`.
     - _Requirements: 1.7, 10.1, 10.7, 10.8_
 
-  - [~] 5.20 Add the digest unsubscribe page
+  - [x] 5.20 Add the digest unsubscribe page
     - Create `apps/web/src/pages/DigestUnsubscribePage.tsx` at `/digest/unsubscribe` that posts to `POST /api/digest/unsubscribe` and states in text whether the digest was stopped. Render it only while `digests` is on. Add the route in `App.tsx` as one conditional element. Add `apps/web/test/digest-unsubscribe-page.test.tsx`.
     - _Requirements: 12.7_
 
-  - [~] 5.21 Add axe tests for the digest UI
+  - [x] 5.21 Add axe tests for the digest UI
     - Create `apps/web/test/a11y/digest.test.tsx` covering the Daily digest section and the unsubscribe page in each state and theme variant that is merged.
     - _Requirements: 3.6_
 

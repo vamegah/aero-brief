@@ -41,7 +41,7 @@ export interface RouteContext {
 export type Handler = (req: Request, env: Env, ctx: RouteContext) => Promise<Response>;
 
 export type Route = {
-  method: "GET" | "POST" | "DELETE";
+  method: "GET" | "POST" | "PUT" | "DELETE";
   pattern: string;
   auth: "none" | "session" | "signature";
   handler: Handler;

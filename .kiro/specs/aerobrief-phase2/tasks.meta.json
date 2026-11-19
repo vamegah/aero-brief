@@ -43,6 +43,14 @@
     "4.22 Write property test for the test-event rate limit": {
       "status": "passed",
       "lastRunTimestamp": 1795054239347
+    },
+    "5.3 Write property test for due-digest selection": {
+      "status": "passed",
+      "lastRunTimestamp": 1795060078807
+    },
+    "5.16 Write property test for digest idempotency": {
+      "status": "passed",
+      "lastRunTimestamp": 1795061044490
     }
   },
   "executionHistory": {
@@ -1312,6 +1320,11 @@
         "executionId": "2a82ecbe-4597-4524-95f9-f6b4e053156d",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795058872203
+      },
+      {
+        "executionId": "2a82ecbe-4597-4524-95f9-f6b4e053156d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059001871
       }
     ],
     "5.1 Scaffold the core digest modules and barrels": [
@@ -1319,6 +1332,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033538860
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059229417
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059759486
       }
     ],
     "5.2 Implement due-time selection": [
@@ -1326,6 +1349,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033538972
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059766778
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059999299
       }
     ],
     "5.3 Write property test for due-digest selection": [
@@ -1333,6 +1366,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539072
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060009450
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060637166
       }
     ],
     "5.4 Implement digest content selection and composition": [
@@ -1340,6 +1383,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539161
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059767626
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059999534
       }
     ],
     "5.5 Write property test for digest content selection": [
@@ -1347,6 +1400,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539272
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060009916
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060637464
       }
     ],
     "5.6 Write property test for digest composition": [
@@ -1354,6 +1417,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539371
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060011379
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060638536
       }
     ],
     "5.7 Implement the digest unsubscribe signature": [
@@ -1361,6 +1434,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539485
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059768194
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060000035
       }
     ],
     "5.8 Write property test for the digest unsubscribe signature": [
@@ -1368,6 +1451,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539586
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060011937
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060639393
       }
     ],
     "5.9 Add the digest schema, Migration 0005 and its down and grants files": [
@@ -1375,6 +1468,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539678
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059229855
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059759900
       }
     ],
     "5.10 Apply Migration 0005 to the `phase-2` branch (needs user approval)": [
@@ -1382,6 +1485,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539787
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059769002
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060000959
       }
     ],
     "5.11 Grant table access to the runtime role (needs user action)": [
@@ -1389,6 +1502,11 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539891
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060008840
       }
     ],
     "5.12 Write the Neon branch integration tests for the digest": [
@@ -1396,6 +1514,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033539997
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060647002
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060957457
       }
     ],
     "5.13 Add the digest repository functions": [
@@ -1403,6 +1531,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033540109
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060012605
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060639950
       }
     ],
     "5.14 Add the digest API routes": [
@@ -1410,6 +1548,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033540224
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060647924
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060957703
       }
     ],
     "5.15 Add `runDigest` to the Poller": [
@@ -1417,6 +1565,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033540354
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060648405
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060958205
       }
     ],
     "5.16 Write property test for digest idempotency": [
@@ -1424,6 +1582,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033540480
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060965478
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795061932662
       }
     ],
     "5.17 Register the hourly digest cron": [
@@ -1431,6 +1599,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033540592
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060966484
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795061932927
       }
     ],
     "5.18 Extend the flags-off guard tests for the digest": [
@@ -1438,6 +1616,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033540709
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060966974
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795061933852
       }
     ],
     "5.19 Add the Daily digest section to the Watchlist page": [
@@ -1445,6 +1633,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033540812
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060968484
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795061934885
       }
     ],
     "5.20 Add the digest unsubscribe page": [
@@ -1452,6 +1650,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033540938
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795060968844
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795061935638
       }
     ],
     "5.21 Add axe tests for the digest UI": [
@@ -1459,6 +1667,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033541102
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795061943331
+      },
+      {
+        "executionId": "9b01f54c-bde1-44cf-86dc-d964098152c9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795062091377
       }
     ],
     "5.22 Run the digest cron locally (needs user action)": [
@@ -1557,6 +1775,13 @@
         "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795042634935
+      }
+    ],
+    "4. Signed webhooks (flag `FEATURE_WEBHOOKS`)": [
+      {
+        "executionId": "2a82ecbe-4597-4524-95f9-f6b4e053156d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795059001986
       }
     ]
   }

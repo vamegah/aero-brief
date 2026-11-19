@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Banner } from "../components/Banner";
 import { Button } from "../components/Button";
 import { ConfirmDialog } from "../components/ConfirmDialog";
+import { DigestSettings } from "../components/DigestSettings";
 import { EmptyState } from "../components/EmptyState";
 import { ErrorRegion } from "../components/ErrorRegion";
 import { LoadingState } from "../components/LoadingState";
@@ -16,7 +17,7 @@ import { consumeSigninFlash, type SigninFlash } from "../lib/signin-flash";
 const MAX_WATCHLIST = 10;
 
 export function WatchlistPage() {
-  const { webhooks } = useFeatures();
+  const { webhooks, digests } = useFeatures();
   const { status } = useStatus();
   const { watchlist, loading, unauthorized, error, busy, add, remove, removeAccount } = useWatchlist();
   const [confirming, setConfirming] = useState(false);
@@ -87,6 +88,7 @@ export function WatchlistPage() {
           onRemove={(id) => void remove(id)}
         />
       ) : null}
+      {digests ? <DigestSettings watchlistCount={loading ? null : watchlist.length} /> : null}
       {webhooks ? <WebhookSettings /> : null}
       <section className="account-section" aria-labelledby="account-heading">
         <h3 id="account-heading">Account</h3>

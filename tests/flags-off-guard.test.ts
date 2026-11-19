@@ -71,6 +71,13 @@ const WEBHOOK_DISABLED_ROUTES: ReadonlyArray<{ method: string; path: string }> =
   { method: "POST", path: `/api/webhooks/${WEBHOOK_ID}/test` },
 ];
 
+/** Digest routes (Task 5.18). With FEATURE_DIGESTS off they must 404 like an unknown path. */
+const DIGEST_DISABLED_ROUTES: ReadonlyArray<{ method: string; path: string; unknownPath: string }> = [
+  { method: "GET", path: "/api/digest", unknownPath: "/api/no-such-route" },
+  { method: "PUT", path: "/api/digest", unknownPath: "/api/no-such-route" },
+  { method: "POST", path: "/api/digest/unsubscribe", unknownPath: "/api/no-such-route/sub" },
+];
+
 const baseEnv = {
   DATABASE_URL: "postgresql://user:pw@host.neon.tech/db",
   RESEND_API_KEY: "re_secret",
