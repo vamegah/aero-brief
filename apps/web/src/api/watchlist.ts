@@ -10,7 +10,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-async function requestJson(method: "GET" | "DELETE", path: string, signal?: AbortSignal): Promise<unknown> {
+export async function requestJson(method: "GET" | "DELETE", path: string, signal?: AbortSignal): Promise<unknown> {
   const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
   let response: Response;
   try {

@@ -15,6 +15,34 @@
     "3.3 Extend the property test for token contrast": {
       "status": "passed",
       "lastRunTimestamp": 1795041230885
+    },
+    "4.6 Write property test for URL safety": {
+      "status": "passed",
+      "lastRunTimestamp": 1795053823777
+    },
+    "4.12 Write property test for the signature round trip": {
+      "status": "passed",
+      "lastRunTimestamp": 1795053832170
+    },
+    "4.7 Write property test for URL validation idempotence": {
+      "status": "passed",
+      "lastRunTimestamp": 1795053980499
+    },
+    "4.18 Write property test for the retry bound": {
+      "status": "passed",
+      "lastRunTimestamp": 1795054020080
+    },
+    "4.13 Write property test for tamper and replay rejection": {
+      "status": "passed",
+      "lastRunTimestamp": 1795054138953
+    },
+    "4.8 Write property test for URL masking": {
+      "status": "passed",
+      "lastRunTimestamp": 1795054234796
+    },
+    "4.22 Write property test for the test-event rate limit": {
+      "status": "passed",
+      "lastRunTimestamp": 1795054239347
     }
   },
   "executionHistory": {
@@ -599,6 +627,11 @@
         "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795042555962
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042634667
       }
     ],
     "4.1 Add the `webhook-sender` line to the structure steering": [
@@ -606,6 +639,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033533905
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042644067
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043032439
       }
     ],
     "4.2 Scaffold the core webhook modules and barrels": [
@@ -613,6 +656,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033533995
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042644245
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043032959
       }
     ],
     "4.3 Implement Safe_Send_Mode helpers": [
@@ -620,6 +673,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033534103
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043041995
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043473945
       }
     ],
     "4.4 Write property test for the allowlist filter": [
@@ -627,6 +690,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033534212
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053742587
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053889459
       }
     ],
     "4.5 Implement the webhook URL validator and masker": [
@@ -634,6 +707,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033534330
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043042253
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043474245
       }
     ],
     "4.6 Write property test for URL safety": [
@@ -641,6 +724,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033534477
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053742947
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053889808
       }
     ],
     "4.7 Write property test for URL validation idempotence": [
@@ -648,6 +741,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033534594
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053900316
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054169677
       }
     ],
     "4.8 Write property test for URL masking": [
@@ -655,6 +758,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033534730
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054173556
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054516510
       }
     ],
     "4.9 Implement derived webhook secrets": [
@@ -662,6 +775,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033534845
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043043399
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043474577
       }
     ],
     "4.10 Write property test for secret derivation": [
@@ -669,6 +792,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033534975
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053743192
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053890143
       }
     ],
     "4.11 Implement signing and verification": [
@@ -676,6 +809,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033535093
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043044189
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043475010
       }
     ],
     "4.12 Write property test for the signature round trip": [
@@ -683,6 +826,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033535204
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053743346
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053891074
       }
     ],
     "4.13 Write property test for tamper and replay rejection": [
@@ -690,6 +843,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033535327
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053901259
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054169930
       }
     ],
     "4.14 Implement the payload schema and builder": [
@@ -697,6 +860,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033535470
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043044867
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043475807
       }
     ],
     "4.15 Write property test for payload validity and size": [
@@ -704,6 +877,26 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033535597
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053743612
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053891254
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054171537
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054517167
       }
     ],
     "4.16 Write property test for the payload JSON round trip": [
@@ -711,6 +904,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033535729
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053901933
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054170515
       }
     ],
     "4.17 Implement the retry policy": [
@@ -718,6 +921,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033535842
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043491821
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043583006
       }
     ],
     "4.18 Write property test for the retry bound": [
@@ -725,6 +938,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033535958
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053902888
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054517957
       }
     ],
     "4.19 Implement the failure counter": [
@@ -732,6 +955,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033536093
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043491970
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043583380
       }
     ],
     "4.20 Write property test for the failure counter": [
@@ -739,6 +972,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033536232
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053903187
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054170252
       }
     ],
     "4.21 Implement the test-event rate-limit functions": [
@@ -746,6 +989,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033536449
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043492448
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043583630
       }
     ],
     "4.22 Write property test for the test-event rate limit": [
@@ -753,6 +1006,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033536576
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054174544
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054518473
       }
     ],
     "4.23 Create the `packages/webhook-sender` package": [
@@ -760,6 +1023,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033536708
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054174888
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054520042
       }
     ],
     "4.24 Add the webhook schema, Migration 0004 and its down and grants files": [
@@ -767,6 +1040,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033536797
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042644730
+      },
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795043033166
       }
     ],
     "4.25 Apply Migration 0004 to the `phase-2` branch (needs user approval)": [
@@ -774,6 +1057,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033537037
+      },
+      {
+        "executionId": "56373d1c-01b6-4795-bc36-900273bf21a3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795050038869
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053688852
       }
     ],
     "4.26 Grant table access to the runtime role (needs user action)": [
@@ -781,6 +1074,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033537249
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053689110
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795053742230
       }
     ],
     "4.27 Write the Neon branch integration tests for webhooks": [
@@ -788,6 +1091,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033537365
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054835606
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795055382550
       }
     ],
     "4.28 Add webhook configuration to the API": [
@@ -795,6 +1108,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033537544
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054527487
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054822386
       }
     ],
     "4.29 Add the webhook repository functions": [
@@ -802,6 +1125,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033537661
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054527656
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054823884
       }
     ],
     "4.30 Add the webhook CRUD routes": [
@@ -809,6 +1142,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033537761
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054836242
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795055236764
       }
     ],
     "4.31 Add the test-event route": [
@@ -816,6 +1159,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033537857
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795055389941
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795056126611
       }
     ],
     "4.32 Add webhook delivery to the Poller": [
@@ -823,6 +1176,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033537957
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054836432
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795055237198
       }
     ],
     "4.33 Extend the flags-off guard tests for webhooks": [
@@ -830,6 +1193,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033538056
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795055391685
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795056127370
       }
     ],
     "4.34 Add the Webhooks section to the Watchlist page": [
@@ -837,6 +1210,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033538175
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795055391137
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795056129485
       }
     ],
     "4.35 Add axe tests for the Webhooks section": [
@@ -844,6 +1227,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033538270
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795056140236
+      },
+      {
+        "executionId": "a196f12e-1a35-4826-9ea9-5bc99d536e66",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795056575250
       }
     ],
     "4.36 Write the webhook receiver guide": [
@@ -851,6 +1244,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033538359
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795054837128
+      },
+      {
+        "executionId": "2dcdf7b7-e769-4ab0-94b5-034288c15c07",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795055237629
       }
     ],
     "4.37 Check a real Slack incoming webhook (needs user action)": [
@@ -858,6 +1261,11 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033538460
+      },
+      {
+        "executionId": "a72f5999-ad94-47ce-bd28-600a5818a891",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795057157788
       }
     ],
     "4.38 Checkpoint: MVP regression with all flags off": [
@@ -1117,6 +1525,13 @@
         "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795039999648
+      }
+    ],
+    "3. High contrast (flag `FEATURE_HIGH_CONTRAST`)": [
+      {
+        "executionId": "f57ec7fe-ad9b-47cc-a587-e9093ff0ea74",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795042634935
       }
     ]
   }

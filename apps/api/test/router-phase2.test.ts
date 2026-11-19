@@ -49,7 +49,14 @@ describe("Phase 2 fall-through", () => {
 
   it("routes.ts table does not contain Phase 2 paths", () => {
     expect(routes.some((r) => r.pattern === "/api/features")).toBe(false);
-    expect(routesPhase2.map((r) => r.pattern)).toEqual(["/api/features"]);
+    expect(routesPhase2.map((r) => `${r.method} ${r.pattern}`)).toEqual([
+      "GET /api/features",
+      "GET /api/webhooks",
+      "POST /api/webhooks",
+      "DELETE /api/webhooks/:id",
+      "POST /api/webhooks/:id/reenable",
+      "POST /api/webhooks/:id/test",
+    ]);
   });
 
   it("runs an enabled injected Phase 2 route with flags on the context, not parseEnv", async () => {

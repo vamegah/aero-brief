@@ -147,7 +147,7 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - The commits of this section stay one contiguous range so `git revert` of that range removes dark mode alone. The user pushes all four features together at the end.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
 
-- [ ] 3. High contrast (flag `FEATURE_HIGH_CONTRAST`)
+- [x] 3. High contrast (flag `FEATURE_HIGH_CONTRAST`)
   - [x] 3.1 Add the AAA token sets
     - In `themes.ts` add `hcLightPalette` and `hcDarkPalette`. In `themes.css` add `html[data-theme="hc-light"]` and `html[data-theme="hc-dark"]` blocks, a 3px focus outline (`outline: 3px solid var(--color-focus)`) and thicker borders, with CSS only and no DOM change. Add the `color-focus` token to each high-contrast palette.
     - Extend `themePairs` for the high-contrast variants: every `palettePairs` entry at 7 / 4.5 / 4.5, plus `color-focus` against every `bg` token (4.5).
@@ -183,180 +183,181 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - Run the high-contrast tests and the dark-mode tests with both theme flags on. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [-] 3.9 Merge high contrast into `main` (local merge, no push)
+  - [x] 3.9 Merge high contrast into `main` (local merge, no push)
     - Run only on the owner's instruction and before the deadline. Confirm Tasks 3.7 and 3.8 passed and dark mode is already merged. Merge this section's commits into `main` locally with all flags off. Do not push, tag or deploy.
     - The commits stay one contiguous range, so `git revert` of that range removes high contrast without touching dark mode.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
 
 - [ ] 4. Signed webhooks (flag `FEATURE_WEBHOOKS`)
-  - [~] 4.1 Add the `webhook-sender` line to the structure steering
+  - [x] 4.1 Add the `webhook-sender` line to the structure steering
     - Add one line to `.kiro/steering/structure.md` under the directory layout: `packages/webhook-sender/` for the signed webhook sender (side effects allowed, `fetch` injected); `packages/core` stays pure; `apps/api` and `apps/poller` import it; `apps/web` must not.
     - This edit is made on `phase-2` and merges with this feature. Change nothing else in the file.
     - _Requirements: 3.8, 7.3_
 
-  - [~] 4.2 Scaffold the core webhook modules and barrels
+  - [x] 4.2 Scaffold the core webhook modules and barrels
     - Create stub modules `packages/core/src/webhooks/{url,secret,sign,payload,retry,counter,test-limit}.ts` (each `export {}` until filled), `packages/core/src/webhooks/index.ts` with an `export *` for each, `packages/core/src/safe-send.ts`, and `packages/core/src/schemas/webhook-payload.ts`. Export the barrels from `packages/core/src/index.ts` and the schemas barrel.
     - _Requirements: 14.10, 15.5_
 
-  - [~] 4.3 Implement Safe_Send_Mode helpers
+  - [x] 4.3 Implement Safe_Send_Mode helpers
     - In `safe-send.ts` implement `isSafeSendMode(raw)` (absent or `true` is on; only the exact string `false` is off) and `filterAllowlisted(items, allowlist, keyOf)`. `delivered@resend.dev` is always allowed for email. The digest section reuses this module.
     - _Requirements: 5.3, 5.4, 5.5, 5.6, 5.7, 5.8_
 
-  - [~] 4.4 Write property test for the allowlist filter
+  - [x] 4.4 Write property test for the allowlist filter
     - **Property 5: Allowlist filter returns only allowlisted recipients**
     - Create `packages/core/test/safe-send.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 5: Allowlist filter returns only allowlisted recipients`. `numRuns` of 100 or more.
     - **Validates: Requirements 5.7, 5.9**
 
-  - [~] 4.5 Implement the webhook URL validator and masker
+  - [x] 4.5 Implement the webhook URL validator and masker
     - In `webhooks/url.ts` implement `validateWebhookUrl(input)` with the ordered rules and reason codes from the design (length, parse, scheme, credentials, port, fragment, trailing dot, IPv6, IP literal, localhost, single label, reserved suffix) and `maskWebhookUrl(url)` returning only the host.
     - Add `packages/core/test/webhook-url.test.ts` with concrete examples, including decimal, hex and octal IPv4 forms and `[::1]`.
     - _Requirements: 13.6, 13.13, 14.1, 14.2, 14.3, 14.4, 14.10_
 
-  - [~] 4.6 Write property test for URL safety
+  - [x] 4.6 Write property test for URL safety
     - **Property 11: Webhook URL safety**
     - Create `packages/core/test/webhook-url.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 11: Webhook URL safety`. `numRuns` of 100 or more. Generators cover IPv4 in dotted, decimal, hex, octal and mixed notation and IPv6.
     - **Validates: Requirements 14.1, 14.2, 14.3, 14.4, 14.10, 14.11, 14.12**
 
-  - [~] 4.7 Write property test for URL validation idempotence
+  - [x] 4.7 Write property test for URL validation idempotence
     - **Property 12: Webhook URL validation is idempotent**
     - Add to `webhook-url.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 12: Webhook URL validation is idempotent`. `numRuns` of 100 or more.
     - **Validates: Requirements 14.13**
 
-  - [~] 4.8 Write property test for URL masking
+  - [x] 4.8 Write property test for URL masking
     - **Property 13: URL masking exposes only the host**
     - Add to `webhook-url.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 13: URL masking exposes only the host`. `numRuns` of 100 or more.
     - **Validates: Requirements 13.6, 13.13**
 
-  - [~] 4.9 Implement derived webhook secrets
+  - [x] 4.9 Implement derived webhook secrets
     - In `webhooks/secret.ts` implement `deriveWebhookSecret(master, webhookId)` as `HMAC-SHA256(utf8(master), utf8("aerobrief.webhook.v1." + webhookId))`, returned as `whsec_` plus base64url (Web Crypto). Reject a master secret shorter than 32 characters with a thrown error that names no secret value.
     - _Requirements: 13.10, 13.11_
 
-  - [~] 4.10 Write property test for secret derivation
+  - [x] 4.10 Write property test for secret derivation
     - **Property 14: Webhook secret derivation**
     - Create `packages/core/test/webhook-secret.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 14: Webhook secret derivation`. `numRuns` of 100 or more.
     - **Validates: Requirements 13.10, 13.11**
 
-  - [~] 4.11 Implement signing and verification
+  - [x] 4.11 Implement signing and verification
     - In `webhooks/sign.ts` implement `signWebhook(secret, timestamp, body)` returning `v1=` plus lowercase hex of HMAC-SHA256 over `<timestamp>.<body>`, and `verifyWebhook({ secret, timestamp, body, signatureHeader, nowSeconds })` that checks the header format, the 300-second window (inclusive) and uses `crypto.subtle.verify` for the constant-time comparison.
     - _Requirements: 15.2, 15.5, 15.6_
 
-  - [~] 4.12 Write property test for the signature round trip
+  - [x] 4.12 Write property test for the signature round trip
     - **Property 15: Signature round trip**
     - Create `packages/core/test/webhook-sign.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 15: Signature round trip`. `numRuns` of 100 or more.
     - **Validates: Requirements 15.2, 15.5, 15.8**
 
-  - [~] 4.13 Write property test for tamper and replay rejection
+  - [x] 4.13 Write property test for tamper and replay rejection
     - **Property 16: Tamper and replay rejection**
     - Add to `webhook-sign.pbt.test.ts`. Cover exactly 300 seconds (accepted) and 301 seconds (rejected) in both directions. Tag: `// Feature: aerobrief-phase2, Property 16: Tamper and replay rejection`. `numRuns` of 100 or more.
     - **Validates: Requirements 15.5, 15.9, 15.10**
 
-  - [~] 4.14 Implement the payload schema and builder
+  - [x] 4.14 Implement the payload schema and builder
     - In `schemas/webhook-payload.ts` define `webhookPayloadSchema` (discriminated union on `type`, with the `TEST` type and the field limits from the design). In `webhooks/payload.ts` implement `buildWebhookPayload(event, deliveryId)` and `buildTestPayload(deliveryId, now)`: strip control characters, one-line `text`, explanation cut to 200 characters in `text` only, `&`, `<` and `>` escaped in `text` only, test text beginning with "TEST:".
     - _Requirements: 15.1, 17.1, 17.2, 17.3, 17.4, 17.5, 17.6, 17.7, 18.3_
 
-  - [~] 4.15 Write property test for payload validity and size
+  - [x] 4.15 Write property test for payload validity and size
     - **Property 19: Payload validity and size**
     - Create `packages/core/test/webhook-payload.pbt.test.ts`. Generators include `&`, `<`, `>`, quotes, backslashes, control characters and non-ASCII text. Tag: `// Feature: aerobrief-phase2, Property 19: Payload validity and size`. `numRuns` of 100 or more.
     - **Validates: Requirements 15.1, 17.1, 17.4, 17.5, 17.6, 17.8**
 
-  - [~] 4.16 Write property test for the payload JSON round trip
+  - [x] 4.16 Write property test for the payload JSON round trip
     - **Property 20: Payload JSON round trip**
     - Add to `webhook-payload.pbt.test.ts`, including the `TEST` type. Tag: `// Feature: aerobrief-phase2, Property 20: Payload JSON round trip`. `numRuns` of 100 or more.
     - **Validates: Requirements 17.9**
 
-  - [~] 4.17 Implement the retry policy
+  - [x] 4.17 Implement the retry policy
     - In `webhooks/retry.ts` implement `classifyAttempt(result)` and `nextStep(attemptsMade, classification)` as specified: 2xx delivered; network error, timeout, 408, 429 and 5xx retryable; everything else (including 3xx and `blocked_url`) permanent; wait 2000 ms then 8000 ms; stop after 3 attempts.
     - _Requirements: 16.4, 16.5, 16.6, 16.15_
 
-  - [~] 4.18 Write property test for the retry bound
+  - [x] 4.18 Write property test for the retry bound
     - **Property 17: Retry bound**
     - Create `packages/core/test/webhook-retry.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 17: Retry bound`. `numRuns` of 100 or more.
     - **Validates: Requirements 16.4, 16.5, 16.6, 16.15**
 
-  - [~] 4.19 Implement the failure counter
+  - [x] 4.19 Implement the failure counter
     - In `webhooks/counter.ts` implement `applyOutcome(state, event)` over `{ failures, disabled }` with events `delivered`, `failed`, `skipped` and `reenabled`, as specified.
     - _Requirements: 16.9, 16.10, 16.11, 16.16, 16.18, 16.19_
 
-  - [~] 4.20 Write property test for the failure counter
+  - [x] 4.20 Write property test for the failure counter
     - **Property 18: Failure counter and auto-disable**
     - Create `packages/core/test/webhook-counter.pbt.test.ts`. Include `reenabled` twice equals once. Tag: `// Feature: aerobrief-phase2, Property 18: Failure counter and auto-disable`. `numRuns` of 100 or more.
     - **Validates: Requirements 16.9, 16.10, 16.11, 16.16, 16.18, 16.19**
 
-  - [~] 4.21 Implement the test-event rate-limit functions
+  - [x] 4.21 Implement the test-event rate-limit functions
     - In `webhooks/test-limit.ts` implement `testEventAllowed(lastTestAt, now)` (60-second rule, first request allowed) and `retryAfterSeconds(lastTestAt, now)` returning 1 to 60.
     - _Requirements: 18.6, 18.9_
 
-  - [~] 4.22 Write property test for the test-event rate limit
+  - [x] 4.22 Write property test for the test-event rate limit
     - **Property 21: Test event rate limit**
     - Create `packages/core/test/webhook-test-limit.pbt.test.ts`. Tag: `// Feature: aerobrief-phase2, Property 21: Test event rate limit`. `numRuns` of 100 or more.
     - **Validates: Requirements 18.6, 18.9**
 
-  - [~] 4.23 Create the `packages/webhook-sender` package
+  - [x] 4.23 Create the `packages/webhook-sender` package
     - Create the workspace package `@aerobrief/webhook-sender` with its own `package.json` (no external dependency, no new devDependency), a `tsconfig.json` extending the base with `"strict": true`, and `src/send.ts` exporting `sendWebhookOnce({ fetch, url, secret, deliveryId, body, now })`: revalidate the URL, sign with a fresh timestamp, `fetch` with `redirect: "manual"` and `AbortSignal.timeout(5000)`, cancel the response body unread, return `{ status }` or `{ errorKind }` (`timeout`, `network`, `blocked_url`, `invalid_payload`). It returns and logs no URL, secret or response detail.
     - Add `packages/webhook-sender/test/send.test.ts` with a fake `fetch`: manual redirect, 3xx result, timeout, body cancelled, headers present, new timestamp and same Delivery_ID across attempts, a stored unsafe URL is never contacted.
     - Add `tests/import-rules.test.ts` that fails if `apps/web` imports `@aerobrief/webhook-sender` or `packages/core` imports it.
     - _Requirements: 7.3, 14.5, 14.6, 14.7, 14.8, 14.9, 15.1, 15.3, 15.4, 16.8_
 
-  - [~] 4.24 Add the webhook schema, Migration 0004 and its down and grants files
+  - [x] 4.24 Add the webhook schema, Migration 0004 and its down and grants files
     - Add the Drizzle tables `webhooks` and `webhook_deliveries` in `packages/db/src/schema`. Write `packages/db/migrations/0004_webhooks.sql` as additive only (tables, index, cap trigger and function that locks the user row then counts, mirroring `0001_enforce_subscription_cap`) and add its journal entry. Write `packages/db/migrations/down/0004_webhooks.down.sql` (drop trigger, function, `webhook_deliveries`, `webhooks`) and `packages/db/migrations/grants/0004_webhooks.grants.sql` (`GRANT SELECT, INSERT, UPDATE, DELETE ... TO :runtime_role`).
     - No column name contains `password`, `passwd` or `pass`. The repo guard keeps passing. Do not run the migration here.
     - _Requirements: 3.9, 4.1, 4.2, 4.3, 4.4, 4.8, 13.2, 13.8, 13.9_
 
-  - [~] 4.25 Apply Migration 0004 to the `phase-2` branch (needs user approval)
+  - [x] 4.25 Apply Migration 0004 to the `phase-2` branch (needs user approval)
     - Ask the user to approve. Run `scripts/migrate-phase2.ts` with the branch URL from the user's shell; the guard must pass first. Never run it against the production database.
     - _Requirements: 4.5, 4.6, 4.9_
 
-  - [~] 4.26 Grant table access to the runtime role (needs user action)
+  - [x] 4.26 Grant table access to the runtime role (needs user action)
     - The user runs `0004_webhooks.grants.sql` in Neon on the `phase-2` branch with their runtime role name. Tell the user the exact file and the psql variable. Wait for confirmation before the integration tests.
     - _Requirements: 4.8_
 
-  - [~] 4.27 Write the Neon branch integration tests for webhooks
+  - [x] 4.27 Write the Neon branch integration tests for webhooks
     - Create tests that run only through `assertPhase2Target`: Migration then down gives a schema snapshot equal to the snapshot before (`information_schema` and `pg_catalog`); the cap holds under 5 concurrent inserts for one User; the delivery claim with `ON CONFLICT DO NOTHING` returns a row once; the SQL counter equals `applyOutcome` over random sequences; the atomic test-slot update allows one of two simultaneous requests; deleting a User removes webhooks and deliveries; the runtime role has the grants.
     - _Requirements: 4.7, 13.2, 13.3, 13.8, 13.9, 16.3, 16.16, 18.6_
 
-  - [~] 4.28 Add webhook configuration to the API
+  - [x] 4.28 Add webhook configuration to the API
     - Add a reader for `WEBHOOK_MASTER_SECRET` and the Safe_Send_Mode variables (`SAFE_SEND_MODE`, `SAFE_SEND_ALLOWLIST_EMAILS`, `SAFE_SEND_ALLOWLIST_HOSTS`) in `apps/api/src/features.ts` or a new `webhook-config.ts`, validated with Zod at use. With the flag on and a missing or short master secret, all five webhook routes answer 503 naming the variable only. Add the names to `.env.example` and both `.dev.vars.example` files without values.
     - _Requirements: 13.12, 5.3_
 
-  - [~] 4.29 Add the webhook repository functions
+  - [x] 4.29 Add the webhook repository functions
     - In `packages/db/src/webhooks.ts` add: list for a User (no `url` selected), insert (maps the cap error to a validation error), delete, re-enable (idempotent), claim a delivery (`ON CONFLICT DO NOTHING RETURNING`), record an outcome with one atomic `UPDATE` (`CASE` for the counter and state), and claim a test slot (`UPDATE ... WHERE last_test_at IS NULL OR last_test_at <= now - 60 seconds RETURNING`). Select `url` only in the sender-facing function.
     - Add unit tests with a fake client.
     - _Requirements: 13.2, 13.3, 13.6, 13.7, 16.3, 16.9, 16.10, 16.11, 16.18, 16.19, 18.6_
 
-  - [~] 4.30 Add the webhook CRUD routes
+  - [x] 4.30 Add the webhook CRUD routes
     - Add `GET /api/webhooks`, `POST /api/webhooks`, `DELETE /api/webhooks/:id` and `POST /api/webhooks/:id/reenable` to `routes-phase2.ts`, with handlers in `apps/api/src/handlers/webhooks.ts`. Require a session and the same request checks as the watchlist routes. Validate the body with Zod and the URL with `validateWebhookUrl`. Create returns the derived secret once. List returns only `id`, `host`, `createdAt`, `state`, `lastOutcome`, `lastOutcomeAt`, `disabledAt`. Log no URL and no secret. While the flag is off, each route returns the unknown-route 404.
     - Add `apps/api/test/webhooks.test.ts`: secret once, masked list, 4th webhook rejected with existing rows unchanged, unsafe URL 400, foreign id 404, re-enable twice equals once, no session 401.
     - _Requirements: 1.6, 13.1, 13.3, 13.4, 13.5, 13.6, 13.7, 13.8, 14.1, 16.18, 16.19_
 
-  - [~] 4.31 Add the test-event route
+  - [x] 4.31 Add the test-event route
     - Add `POST /api/webhooks/:id/test`. Look up the webhook by id and session user (404 if none). Claim the test slot atomically (429 with `retryAfterSeconds` if refused). Apply the host allowlist while Safe_Send_Mode is on (`failed` with `not_allowlisted`, no request). Build the `TEST` payload, call `sendWebhookOnce` once, return `{ outcome, status?, errorKind? }`, store only `last_test_outcome`. Write no delivery row, never change the failure counter, skip the stale gate, accept a disabled webhook.
     - Add `apps/api/test/webhook-test-event.test.ts` with a fake `fetch`.
     - _Requirements: 5.5, 5.6, 18.2, 18.3, 18.4, 18.5, 18.6, 18.7, 18.8_
 
-  - [~] 4.32 Add webhook delivery to the Poller
+  - [x] 4.32 Add webhook delivery to the Poller
     - Create `apps/poller/src/webhooks.ts` with `dispatchWebhooks(env, events, now)`: run only when `webhooks` is on and the latest Snapshot is fresh; select the same recipients as alert emails; load active webhooks; apply Safe_Send_Mode (record `skipped`, reason `not_allowlisted`); claim each delivery; run claimed deliveries in a pool of 20 following the retry policy; record outcomes with the atomic SQL; log only Delivery_ID, webhook id and host; log the first-attempt delay. Wrap everything so a throw is logged and alert emails stay untouched. Call it after `notify()` returns, behind the flag. A missing or short master secret sends nothing and logs one error.
     - Do not change `notify()`. Add `apps/poller/test/webhooks.test.ts`: stale gate, recipients equal alert-email recipients, retry timings with fake timers, 5 failures disable, a thrown error leaves alert emails unchanged, no email on disable.
     - _Requirements: 5.5, 5.6, 5.7, 13.12, 16.1, 16.2, 16.3, 16.4, 16.5, 16.6, 16.7, 16.8, 16.9, 16.13, 16.14, 16.17_
 
-  - [~] 4.33 Extend the flags-off guard tests for webhooks
+  - [x] 4.33 Extend the flags-off guard tests for webhooks
     - With all flags off: every `/api/webhooks...` path returns a body and headers equal to those of an unknown path; the Poller makes no `fetch` and no webhook database query after `notify()`; `notify()` output is unchanged. Add these to the guard test files from Task 1.6 or new files.
     - _Requirements: 1.6, 3.1, 3.2_
 
-  - [~] 4.34 Add the Webhooks section to the Watchlist page
+  - [x] 4.34 Add the Webhooks section to the Watchlist page
     - Create `apps/web/src/api/webhooks.ts` and `apps/web/src/components/WebhookSettings.tsx`, rendered on the Watchlist page only while `webhooks` is on. It shows the list (host only), an add form, the secret once in a read-only input with the text "This secret cannot be shown again" and a copy Button, a "Re-enable" Button for disabled webhooks with the text "Disabled after repeated failures" and the last outcome time, a "Delete" Button, and a "Send test event" Button with the result as visible text. Results go to a new `aria-live` region without moving focus. Every state (loading, empty, error, success) renders text. These are secondary Buttons.
     - Add `apps/web/test/webhook-settings.test.tsx`: absent while the flag is off; every state; secret shown once; focus not moved.
     - _Requirements: 1.7, 13.1, 13.5, 16.12, 16.17, 18.1_
 
-  - [~] 4.35 Add axe tests for the Webhooks section
+  - [x] 4.35 Add axe tests for the Webhooks section
     - Create `apps/web/test/a11y/webhooks.test.tsx` rendering the Watchlist page with `webhooks` on in each state, in light, dark, `hc-light` and `hc-dark` where those themes are merged, failing on any violation.
     - _Requirements: 3.6_
 
-  - [~] 4.36 Write the webhook receiver guide
+  - [x] 4.36 Write the webhook receiver guide
     - Create `docs/webhooks.md`: header names, signed text `<timestamp>.<raw body>`, the full `whsec_...` string as the key, the 300-second Replay_Window, constant-time comparison, Delivery_ID replay storage for at least 10 minutes, retry and auto-disable rules, the payload fields and a TypeScript verification example using Web Crypto. Add an operations note that rotating `WEBHOOK_MASTER_SECRET` invalidates every secret and that it is outside the rotation script.
     - _Requirements: 15.7, 13.10_
 
-  - [~] 4.37 Check a real Slack incoming webhook (needs user action)
+  - [x] 4.37 Check a real Slack incoming webhook (needs user action)
     - The user supplies a real Slack incoming-webhook URL that they own, and sets it only in the Safe_Send_Mode host allowlist of their own shell. Ask the user to register it on the `phase-2` branch through the app (local `wrangler dev`), press "Send test event" and confirm that Slack shows the `text` line and accepts the extra JSON fields. Record the result in `docs/decisions.md` without the URL. The agent never receives or stores the URL.
+    - Dropped by the project owner on 2026-11-19. Not run; recorded in `docs/decisions.md` and `docs/webhooks.md`.
     - _Requirements: 17.4, 17.7, 18.3_
 
   - [~] 4.38 Checkpoint: MVP regression with all flags off

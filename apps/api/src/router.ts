@@ -3,6 +3,7 @@ import { isMalformedPreviousExpiry, parseEnv, type Env } from "./env";
 import { createFlagReader } from "./features";
 import { ApiError, errorResponse } from "./http";
 import { routesPhase2 } from "./routes-phase2";
+import { webhookSecretToRedact } from "./webhook-config";
 
 /** Hand-written router on the Workers fetch handler. No routing framework (design.md, apps/api). */
 
@@ -33,6 +34,8 @@ export interface RouteContext {
   logger: Logger;
   /** Feature flags read from the raw env. Set only for Phase 2 routes. */
   flags?: Flags;
+  /** The raw Worker env. Set only for Phase 2 routes, which read their own settings from it. */
+  rawEnv?: unknown;
 }
 
 export type Handler = (req: Request, env: Env, ctx: RouteContext) => Promise<Response>;
@@ -223,6 +226,8 @@ export function createFetchHandler(routes: readonly Route[], deps: RouterDeps = 
     }
     const redacted = [env.DATABASE_URL, env.RESEND_API_KEY, env.UNSUBSCRIBE_SECRET];
     if (env.UNSUBSCRIBE_SECRET_PREVIOUS !== undefined) redacted.push(env.UNSUBSCRIBE_SECRET_PREVIOUS);
+    const webhookSecret = webhookSecretToRedact(rawEnv);
+    if (webhookSecret !== undefined) redacted.push(webhookSecret);
     const logger = createLogger(redacted, deps.logSink);
 
     const url = new URL(request.url);
@@ -285,7 +290,10 @@ export function createFetchHandler(routes: readonly Route[], deps: RouterDeps = 
           if (session === null) return unauthorized();
         }
         const ctx: RouteContext = { params, session, now, body, url, signal, logger };
-        if (flags !== undefined) ctx.flags = flags;
+        if (flags !== undefined) {
+          ctx.flags = flags;
+          ctx.rawEnv = rawEnv;
+        }
         return matched.handler(request, env, ctx);
       });
     } catch (err) {

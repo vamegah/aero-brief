@@ -18,7 +18,8 @@ aerobrief/
 │ ├── core/ # pure functions only: change detector, dedupe, translation rules, Zod schemas
 │ │ ├── src/
 │ │ └── test/ # Vitest unit tests and fast-check *.pbt.test.ts
-│ └── db/ # Drizzle schema, migrations, seed scripts
+│ ├── db/ # Drizzle schema, migrations, seed scripts
+│ └── webhook-sender/ # signed webhook sender: side effects allowed, fetch injected; imported by apps/api and apps/poller, never by apps/web or packages/core
 ├── apps/
 │ ├── poller/ # Cloudflare Worker cron entry + FAA fetch logic
 │ ├── api/ # Worker API routes and middleware

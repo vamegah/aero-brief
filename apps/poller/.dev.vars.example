@@ -10,3 +10,9 @@ FEATURE_DARK_MODE=false
 FEATURE_HIGH_CONTRAST=false
 FEATURE_DIGESTS=false
 FEATURE_WEBHOOKS=false
+# Phase 2 webhooks. WEBHOOK_MASTER_SECRET: set as a Worker secret, at least 32 random characters. Leave empty here.
+WEBHOOK_MASTER_SECRET=
+# Safe_Send_Mode is on unless exactly "false". Allowlists are comma-separated.
+SAFE_SEND_MODE=true
+SAFE_SEND_ALLOWLIST_EMAILS=
+SAFE_SEND_ALLOWLIST_HOSTS=

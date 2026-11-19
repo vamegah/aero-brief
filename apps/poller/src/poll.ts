@@ -11,6 +11,8 @@ import { parseEnv, type Env } from "./env";
 import { fetchFaa, type FetchFn } from "./faa-client";
 import { notify as defaultNotify, type NotifierDeps, type NotifierRepositories, type NotifierEvent, type NotifyInput, type NotifySummary } from "./notifier";
 import { sendEmail } from "@aerobrief/mail";
+import { readFlags } from "./features";
+import { dispatchWebhooks } from "./webhooks";
 
 /** Lease TTL from design.md (Poller): 3 minutes. */
 export const LEASE_TTL_MS = 180_000;
@@ -37,6 +39,8 @@ export type PollDeps = {
   /** Notifier entry point. Defaults to `notify` from ./notifier. */
   notifyFn?: (deps: NotifierDeps, input: NotifyInput) => Promise<NotifySummary>;
   sendEmailFn?: NotifierDeps["sendEmail"];
+  /** Webhook dispatcher. Defaults to `dispatchWebhooks` from ./webhooks. */
+  dispatchWebhooksFn?: typeof dispatchWebhooks;
 };
 
 function describeError(err: unknown): string {
@@ -57,6 +61,9 @@ function truncate(text: string): string {
 export async function runPoll(env: Env, now: Date, deps: PollDeps = {}): Promise<void> {
   const validEnv = parseEnv(env);
   const secrets = [validEnv.DATABASE_URL, validEnv.RESEND_API_KEY, validEnv.UNSUBSCRIBE_SECRET];
+  if (typeof env.WEBHOOK_MASTER_SECRET === "string" && env.WEBHOOK_MASTER_SECRET.length > 0) {
+    secrets.push(env.WEBHOOK_MASTER_SECRET);
+  }
   const logger = deps.logger ?? createLogger(secrets);
   const clock = deps.clock ?? (() => new Date());
   const repos = (deps.createRepositories ?? defaultRepositories)(validEnv.DATABASE_URL);
@@ -141,6 +148,16 @@ export async function runPoll(env: Env, now: Date, deps: PollDeps = {}): Promise
         );
       } catch (err) {
         logger.error("poll_notify_failed", { error: err });
+      }
+
+      // Webhooks run after notify() returns and only while the flag is on (Requirements 16.1, 16.14).
+      // With the flag off there is no webhook query and no fetch.
+      if (readFlags(env, logger).FEATURE_WEBHOOKS) {
+        try {
+          await (deps.dispatchWebhooksFn ?? dispatchWebhooks)(env, inserted, storedAt, { logger, clock });
+        } catch (err) {
+          logger.error("poll_webhooks_failed", { error: err });
+        }
       }
     }
   } finally {

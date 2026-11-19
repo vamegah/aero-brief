@@ -47,6 +47,7 @@ declare module "node:readline/promises" {
 }
 declare const process: {
   argv: string[];
+  execPath: string;
   env: Record<string, string | undefined>;
   exitCode: number | undefined;
   stdin: { isTTY?: boolean };

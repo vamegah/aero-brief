@@ -6,6 +6,15 @@ export interface Env {
   UNSUBSCRIBE_SECRET: string;
   FRONTEND_URL: string;
   MAIL_FROM: string;
+  /** Phase 2 flags and webhook settings. Read raw by the webhook code; not validated by parseEnv. */
+  FEATURE_DARK_MODE?: string;
+  FEATURE_HIGH_CONTRAST?: string;
+  FEATURE_DIGESTS?: string;
+  FEATURE_WEBHOOKS?: string;
+  WEBHOOK_MASTER_SECRET?: string;
+  SAFE_SEND_MODE?: string;
+  SAFE_SEND_ALLOWLIST_EMAILS?: string;
+  SAFE_SEND_ALLOWLIST_HOSTS?: string;
 }
 
 export const envSchema = z.object({

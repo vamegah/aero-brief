@@ -1,0 +1,85 @@
+/* Webhooks section of the Watchlist page (Task 4.34). Tokens only; secondary Buttons only. */
+.webhook-settings {
+  max-width: 960px;
+  margin: var(--space-5) auto 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.webhook-settings__help,
+.webhook-settings__hint {
+  margin: var(--space-1) 0 var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.webhook-settings__list {
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.webhook-settings__item {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.webhook-settings__host {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.webhook-settings__outcome,
+.webhook-settings__disabled,
+.webhook-settings__result {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+}
+
+.webhook-settings__disabled {
+  font-weight: 600;
+}
+
+.webhook-settings__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.webhook-settings__secret,
+.webhook-settings__form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+}
+
+.webhook-settings__secret .text-input,
+.webhook-settings__form .text-input {
+  width: 100%;
+  max-width: 480px;
+}
+
+.webhook-settings__warning {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.webhook-settings__error,
+.webhook-settings__status {
+  margin: var(--space-1) 0;
+  font-size: var(--text-sm);
+}
+
+.webhook-settings__live {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+}

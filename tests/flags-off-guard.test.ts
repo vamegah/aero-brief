@@ -61,6 +61,16 @@ const MAIN_ROUTE_KEYS = [
 /** Phase 2 paths that must be indistinguishable from an unknown path while their flags are off. */
 const PHASE2_DISABLED_PATHS = ["/api/features"];
 
+const WEBHOOK_ID = "123e4567-e89b-42d3-a456-426614174000";
+/** Webhook routes (Task 4.33). `/test` is added by Task 4.31; with flags off it must 404 either way. */
+const WEBHOOK_DISABLED_ROUTES: ReadonlyArray<{ method: string; path: string }> = [
+  { method: "GET", path: "/api/webhooks" },
+  { method: "POST", path: "/api/webhooks" },
+  { method: "DELETE", path: `/api/webhooks/${WEBHOOK_ID}` },
+  { method: "POST", path: `/api/webhooks/${WEBHOOK_ID}/reenable` },
+  { method: "POST", path: `/api/webhooks/${WEBHOOK_ID}/test` },
+];
+
 const baseEnv = {
   DATABASE_URL: "postgresql://user:pw@host.neon.tech/db",
   RESEND_API_KEY: "re_secret",
@@ -115,6 +125,32 @@ describe("flags-off guard: API", () => {
         expect(disabled.status).toBe(404);
         expect(disabled).toEqual(unknown);
       });
+    }
+
+    for (const { method, path } of WEBHOOK_DISABLED_ROUTES) {
+      const unknownPath = path.replace("/api/webhooks", "/api/no-such-route");
+      const hasBody = method === "POST";
+      // Once as a real client sends it, once bare, so other checks cannot be the cause of the 404.
+      const variants: Array<[string, () => RequestInit]> = [
+        [
+          "with Origin and JSON",
+          () => ({
+            method,
+            headers: { Origin: "https://app.example.com", "Content-Type": "application/json" },
+            ...(hasBody ? { body: "{}" } : {}),
+          }),
+        ],
+        ["without Origin or content-type", () => ({ method })],
+      ];
+      for (const [variant, init] of variants) {
+        it(`${method} ${path} (${variant}) matches an unknown path: ${label}`, async () => {
+          const handler = createFetchHandler(routes);
+          const disabled = await snapshot(await handler(new Request(`https://x.test${path}`, init()), env));
+          const unknown = await snapshot(await handler(new Request(`https://x.test${unknownPath}`, init()), env));
+          expect(disabled.status).toBe(404);
+          expect(disabled).toEqual(unknown);
+        });
+      }
     }
   }
 });

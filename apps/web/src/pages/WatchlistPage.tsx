@@ -7,6 +7,8 @@ import { ErrorRegion } from "../components/ErrorRegion";
 import { LoadingState } from "../components/LoadingState";
 import { PageHeader } from "../components/PageHeader";
 import { WatchlistTable } from "../components/WatchlistTable";
+import { WebhookSettings } from "../components/WebhookSettings";
+import { useFeatures } from "../features/use-features";
 import { useStatus } from "../hooks/use-status";
 import { useWatchlist } from "../hooks/use-watchlist";
 import { consumeSigninFlash, type SigninFlash } from "../lib/signin-flash";
@@ -14,6 +16,7 @@ import { consumeSigninFlash, type SigninFlash } from "../lib/signin-flash";
 const MAX_WATCHLIST = 10;
 
 export function WatchlistPage() {
+  const { webhooks } = useFeatures();
   const { status } = useStatus();
   const { watchlist, loading, unauthorized, error, busy, add, remove, removeAccount } = useWatchlist();
   const [confirming, setConfirming] = useState(false);
@@ -84,6 +87,7 @@ export function WatchlistPage() {
           onRemove={(id) => void remove(id)}
         />
       ) : null}
+      {webhooks ? <WebhookSettings /> : null}
       <section className="account-section" aria-labelledby="account-heading">
         <h3 id="account-heading">Account</h3>
         <p className="account-section__help">Permanently delete your account and watchlist.</p>

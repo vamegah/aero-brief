@@ -12,6 +12,7 @@
     "@aerobrief/core": "*",
     "@aerobrief/db": "*",
     "@aerobrief/mail": "*",
+    "@aerobrief/webhook-sender": "*",
     "zod": "^4.0.0"
   },
   "devDependencies": {

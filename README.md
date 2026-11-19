@@ -135,7 +135,7 @@ AeroBrief is live. Deployment, the live smoke test, the Resend domain check and 
 | API (Cloudflare Worker) | https://aerobrief-api.vamegah.workers.dev (also served at https://www.aerobriefs.com/api/ through the Vercel rewrite) |
 | Health check (`/api/health`) | https://www.aerobriefs.com/api/health |
 
-The public read-only API is documented in [`docs/api.md`](docs/api.md).
+The public read-only API is documented in [`docs/api.md`](docs/api.md). Phase 2 webhook receivers are covered in [`docs/webhooks.md`](docs/webhooks.md).
 
 Deployment steps are in [`docs/production-runbook.md`](docs/production-runbook.md). Rotating production secrets is covered in [`docs/secret-rotation.md`](docs/secret-rotation.md).
 

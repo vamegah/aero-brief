@@ -1,10 +1,12 @@
 import { sql } from "drizzle-orm";
 import {
+  check,
   index,
   integer,
   jsonb,
   pgTable,
   primaryKey,
+  smallint,
   text,
   timestamp,
   unique,
@@ -171,3 +173,67 @@ export const pollerLease = pgTable("poller_lease", {
   /** Random token of the run holding the lease. Release only clears the lease for this token. */
   holder: text("holder"),
 });
+
+// ---------------------------------------------------------------------------
+// Phase 2: signed outbound webhooks (migration 0004_webhooks)
+// ---------------------------------------------------------------------------
+
+/**
+ * A User's outbound webhook. The cap of 3 per User is enforced by trigger `enforce_webhook_cap`
+ * (migration 0004). The signing secret is derived from WEBHOOK_MASTER_SECRET and the id, never stored.
+ */
+export const webhooks = pgTable(
+  "webhooks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    host: text("host").notNull(),
+    /** active | disabled */
+    state: text("state").default("active").notNull(),
+    consecutiveFailures: smallint("consecutive_failures").default(0).notNull(),
+    disabledReason: text("disabled_reason"),
+    disabledAt: ts("disabled_at"),
+    /** delivered | failed | skipped */
+    lastOutcome: text("last_outcome"),
+    lastOutcomeAt: ts("last_outcome_at"),
+    lastTestAt: ts("last_test_at"),
+    /** delivered | failed */
+    lastTestOutcome: text("last_test_outcome"),
+    createdAt: ts("created_at").defaultNow().notNull(),
+  },
+  (t) => [
+    index("webhooks_user_idx").on(t.userId),
+    check("webhooks_url_length_check", sql`length(${t.url}) <= 2048`),
+    check("webhooks_state_check", sql`${t.state} IN ('active','disabled')`),
+    check("webhooks_consecutive_failures_check", sql`${t.consecutiveFailures} >= 0`),
+    check("webhooks_last_outcome_check", sql`${t.lastOutcome} IN ('delivered','failed','skipped')`),
+    check("webhooks_last_test_outcome_check", sql`${t.lastTestOutcome} IN ('delivered','failed')`),
+  ],
+);
+
+/** One claimed delivery per (webhook, event). `id` is the Delivery_ID. */
+export const webhookDeliveries = pgTable(
+  "webhook_deliveries",
+  {
+    id: uuid("id").primaryKey(),
+    webhookId: uuid("webhook_id")
+      .notNull()
+      .references(() => webhooks.id, { onDelete: "cascade" }),
+    eventKey: text("event_key").notNull(),
+    eventType: text("event_type").notNull(),
+    /** pending | delivered | failed | skipped */
+    outcome: text("outcome").default("pending").notNull(),
+    attempts: smallint("attempts").default(0).notNull(),
+    lastStatus: integer("last_status"),
+    lastErrorKind: text("last_error_kind"),
+    createdAt: ts("created_at").defaultNow().notNull(),
+    completedAt: ts("completed_at"),
+  },
+  (t) => [
+    unique("webhook_deliveries_webhook_id_event_key_event_type_unique").on(t.webhookId, t.eventKey, t.eventType),
+    check("webhook_deliveries_outcome_check", sql`${t.outcome} IN ('pending','delivered','failed','skipped')`),
+  ],
+);

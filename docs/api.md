@@ -231,3 +231,7 @@ The API code sets no CORS headers. Call it from a server, a script or the same o
 ## Not a public API
 
 These endpoints exist for the AeroBrief web app. They need a signed-in session or a signed link, and they are not supported for outside use: authentication (`/api/auth/*`), watchlist (`/api/watchlist`), account (`/api/account`) and unsubscribe (`/api/unsubscribe`).
+
+## Phase 2 note
+
+Outbound webhooks (Phase 2, behind a feature flag) are not part of this API. To receive and verify them, see [`docs/webhooks.md`](webhooks.md).
