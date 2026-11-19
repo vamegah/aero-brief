@@ -124,3 +124,4 @@ No connection string or password is recorded here. The branch holds a copy of pr
 2026-11-18: Copied production users deleted and two allowlisted test users seeded on branch phase-2 (verified by read-only counts).
 2026-11-19: Migration 0004 (webhooks) applied to branch phase-2 via Neon MCP run_sql_transaction; drizzle-kit not used because the branch has no __drizzle_migrations table.
 - 2026-11-19: Task 4.37 (real Slack incoming-webhook check) dropped by the project owner. The payload's `text` field follows Slack's documented format, but delivery to a real Slack workspace is unverified.
+- 2026-11-19: Task 4.39 branch integration tests passed (6 passed, destructive DDL test skipped). They needed NODE_OPTIONS=--use-system-ca on the owner's machine because local HTTPS inspection re-signs certificates; TLS verification was not disabled.

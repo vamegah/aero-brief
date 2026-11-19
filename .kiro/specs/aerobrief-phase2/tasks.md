@@ -360,15 +360,15 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - Dropped by the project owner on 2026-11-19. Not run; recorded in `docs/decisions.md` and `docs/webhooks.md`.
     - _Requirements: 17.4, 17.7, 18.3_
 
-  - [~] 4.38 Checkpoint: MVP regression with all flags off
+  - [x] 4.38 Checkpoint: MVP regression with all flags off
     - Run root `npm test` and `npm run typecheck` with every flag off. All MVP tests pass unchanged. Ask the user if questions arise.
     - _Requirements: 3.1, 3.6_
 
-  - [~] 4.39 Checkpoint: webhooks with their flag on
+  - [x] 4.39 Checkpoint: webhooks with their flag on
     - Run Properties 5, 11 to 21, the sender, API, Poller, component and axe tests with `webhooks` on, plus the branch integration tests. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [~] 4.40 Merge webhooks into `main` (local merge, no push)
+  - [-] 4.40 Merge webhooks into `main` (local merge, no push)
     - Run only on the owner's instruction and before December 4, 2026, 2:00 PM PT. Confirm Tasks 4.37, 4.38 and 4.39 are done and that dark mode and high contrast are merged. Merge this section's commits (including the `structure.md` line) into `main` locally with all flags off. Do not apply Migration 0004 to the production database, push, tag or deploy.
     - The commits stay one contiguous range, so `git revert` of that range removes webhooks without touching the themes. The migration stays unapplied to production until the owner approves that step.
     - _Requirements: 4.9, 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
@@ -530,32 +530,44 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     { "id": 0, "tasks": ["1.1", "1.8", "1.9"] },
     { "id": 1, "tasks": ["1.2", "1.3", "1.4", "1.5", "1.7", "1.10"] },
     { "id": 2, "tasks": ["1.6", "1.11"] },
-    { "id": 3, "tasks": ["2.1", "2.2"] },
-    { "id": 4, "tasks": ["2.3", "2.4", "2.5"] },
-    { "id": 5, "tasks": ["2.6", "2.7", "2.8"] },
-    { "id": 6, "tasks": ["2.9"] },
-    { "id": 7, "tasks": ["2.10"] },
-    { "id": 8, "tasks": ["2.13"] },
-    { "id": 9, "tasks": ["3.1"] },
-    { "id": 10, "tasks": ["3.2", "3.3", "3.4"] },
-    { "id": 11, "tasks": ["3.5"] },
-    { "id": 12, "tasks": ["3.6"] },
-    { "id": 13, "tasks": ["3.9"] },
-    { "id": 14, "tasks": ["4.1", "4.2", "4.24"] },
-    { "id": 15, "tasks": ["4.3", "4.5", "4.9", "4.11", "4.14", "4.17", "4.19", "4.21", "4.25"] },
-    { "id": 16, "tasks": ["4.4", "4.6", "4.7", "4.8", "4.10", "4.12", "4.13", "4.15", "4.16", "4.18", "4.20", "4.22", "4.23", "4.26", "4.28", "4.29"] },
-    { "id": 17, "tasks": ["4.27", "4.30", "4.32", "4.36"] },
-    { "id": 18, "tasks": ["4.31", "4.33", "4.34"] },
-    { "id": 19, "tasks": ["4.35", "4.37"] },
-    { "id": 20, "tasks": ["4.40"] },
-    { "id": 21, "tasks": ["5.1", "5.9"] },
-    { "id": 22, "tasks": ["5.2", "5.4", "5.7", "5.10"] },
-    { "id": 23, "tasks": ["5.3", "5.5", "5.6", "5.8", "5.11", "5.13"] },
-    { "id": 24, "tasks": ["5.12", "5.14", "5.15"] },
-    { "id": 25, "tasks": ["5.16", "5.17", "5.18", "5.19", "5.20"] },
-    { "id": 26, "tasks": ["5.21", "5.22"] },
-    { "id": 27, "tasks": ["5.25"] },
-    { "id": 28, "tasks": ["6.3", "6.4", "6.5", "6.6"] }
+    { "id": 3, "tasks": ["1.12"] },
+    { "id": 4, "tasks": ["2.1", "2.2"] },
+    { "id": 5, "tasks": ["2.3", "2.4", "2.5"] },
+    { "id": 6, "tasks": ["2.6", "2.7", "2.8"] },
+    { "id": 7, "tasks": ["2.9"] },
+    { "id": 8, "tasks": ["2.10"] },
+    { "id": 9, "tasks": ["2.11"] },
+    { "id": 10, "tasks": ["2.12"] },
+    { "id": 11, "tasks": ["2.13"] },
+    { "id": 12, "tasks": ["3.1"] },
+    { "id": 13, "tasks": ["3.2", "3.3", "3.4"] },
+    { "id": 14, "tasks": ["3.5"] },
+    { "id": 15, "tasks": ["3.6"] },
+    { "id": 16, "tasks": ["3.7"] },
+    { "id": 17, "tasks": ["3.8"] },
+    { "id": 18, "tasks": ["3.9"] },
+    { "id": 19, "tasks": ["4.1", "4.2", "4.24"] },
+    { "id": 20, "tasks": ["4.3", "4.5", "4.9", "4.11", "4.14", "4.17", "4.19", "4.21", "4.25"] },
+    { "id": 21, "tasks": ["4.4", "4.6", "4.7", "4.8", "4.10", "4.12", "4.13", "4.15", "4.16", "4.18", "4.20", "4.22", "4.23", "4.26", "4.28", "4.29"] },
+    { "id": 22, "tasks": ["4.27", "4.30", "4.32", "4.36"] },
+    { "id": 23, "tasks": ["4.31", "4.33", "4.34"] },
+    { "id": 24, "tasks": ["4.35", "4.37"] },
+    { "id": 25, "tasks": ["4.38"] },
+    { "id": 26, "tasks": ["4.39"] },
+    { "id": 27, "tasks": ["4.40"] },
+    { "id": 28, "tasks": ["5.1", "5.9"] },
+    { "id": 29, "tasks": ["5.2", "5.4", "5.7", "5.10"] },
+    { "id": 30, "tasks": ["5.3", "5.5", "5.6", "5.8", "5.11", "5.13"] },
+    { "id": 31, "tasks": ["5.12", "5.14", "5.15"] },
+    { "id": 32, "tasks": ["5.16", "5.17", "5.18", "5.19", "5.20"] },
+    { "id": 33, "tasks": ["5.21", "5.22"] },
+    { "id": 34, "tasks": ["5.23"] },
+    { "id": 35, "tasks": ["5.24"] },
+    { "id": 36, "tasks": ["5.25"] },
+    { "id": 37, "tasks": ["6.1"] },
+    { "id": 38, "tasks": ["6.2"] },
+    { "id": 39, "tasks": ["6.3", "6.4", "6.5", "6.6"] },
+    { "id": 40, "tasks": ["6.7"] }
   ]
 }
 ```
