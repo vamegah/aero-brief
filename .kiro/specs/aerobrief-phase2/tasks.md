@@ -483,7 +483,7 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - The commits stay one contiguous range, so `git revert` of that range removes the digest without touching the other features. The migration stays unapplied to production until the owner approves that step.
     - _Requirements: 4.9, 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
 
-- [ ] 6. Final verification, documentation and rollout plan
+- [x] 6. Final verification, documentation and rollout plan
   - [x] 6.1 Checkpoint: all flags off, full MVP suite
     - Run root `npm test`, `npm run typecheck` and the web build with every flag off. All MVP tests pass with no existing test file edited, deleted or skipped. Ask the user if questions arise.
     - _Requirements: 3.1, 3.2_
@@ -509,7 +509,7 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - State that the project owner decides when to enable anything and pushes `main`.
     - _Requirements: 4.9, 5.3, 6.5, 6.7_
 
-  - [-] 6.7 Final checkpoint: all tests pass
+  - [x] 6.7 Final checkpoint: all tests pass
     - Root `npm test` and `npm run typecheck` pass in both flag states and the web build passes. Ask the user if questions arise.
     - _Requirements: 3.1, 3.6_
 
