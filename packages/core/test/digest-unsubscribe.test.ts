@@ -22,6 +22,45 @@ describe("digest unsubscribe signature", () => {
     expect(await verifyDigestUnsubscribe(USER, "", ["s1"])).toBe(false);
   });
 
+  it("accepts only the canonical encoding (Property 10 counterexample)", async () => {
+    const user = "00000000-5f10-6582-8000-001a41acf1c7";
+    const secret = "( 60Q";
+    const sig = await signDigestUnsubscribe(user, secret);
+    expect(sig).toHaveLength(43);
+    expect(await verifyDigestUnsubscribe(user, sig, [secret])).toBe(true);
+
+    // The last character holds 2 data bits; every other last character must be rejected,
+    // including those that decode to the same bytes.
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    for (const c of alphabet) {
+      const variant = sig.slice(0, -1) + c;
+      expect(await verifyDigestUnsubscribe(user, variant, [secret])).toBe(c === sig.at(-1));
+    }
+    const swapped = sig.slice(0, -1) + (sig.at(-1) === "A" ? "B" : "A");
+    expect(await verifyDigestUnsubscribe(user, swapped, [secret])).toBe(false);
+  });
+
+  it("rejects non-alphabet characters, wrong length, padding and whitespace", async () => {
+    const sig = await signDigestUnsubscribe(USER, "s1");
+    const bad = [
+      sig + "=",
+      sig + "==",
+      sig.slice(0, -1),
+      sig + "A",
+      sig.slice(0, -2),
+      ` ${sig}`,
+      `${sig} `,
+      `${sig}\n`,
+      `${sig.slice(0, 10)} ${sig.slice(10)}`,
+      sig.slice(0, 10) + "+" + sig.slice(11),
+      sig.slice(0, 10) + "/" + sig.slice(11),
+      sig.slice(0, 10) + "!" + sig.slice(11),
+      sig.slice(0, 10) + "é" + sig.slice(11),
+    ];
+    for (const b of bad) expect(await verifyDigestUnsubscribe(USER, b, ["s1"])).toBe(false);
+    expect(await verifyDigestUnsubscribe(USER, sig, ["s1"])).toBe(true);
+  });
+
   it("never cross-verifies with the per-airport signature", async () => {
     const digest = await signDigestUnsubscribe(USER, "s1");
     const airport = await signUnsubscribe("s1", USER, "KJFK");

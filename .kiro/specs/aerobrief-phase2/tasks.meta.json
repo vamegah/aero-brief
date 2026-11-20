@@ -1684,6 +1684,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033541333
+      },
+      {
+        "executionId": "a1131768-c79e-4d10-958a-f40448179c55",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795062487020
+      },
+      {
+        "executionId": "cb5b3c4b-edbc-40ce-ad86-ce721869a8b9",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795142711441
       }
     ],
     "5.23 Checkpoint: MVP regression with all flags off": [
@@ -1691,6 +1701,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033541864
+      },
+      {
+        "executionId": "ada90fd1-8fb6-42f7-8f67-dbcd4eead357",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795142836573
+      },
+      {
+        "executionId": "ada90fd1-8fb6-42f7-8f67-dbcd4eead357",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795143187119
       }
     ],
     "5.24 Checkpoint: digest with its flag on": [
@@ -1698,6 +1718,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033542013
+      },
+      {
+        "executionId": "ada90fd1-8fb6-42f7-8f67-dbcd4eead357",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795143196635
+      },
+      {
+        "executionId": "5d7f2042-ce3e-40a2-b507-e95d1b0f4a29",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795143933078
       }
     ],
     "5.25 Merge the digest into `main` (local merge, no push; needs user approval)": [
@@ -1705,6 +1735,11 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033542142
+      },
+      {
+        "executionId": "5d7f2042-ce3e-40a2-b507-e95d1b0f4a29",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795144000092
       }
     ],
     "6.1 Checkpoint: all flags off, full MVP suite": [

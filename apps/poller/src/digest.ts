@@ -88,6 +88,19 @@ const defaultSleep = (ms: number): Promise<void> => new Promise((resolve) => set
 
 const defaultFetch: DigestFetch = (url, init) => fetch(url, init);
 
+const MAX_ERROR_TEXT = 500;
+
+/** Message of an Error, or a safe string form of any other value, cut to 500 characters. */
+function describeError(value: unknown): string {
+  let text: string;
+  try {
+    text = value instanceof Error ? value.message : typeof value === "string" ? value : String(value);
+  } catch {
+    text = "unprintable";
+  }
+  return text.slice(0, MAX_ERROR_TEXT);
+}
+
 function str(env: object, key: string): string | undefined {
   const v = (env as Record<string, unknown>)[key];
   return typeof v === "string" ? v : undefined;
@@ -127,6 +140,7 @@ export async function runDigest(env: Env, now: Date, deps: DigestDeps = {}): Pro
     errored: 0,
   };
   const logger = deps.logger ?? createLogger([env.DATABASE_URL, env.RESEND_API_KEY, env.UNSUBSCRIBE_SECRET]);
+  let stage = "flags";
   try {
     // Flag gate first, so a flag-off run makes no query and no request (Requirement 1.5).
     if (!readFlags(env, logger).FEATURE_DIGESTS) return { ...summary, skippedReason: "flag_off" };
@@ -134,8 +148,10 @@ export async function runDigest(env: Env, now: Date, deps: DigestDeps = {}): Pro
     const clock = deps.clock ?? (() => new Date());
     const sleep = deps.sleep ?? defaultSleep;
     const fetchFn = deps.fetchFn ?? defaultFetch;
+    stage = "createRepositories";
     const repos = (deps.createRepositories ?? defaultRepositories)(env.DATABASE_URL);
 
+    stage = "loadDueInputs";
     const inputs = await repos.digest.loadDueInputs(candidateDigestDates(now));
     const due = selectDueDigests({
       now,
@@ -147,8 +163,11 @@ export async function runDigest(env: Env, now: Date, deps: DigestDeps = {}): Pro
     if (due.length === 0) return summary;
 
     // Read once per run: addresses, the last 24 hours of Events and the latest Snapshot.
+    stage = "usersWithWatchlist";
     const emails = new Map((await repos.subscriptions.usersWithWatchlist()).map((u) => [u.userId, u.email]));
+    stage = "recentEvents";
     const recent = await repos.events.recentEvents(now);
+    stage = "latestSnapshot";
     const snapshot = await repos.snapshots.latestSnapshot(now);
 
     const safeSend = isSafeSendMode(str(env, "SAFE_SEND_MODE"));
@@ -191,7 +210,18 @@ export async function runDigest(env: Env, now: Date, deps: DigestDeps = {}): Pro
     }
     return summary;
   } catch (err) {
-    logger.error("digest_run_failed", { errorName: err instanceof Error ? err.name : "unknown" });
+    // The logger redacts the configured secrets (DATABASE_URL included) as substrings of every field value.
+    const fields: Record<string, unknown> = {
+      stage,
+      errorName: err instanceof Error ? err.name : "unknown",
+      errorMessage: describeError(err),
+    };
+    const cause = err instanceof Error ? err.cause : undefined;
+    if (cause !== undefined && cause !== null) {
+      fields["causeName"] = cause instanceof Error ? cause.name : typeof cause;
+      fields["causeMessage"] = describeError(cause);
+    }
+    logger.error("digest_run_failed", fields);
     return summary;
   }
 }

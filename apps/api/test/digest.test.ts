@@ -135,7 +135,9 @@ describe("POST /api/digest/unsubscribe", () => {
     prefs.set(USER, { enabled: true, hour: 9 });
     const wrong = await signDigestUnsubscribe(USER, "some_other_secret");
     const forOther = await signDigestUnsubscribe(OTHER, SECRET);
-    for (const sig of [wrong, forOther, "not-a-signature", "!!!"]) {
+    const valid = await signDigestUnsubscribe(USER, SECRET);
+    const nonCanonical = valid.slice(0, -1) + (valid.endsWith("A") ? "B" : "A");
+    for (const sig of [wrong, forOther, "not-a-signature", "!!!", nonCanonical, `${valid}=`, ` ${valid}`]) {
       const res = await send("POST", "/api/digest/unsubscribe", { cookie: false, body: { userId: USER, sig } });
       expect(res.status).toBe(403);
       expect(((await res.json()) as { error: { code: string } }).error.code).toBe("invalid_signature");

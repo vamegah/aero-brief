@@ -1,13 +1,9 @@
 import { createLogger } from "@aerobrief/core";
 import { runCleanup } from "./cleanup";
+import { CLEANUP_CRON, DIGEST_CRON, POLL_CRON } from "./crons";
 import { runDigest } from "./digest";
 import type { Env } from "./env";
 import { runPoll } from "./poll";
-
-export const POLL_CRON = "*/5 * * * *";
-export const CLEANUP_CRON = "*/30 * * * *";
-/** Hourly digest run. Must match apps/poller/wrangler.jsonc character for character. */
-export const DIGEST_CRON = "0 * * * *";
 
 export default {
   // The runtime awaits this promise, so ctx.waitUntil is not needed for a single task.

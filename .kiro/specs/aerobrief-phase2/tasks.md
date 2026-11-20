@@ -466,19 +466,19 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - Create `apps/web/test/a11y/digest.test.tsx` covering the Daily digest section and the unsubscribe page in each state and theme variant that is merged.
     - _Requirements: 3.6_
 
-  - [~] 5.22 Run the digest cron locally (needs user action)
+  - [x] 5.22 Run the digest cron locally (needs user action)
     - The user runs `wrangler dev --test-scheduled` for the poller, with the `phase-2` branch URL, `FEATURE_DIGESTS=true` and an allowlist of their own addresses in their shell, and triggers `/__scheduled?cron=0+*+*+*+*`. Confirm one email arrives at an allowlisted address, a second trigger sends none, and a non-allowlisted test User is skipped with `not_allowlisted`. Record the result in `docs/decisions.md`. Do not start the dev server from the agent.
     - _Requirements: 5.1, 5.4, 5.6, 11.5_
 
-  - [~] 5.23 Checkpoint: MVP regression with all flags off
+  - [x] 5.23 Checkpoint: MVP regression with all flags off
     - Run root `npm test` and `npm run typecheck` with every flag off. All MVP tests pass unchanged. Ask the user if questions arise.
     - _Requirements: 3.1, 3.6_
 
-  - [~] 5.24 Checkpoint: digest with its flag on
+  - [x] 5.24 Checkpoint: digest with its flag on
     - Run Properties 5 to 10, the API, Poller, component and axe tests with `digests` on, plus the branch integration tests. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [~] 5.25 Merge the digest into `main` (local merge, no push; needs user approval)
+  - [-] 5.25 Merge the digest into `main` (local merge, no push; needs user approval)
     - Ask the user to approve first. The new cron `0 * * * *` registers on the next production deploy even with the flag off, and the Poller then has three cron triggers. Ask the user to confirm the Cloudflare plan allows that trigger count, because a failed deploy on `main` would block everything. Run only before December 4, 2026, 2:00 PM PT. Confirm Tasks 5.22, 5.23 and 5.24 are done and that the other three features are merged. Merge this section's commits into `main` locally. Do not apply Migration 0005 to the production database, push, tag or deploy.
     - The commits stay one contiguous range, so `git revert` of that range removes the digest without touching the other features. The migration stays unapplied to production until the owner approves that step.
     - _Requirements: 4.9, 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_

@@ -119,6 +119,46 @@ describe("candidateDigestDates", () => {
   });
 });
 
+describe("runDigest outer failure log", () => {
+  it("logs the stage, message and cause message when loadDueInputs throws", async () => {
+    const s = setup();
+    s.repos.digest.loadDueInputs.mockRejectedValueOnce(new Error("boom", { cause: new Error("cert fail") }));
+    await runDigest(baseEnv, NOW, s.deps);
+
+    const entry = JSON.parse(s.lines.find((l) => l.includes("digest_run_failed")) as string) as {
+      fields: Record<string, unknown>;
+    };
+    expect(entry.fields).toMatchObject({
+      stage: "loadDueInputs",
+      errorName: "Error",
+      errorMessage: "boom",
+      causeName: "Error",
+      causeMessage: "cert fail",
+    });
+  });
+
+  it("does not log the DATABASE_URL when it appears in the message or cause", async () => {
+    const s = setup();
+    const lines: string[] = [];
+    const push = (l: string) => void lines.push(l);
+    const logger = createLogger([baseEnv.DATABASE_URL, baseEnv.RESEND_API_KEY, baseEnv.UNSUBSCRIBE_SECRET], {
+      debug: push,
+      info: push,
+      warn: push,
+      error: push,
+    });
+    s.repos.digest.loadDueInputs.mockRejectedValueOnce(
+      new Error(`connect failed for ${baseEnv.DATABASE_URL}`, { cause: `bad ${baseEnv.DATABASE_URL}` }),
+    );
+    await runDigest(baseEnv, NOW, { ...s.deps, logger });
+
+    const out = lines.join("\n");
+    expect(out).toContain("digest_run_failed");
+    expect(out).not.toContain(baseEnv.DATABASE_URL);
+    expect(out).not.toContain("dbpass");
+  });
+});
+
 describe("runDigest", () => {
   it("makes no database, Resend or fetch call when the flag is off", async () => {
     const s = setup();

@@ -20,7 +20,8 @@ vi.mock("@aerobrief/db", () => ({
 import { createDb, createRepositories } from "@aerobrief/db";
 import type { Env } from "../src/env";
 import { runDigest } from "../src/digest";
-import worker, { CLEANUP_CRON, DIGEST_CRON, POLL_CRON } from "../src/index";
+import { CLEANUP_CRON, DIGEST_CRON, POLL_CRON } from "../src/crons";
+import worker from "../src/index";
 import { runCleanup } from "../src/cleanup";
 import { runPoll } from "../src/poll";
 

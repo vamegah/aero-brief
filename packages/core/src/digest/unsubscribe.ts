@@ -24,7 +24,9 @@ function fromBase64Url(s: string): Uint8Array | null {
     const bin = atob(b64);
     const out = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-    return out;
+    // Canonical form only: the final character carries unused trailing bits that atob ignores,
+    // so two different strings could otherwise decode to the same bytes.
+    return toBase64Url(out) === s ? out : null;
   } catch {
     return null;
   }
