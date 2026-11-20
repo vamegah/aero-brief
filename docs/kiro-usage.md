@@ -11,10 +11,10 @@ AeroBrief is live at https://www.aerobriefs.com. Tasks 14.4 (demo video) and 14.
 | Kiro IDE, CLI, Web or Crew | Kiro IDE only | No CLI, Web or Crew artifacts in the repo |
 | Custom agents | None created | No `.kiro/agents/` directory |
 | Agent hooks | 2 defined, both with known gaps, no record of firing | `.kiro/hooks/` |
-| Spec-driven development | Central. One spec, 18 requirements, 38 properties, 20 task sections | `.kiro/specs/aerobrief/` |
+| Spec-driven development | Central. MVP spec: 18 requirements, 38 properties, 20 task sections. Phase 2 spec: 21 properties, features behind flags | `.kiro/specs/aerobrief/`, `.kiro/specs/aerobrief-phase2/` |
 | Steering | 5 files, all `inclusion: always` | `.kiro/steering/` |
 | MCP | Neon MCP used for read-only production checks. context7 available, no recorded use | `docs/decisions.md` |
-| Property-based testing | 44 `*.pbt.test.ts` files, fast-check. No caught bug recorded | `packages/*/test`, `apps/*/test` |
+| Property-based testing | 63 `*.pbt.test.ts` files on `main` (44 at the MVP tag), fast-check. One bug caught by a Phase 2 property | `packages/*/test`, `apps/*/test` |
 | Kiro powers | None used | See Powers |
 
 ## Kiro IDE, CLI, Web, Crew
@@ -127,9 +127,31 @@ Requirements using PBT, with property numbers from `design.md`:
 - Property 37, unsubscribe secret acceptance (Requirements 16.7, 16.8, 9.8): the current secret always verifies, the previous secret only before its expiry, and any other secret is rejected. Test: `packages/core/test/unsubscribe-secrets.pbt.test.ts`.
 - Property 38, advisory URL acceptance (Requirements 17.4, 17.5): only `https:` URLs on `faa.gov` or a subdomain pass, and look-alike hosts return `null`. Test: `packages/core/test/advisory-url.pbt.test.ts` (task 20.1).
 
-Did PBT catch issues unit tests would miss? The repo does not record a bug that a property test caught. Searches of `docs/decisions.md`, `tasks.md` and `git log` found none, so none is claimed. What the properties guard against: duplicate alert emails (Properties 24 to 27, 33, 34), misclassifying a missing airport or a changed Snapshot as an event (Properties 5 to 8), wrong staleness at the 10 minute edge (Property 16), and accepting a forged unsubscribe link or a look-alike advisory host (Properties 26, 37, 38). The one production bug recorded (415 on DELETE, task 18.5) was in the HTTP layer, where no property test existed, and the fix added example-based regression tests.
+Did PBT catch issues unit tests would miss? In the MVP build the repo records no bug that a property test caught. Searches of `docs/decisions.md`, `tasks.md` and `git log` found none. Phase 2 has one (see "Phase 2: features merged behind flags"). What the properties guard against: duplicate alert emails (Properties 24 to 27, 33, 34), misclassifying a missing airport or a changed Snapshot as an event (Properties 5 to 8), wrong staleness at the 10 minute edge (Property 16), and accepting a forged unsubscribe link or a look-alike advisory host (Properties 26, 37, 38). The one production bug recorded (415 on DELETE, task 18.5) was in the HTTP layer, where no property test existed, and the fix added example-based regression tests.
 
 Unit tests sit next to the property tests (for example `change-detector.test.ts`, `explain.test.ts`). Database integration tests skip when no test database URL is set (Task 3.5). Run everything with `npm test`. CI runs the same, plus the accessibility suite and per-workspace typechecks, in `.github/workflows/ci.yml`.
+
+## Phase 2: features merged behind flags
+
+After the MVP was submitted (tag `mvp-contest-2026`), four additions were built on the `phase-2` branch and merged into local `main`: dark mode (`FEATURE_DARK_MODE`), a high-contrast AAA theme (`FEATURE_HIGH_CONTRAST`), signed webhooks (`FEATURE_WEBHOOKS`) and a daily digest email (`FEATURE_DIGESTS`). Each flag is off by default and none is enabled in production. Production does not have migrations 0004 (webhooks) and 0005 (digest), so turning on `FEATURE_WEBHOOKS` or `FEATURE_DIGESTS` there would fail until they are applied. The other Phase 2 scope items (more airports, paid data providers, SMS, Slack, PagerDuty, billing, single sign-on and the rest) are not built and not merged. This section covers only the four merged features.
+
+What Kiro artifacts back this:
+
+- **A second spec.** `.kiro/specs/aerobrief-phase2/` holds `requirements.md`, `design.md`, `tasks.md` and `tasks.meta.json`. Its `.config.kiro` sets `workflowType: requirements-first`. The design has 21 numbered properties: 1 flag parsing; 2 and 3 theme resolution; 4 theme contrast; 5 allowlist filter; 6 to 10 digest (due selection, idempotency, content, composition, unsubscribe signature); 11 to 14 webhook URL safety, idempotent URL validation, URL masking and secret derivation; 15 to 21 webhook signing, tamper and replay rejection, retry bound, failure counter, payload validity, payload round trip and test-event rate limit. Each property cites the requirements it validates.
+- **Steering carried the rules.** `.kiro/steering/scope.md` has a "Phase 2 (branch `phase-2` only)" section. It lists what is in scope on that branch and what stays prohibited (no scraping, push, map view, native apps, passwords or FAA SWIM). It requires a feature flag for every Phase 2 feature, off by default, so that with every flag off the app behaves as `main` did. It requires every schema change to be a separate, reversible migration run only against a Neon branch until merged, and Phase 2 Workers to deploy under separate names. Its "Rule: roll back" says to turn a failed feature's flag off and revert its commits, or delete the branch if the branch as a whole fails. The `tech.md` approval rule still applied.
+- **One flag and one contiguous commit range per feature.** After the setup commit `556907b` (flags, `/api/features`, flags-off guards, deploy and migration-target guards), the history has `989708e` (dark mode), `fa2d6fa` (high contrast), `c8bb274` and `95da9f8` (webhooks), and `e5959c3` and `bbd419e` (digest). Because each feature is a contiguous range behind its own flag, the rollback rule can be applied to one feature without touching the others.
+- **A separate database branch.** Migrations 0004 and 0005 were applied to a Neon branch named `phase-2` (a copy-on-write child of production), not to production. `docs/decisions.md` records this, including that the copied production users were deleted and two allowlisted test users seeded. Email sending during testing was limited by `SAFE_SEND_MODE` and an allowlist (Property 5).
+- **Checkpoints as tasks.** The task list has checkpoint tasks: a regression run with all flags off (5.23), a run of the digest with its flag on (5.24), and an all-flags-on run of the full suite (6.2). `docs/decisions.md` records the 6.2 result: one failing test, caused by the test environment copying `FEATURE_*` process variables into `import.meta.env`, which a guard test rejects. The guard was not weakened.
+- **Hooks.** The two hooks in `.kiro/hooks/` were not changed for Phase 2, so the gaps listed under Hooks still apply. Nothing in the repo shows them firing during Phase 2.
+
+Issues caught during the build, from the repo:
+
+- **Property 10 found a non-canonical base64url signature.** `verifyDigestUnsubscribe` decoded the signature with `atob`, which ignores the unused trailing bits of the last character. Two different strings could decode to the same bytes and both verify. The property test produced a counterexample (user `00000000-5f10-6582-8000-001a41acf1c7`, secret `( 60Q`). Commit `bbd419e` made the decoder accept only the canonical encoding. `packages/core/test/digest-unsubscribe.test.ts` keeps the counterexample as a regression test, with a second test for padding, whitespace and non-alphabet characters. The impact was small, since a signature still had to match an HMAC, but a verifier should accept exactly one string per signature.
+- **workerd rejected a named export.** Running the digest cron locally with `wrangler dev --test-scheduled` (task 5.22) showed that workerd rejects non-handler named exports from a Worker's main module. The cron constants moved to `apps/poller/src/crons.ts`, and `entry-exports.test.ts` in both Workers now guards the entry files. The same run led to a more useful `digest_run_failed` log (stage, error message and cause, truncated and redacted), and exposed a local `DATABASE_URL` that pointed at a database without migration 0005. See `docs/decisions.md` (2026-11-20) and `docs/digest-local-run.md`.
+- **Scope drift in a test file.** The check that MVP tests were unchanged (task 6.1) found 35 added lines in `apps/web/test/components/airport-page.test.tsx`. They came from MVP section 21 (commit `086e681`), not from Phase 2. The project owner accepted the exception, and `docs/decisions.md` records that no MVP test was deleted, skipped or weakened.
+- **A task was dropped, not faked.** Task 4.37 (a delivery check against a real Slack workspace) was dropped by the project owner. The webhook payload follows Slack's documented `text` format, but delivery to a real Slack workspace is unverified.
+
+What this does not show: no production run of any Phase 2 feature, and no comparison with building without the spec.
 
 ## Powers
 
@@ -141,7 +163,7 @@ No Kiro powers were used to build AeroBrief. The Kiro environment had the postma
 - No custom agents. Only built-in Kiro sub-agents were used.
 - No claim that the hooks ran or protected anything. Both have known gaps.
 - No claim that context7 was used. It was available, and no use is recorded.
-- No bug caught by a property test. None is recorded in the repo.
+- No MVP bug caught by a property test. The one recorded catch is in Phase 2.
 - No measured comparison with vibe coding. No vibe-coded version exists.
 - No demo video and no submission status (Tasks 14.4 and 14.5 are open).
 - No Kiro powers.

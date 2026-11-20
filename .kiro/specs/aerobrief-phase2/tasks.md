@@ -373,7 +373,7 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - The commits stay one contiguous range, so `git revert` of that range removes webhooks without touching the themes. The migration stays unapplied to production until the owner approves that step.
     - _Requirements: 4.9, 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
 
-- [ ] 5. Daily digest (flag `FEATURE_DIGESTS`)
+- [x] 5. Daily digest (flag `FEATURE_DIGESTS`)
   - [x] 5.1 Scaffold the core digest modules and barrels
     - Create stub modules `packages/core/src/digest/{due,content,unsubscribe}.ts` (each `export {}` until filled), `packages/core/src/digest/index.ts` with an `export *` for each, and export the barrel from `packages/core/src/index.ts`.
     - _Requirements: 11.2, 11.7, 12.1_
@@ -478,38 +478,38 @@ All code is TypeScript with `"strict": true`. The stack is fixed by workspace st
     - Run Properties 5 to 10, the API, Poller, component and axe tests with `digests` on, plus the branch integration tests. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [-] 5.25 Merge the digest into `main` (local merge, no push; needs user approval)
+  - [x] 5.25 Merge the digest into `main` (local merge, no push; needs user approval)
     - Ask the user to approve first. The new cron `0 * * * *` registers on the next production deploy even with the flag off, and the Poller then has three cron triggers. Ask the user to confirm the Cloudflare plan allows that trigger count, because a failed deploy on `main` would block everything. Run only before December 4, 2026, 2:00 PM PT. Confirm Tasks 5.22, 5.23 and 5.24 are done and that the other three features are merged. Merge this section's commits into `main` locally. Do not apply Migration 0005 to the production database, push, tag or deploy.
     - The commits stay one contiguous range, so `git revert` of that range removes the digest without touching the other features. The migration stays unapplied to production until the owner approves that step.
     - _Requirements: 4.9, 6.1, 6.2, 6.3, 6.4, 6.5, 6.7_
 
 - [ ] 6. Final verification, documentation and rollout plan
-  - [~] 6.1 Checkpoint: all flags off, full MVP suite
+  - [x] 6.1 Checkpoint: all flags off, full MVP suite
     - Run root `npm test`, `npm run typecheck` and the web build with every flag off. All MVP tests pass with no existing test file edited, deleted or skipped. Ask the user if questions arise.
     - _Requirements: 3.1, 3.2_
 
-  - [~] 6.2 Checkpoint: all flags on, full suite and web build
+  - [x] 6.2 Checkpoint: all flags on, full suite and web build
     - Run root `npm test`, `npm run typecheck` and the web build with all four flags on. All pass. Ask the user if questions arise.
     - _Requirements: 3.6, 6.3_
 
-  - [~] 6.3 Add the accessibility suite for every theme variant
+  - [x] 6.3 Add the accessibility suite for every theme variant
     - Create `apps/web/test/a11y/themes/all-variants.test.tsx` that renders the Status, Airport, Watchlist (with the digest and webhook sections), Sign-in and unsubscribe pages with all flags on in `light`, `dark`, `hc-light` and `hc-dark` and fails on any violation.
     - _Requirements: 8.13, 9.11_
 
-  - [~] 6.4 Update the README and the API documentation
+  - [x] 6.4 Update the README and the API documentation
     - Update `README.md` with the Phase 2 feature list, each flag and its default (off), and a link to `docs/webhooks.md`. Update `docs/api.md` with `GET /api/features` (200 body, 404 while all flags are off), the `/api/digest` and `/api/webhooks` routes, and a webhook receiver verification section with a TypeScript signature-check example, linking to `docs/webhooks.md`. Describe only features that are merged.
     - _Requirements: 15.7_
 
-  - [~] 6.5 Update the Kiro usage and submission documents
+  - [x] 6.5 Update the Kiro usage and submission documents
     - Update `docs/kiro-usage.md` and `docs/devpost-submission.md` to mention a Phase 2 feature only if it is merged into `main`. Change nothing for unmerged features.
     - _Requirements: 6.1_
 
-  - [~] 6.6 Write the production enable plan
+  - [x] 6.6 Write the production enable plan
     - Create `docs/phase2-rollout.md`: the order of production steps for each feature; the Worker variables to set (`FEATURE_*`, `SAFE_SEND_MODE`, `SAFE_SEND_ALLOWLIST_EMAILS`, `SAFE_SEND_ALLOWLIST_HOSTS`, the secret `WEBHOOK_MASTER_SECRET` of at least 32 characters); the migration and grants steps against the Production_DB, each needing the owner's approval; a check that the deploy workflow keeps dashboard variables not set in `wrangler.jsonc`; enabling with Safe_Send_Mode on, checking, then setting `SAFE_SEND_MODE=false` as a separate decision; and the rollback by flag, by `git revert`, and by deleting `phase-2`.
     - State that the project owner decides when to enable anything and pushes `main`.
     - _Requirements: 4.9, 5.3, 6.5, 6.7_
 
-  - [~] 6.7 Final checkpoint: all tests pass
+  - [-] 6.7 Final checkpoint: all tests pass
     - Root `npm test` and `npm run typecheck` pass in both flag states and the web build passes. Ask the user if questions arise.
     - _Requirements: 3.1, 3.6_
 

@@ -13,6 +13,23 @@ These limits are fixed for the MVP:
 - History retention is 24 hours.
 - Not included: FAA SWIM, scraping third-party sites, push notifications, a map view, native apps, passwords (sign-in is by emailed magic link) and monetization.
 
+## Phase 2 features (built, off by default)
+
+Four Phase 2 features are merged into `main`. Each sits behind its own flag, and every flag is **off by default**. They are built but not live: production has not had the Phase 2 migrations (`0004`, `0005`) applied, and no flag is on there. With every flag off, AeroBrief behaves exactly as the MVP does.
+
+| Feature | Flag | Default | What it does |
+| --- | --- | --- | --- |
+| Dark mode | `FEATURE_DARK_MODE` | off | A dark colour theme for the web app |
+| High-contrast theme | `FEATURE_HIGH_CONTRAST` | off | A higher-contrast theme for the web app |
+| Daily digest | `FEATURE_DIGESTS` | off | An optional daily email digest, sent at an hour (0 to 23) you choose |
+| Signed webhooks | `FEATURE_WEBHOOKS` | off | Up to 3 HTTPS URLs per account that receive a signed `POST` when a ground stop starts or ends, or a nationwide ground stop is detected |
+
+A flag is on only when its value is exactly the text `true`. A missing flag, `false`, or any other value means off. Flags are plain Worker variables, set for `apps/api` and `apps/poller` (the examples are in each `.dev.vars.example`). The web app reads them from the API's `GET /api/features`.
+
+Webhooks also need a `WEBHOOK_MASTER_SECRET` Worker secret of at least 32 characters. Without it the webhook routes answer `503`.
+
+To receive webhooks, see [`docs/webhooks.md`](docs/webhooks.md). The related API routes are in [`docs/api.md`](docs/api.md).
+
 ## Stack
 
 | Layer | Technology |
@@ -83,10 +100,12 @@ Then edit both `.dev.vars` files (gitignored). They hold `DATABASE_URL`, `RESEND
 
 ```powershell
 $env:DATABASE_URL = "<your DATABASE_URL_UNPOOLED value>"
-npx drizzle-kit migrate --config packages/db/drizzle.config.ts
+Push-Location packages/db   # the config uses ./src/schema.ts and ./migrations, so run from here
+npx drizzle-kit migrate --config drizzle.config.ts
+Pop-Location
 ```
 
-There are four migrations in `packages/db/migrations/`. The 20 airports are seeded by migration `0002_seed_airports.sql`, so there is no separate seed command. `docs/production-runbook.md` lists the SQL checks and the runtime-role grants.
+There are six migrations in `packages/db/migrations/`. `0000` to `0003` are the MVP schema. `0004_webhooks.sql` and `0005_digest.sql` create the Phase 2 tables and have not been applied to production. The command above applies all of them, so run it only against a database you mean to change. For Phase 2 work against a Neon branch, `npm run migrate-phase2` runs the same command with a guard that refuses the production database. The 20 airports are seeded by migration `0002_seed_airports.sql`, so there is no separate seed command. `docs/production-runbook.md` lists the SQL checks and the runtime-role grants.
 
 ## Run the tests
 

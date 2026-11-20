@@ -1740,6 +1740,11 @@
         "executionId": "5d7f2042-ce3e-40a2-b507-e95d1b0f4a29",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795144000092
+      },
+      {
+        "executionId": "5d7f2042-ce3e-40a2-b507-e95d1b0f4a29",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795144484982
       }
     ],
     "6.1 Checkpoint: all flags off, full MVP suite": [
@@ -1747,6 +1752,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033542273
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795145029061
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795145504696
       }
     ],
     "6.2 Checkpoint: all flags on, full suite and web build": [
@@ -1754,6 +1769,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033542396
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795145508596
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795145852743
       }
     ],
     "6.3 Add the accessibility suite for every theme variant": [
@@ -1761,6 +1786,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033542582
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795145858432
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795146245858
       }
     ],
     "6.4 Update the README and the API documentation": [
@@ -1768,6 +1803,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033542762
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795145859015
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795146247963
       }
     ],
     "6.5 Update the Kiro usage and submission documents": [
@@ -1775,6 +1820,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033542903
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795145862447
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795146249880
       }
     ],
     "6.6 Write the production enable plan": [
@@ -1782,6 +1837,16 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033543225
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795145862675
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795146251609
       }
     ],
     "6.7 Final checkpoint: all tests pass": [
@@ -1789,6 +1854,11 @@
         "executionId": "bb49d34f-a898-4c0f-8d0e-e9cf72a8c8d4",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795033543524
+      },
+      {
+        "executionId": "3fd45c70-5ec1-4f82-ac7b-e387cdfac040",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795146255166
       }
     ],
     "1. Setup: flags, features endpoint, guards and Neon branch": [
@@ -1817,6 +1887,13 @@
         "executionId": "2a82ecbe-4597-4524-95f9-f6b4e053156d",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795059001986
+      }
+    ],
+    "5. Daily digest (flag `FEATURE_DIGESTS`)": [
+      {
+        "executionId": "5d7f2042-ce3e-40a2-b507-e95d1b0f4a29",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795144485123
       }
     ]
   }

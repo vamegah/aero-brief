@@ -32,6 +32,17 @@ Live today at https://www.aerobriefs.com:
 - **Email alerts.** Sent when a ground stop starts or ends at a watched airport, and for nationwide events. Alerts pause while data is stale.
 - **One-click unsubscribe.** Each ground stop alert carries a signed unsubscribe link.
 
+## After the MVP: additions behind feature flags
+
+The core submission is the MVP described above (git tag `mvp-contest-2026`). Under the contest rules, four additions were built afterwards on a separate branch and merged into `main`, one feature at a time, each behind its own feature flag that is off by default:
+
+- **Dark mode** (`FEATURE_DARK_MODE`).
+- **High-contrast AAA theme** (`FEATURE_HIGH_CONTRAST`).
+- **Signed webhooks** (`FEATURE_WEBHOOKS`): outbound, signed, retried deliveries of ground stop events.
+- **Daily digest email** (`FEATURE_DIGESTS`).
+
+These are not live. All four flags are off at https://www.aerobriefs.com, and the production database does not yet have the two migrations that webhooks and the digest need. With every flag off, the app behaves as the MVP does. The flags-on behavior is covered by tests and by a local run of the digest cron against a separate Neon branch, not by production use. The MVP limits (20 airports, 10-airport watchlist, 24-hour history) are unchanged. Nothing else from the Phase 2 plan is built.
+
 ## How we built it
 
 The stack is fixed and serverless:
@@ -42,7 +53,7 @@ The stack is fixed and serverless:
 - **Resend** sends magic links and alerts. A small shared client retries and sets an `Idempotency-Key` so a retried poll cannot email a user twice about the same event.
 - **React 18 + Vite** on **Vercel** renders the dashboard. Colors are tokens, and a test checks every color pair against WCAG 2.1 AA contrast. A vitest-axe suite checks every page.
 
-How Kiro was used: the Kiro IDE only, with built-in sub-agents (no custom agents) and no Kiro powers. One spec (18 requirements, 38 design properties, 20 task sections) drove the build, with tasks that cite requirements and property tests that cite design properties. Five steering files fix the stack, structure, MVP scope, visual design and product tone, and `tests/repo-guard.test.ts` turns some of those rules into a failing test. The Neon MCP tools were used for read-only checks of production during the live smoke test (recorded in `docs/decisions.md`). Hooks are defined in `.kiro/hooks/`, but `docs/kiro-usage.md` lists known gaps in them. The full account is in [`docs/kiro-usage.md`](kiro-usage.md).
+How Kiro was used: the Kiro IDE only, with built-in sub-agents (no custom agents) and no Kiro powers. One spec (18 requirements, 38 design properties, 20 task sections) drove the build, with tasks that cite requirements and property tests that cite design properties. Five steering files fix the stack, structure, MVP scope, visual design and product tone, and `tests/repo-guard.test.ts` turns some of those rules into a failing test. The Neon MCP tools were used for read-only checks of production during the live smoke test (recorded in `docs/decisions.md`). Hooks are defined in `.kiro/hooks/`, but `docs/kiro-usage.md` lists known gaps in them. The flagged additions came from a second spec (`.kiro/specs/aerobrief-phase2/`, 21 design properties) and the Phase 2 section of the scope steering file, which requires a flag per feature and a rollback rule. One of its property tests caught a real bug: the digest unsubscribe signature check accepted more than one string for the same signature. The full account is in [`docs/kiro-usage.md`](kiro-usage.md).
 
 ## Challenges
 

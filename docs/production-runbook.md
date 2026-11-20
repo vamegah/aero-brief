@@ -44,11 +44,15 @@ Prerequisites: `npm install` has run at the repo root, `npx wrangler login` is d
 
 Use the direct (unpooled) owner connection for DDL. The four migrations are `0000_init_schema.sql`, `0001_enforce_subscription_cap.sql`, `0002_seed_airports.sql` and `0003_poller_lease_holder.sql`.
 
+Note: the `packages/db/migrations/` folder on the Phase 2 line also holds `0004_webhooks.sql` and `0005_digest.sql`. The command below applies every migration in the folder, so do not run it against production until the Phase 2 rollout plan says to.
+
 In PowerShell, from the repo root:
 
 ```powershell
 $env:DATABASE_URL = "<paste the UNPOOLED owner URL from the Neon console>"
-npx drizzle-kit migrate --config packages/db/drizzle.config.ts
+Push-Location packages/db   # the config uses ./src/schema.ts and ./migrations, so run from here
+npx drizzle-kit migrate --config drizzle.config.ts
+Pop-Location
 Remove-Item Env:DATABASE_URL
 ```
 
