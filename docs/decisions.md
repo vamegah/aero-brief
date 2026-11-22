@@ -134,3 +134,26 @@ No connection string or password is recorded here. The branch holds a copy of pr
 - 2026-11-20: Task 6.2 checkpoint (all four flags on) run on branch `phase-2` at 58daf5c. No flags-on script or test setup exists, so `FEATURE_DARK_MODE`, `FEATURE_HIGH_CONTRAST`, `FEATURE_WEBHOOKS` and `FEATURE_DIGESTS` were set to `true` in the process environment. Flag-on tests in web, API and Poller set their own flags (`FeaturesContext.Provider` values and `baseEnv` objects), so the process variables do not change what they test.
   - `npm test`: 198 test files passed, 1 failed, 6 skipped (205); 1800 tests passed, 1 failed, 15 skipped (1816). The one failure is `apps/web/test/features-provider.test.tsx > does not read a build-time variable for flags`. It is an environment artifact: vitest copies `FEATURE_*` process variables into `import.meta.env`, and the guard correctly rejects them. The guard was not weakened. With the variables unset, that file passes (14 of 14).
   - `npm run typecheck` with the flags on: exit 0. `npm run build -w @aerobrief/web` with the flags on: exit 0 (94 modules, 189.00 kB JS, 30.06 kB CSS).
+
+## 2026-11-22: Vercel Function relay for the FAA poll (approved deviation from tech.md)
+
+The production poller gets HTTP 403 from the FAA on every poll, so no Snapshot is stored. The owner chose a relay on a Vercel Function (option 2) and approved the deviation from `tech.md` on 2026-11-22. Spec: `.kiro/specs/faa-403-poller/` (`bugfix.md`, `design.md`). Evidence: `.kiro/specs/faa-403-poller/probe-result.md`.
+
+| Question | Answer |
+| --- | --- |
+| What is outside the approved stack? | A Vercel Function used as a backend component. `tech.md` names Cloudflare Workers for the poller and the API and uses Vercel only for the frontend. |
+| Why is it needed? | The FAA edge denies requests from Cloudflare Workers. A throwaway Worker called `https://nasstatus.faa.gov/api/airport-events` three ways from Cloudflare colo DFW on 2026-11-21 (no headers, the AeroBrief `User-Agent`, a browser-like `User-Agent`). All three got HTTP 403 with an "Access Denied" page. The same URL returns 200 with valid JSON from the owner's machine. The live site shows no data because of it. |
+| In-stack options considered | (a) Request headers on the Worker: ruled out, all three header variants got 403. (b) Contact the FAA to be allowed: possible later, but no answer is expected before December 4, 2026. (c) A GitHub Actions scheduled job as the poller: GitHub's schedule is unreliable (delayed or skipped runs). |
+| Approved by, when | The owner, explicitly, 2026-11-22. |
+| Scope of the exception | One Vercel Function, `apps/web/api/internal/faa-relay.ts`, one fixed upstream URL (`https://nasstatus.faa.gov/api/airport-events`). It does not permit other Vercel Functions or other backend logic. It is not an always-on server: it runs per request. |
+| Rollback | Unset `FAA_RELAY_URL` and `FAA_RELAY_SECRET` on `aerobrief-poller` (`npx wrangler secret delete <NAME> --name aerobrief-poller`). The poller calls the FAA directly again, as before. No deploy is needed. |
+
+Approved recommendations (owner, 2026-11-22):
+1. Rate limit: add a Vercel Firewall rate-limit rule on `/api/internal/faa-relay` if the owner's Vercel plan includes rate limiting. Not yet checked whether the plan includes it. Calls without the key still count as function invocations, and going over Hobby limits pauses the whole project.
+2. Non-2xx pass-through: when the FAA answers non-2xx, the relay passes the status and only a 300-character text excerpt of the body, not the full HTML.
+3. Fail closed: the poller fails closed on an invalid `FAA_RELAY_URL` or `FAA_RELAY_SECRET`. It makes no request and records a failed `job_run` (`failure_kind=validation`). It does not fall back to a direct call.
+
+Notes:
+- Not yet known whether Vercel's network is also denied by the FAA. Task 10 proves it on a Preview deployment before the poller changes. If Vercel is denied too, work stops and the owner is told (requirement 2.7). A second relay host would be another deviation and needs its own approval.
+- Probe Worker `aerobrief-faa-probe` was deleted on 2026-11-22. Its `workers.dev` URL now returns 404. `tools/faa-probe/` is still in the repo until the checkpoint task removes it.
+- Scraping, FAA SWIM and other data sources stay prohibited by `scope.md`. This entry does not change them.

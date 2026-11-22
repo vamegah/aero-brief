@@ -31,6 +31,7 @@ jobs:
           - apps/poller/tsconfig.json
           - apps/api/tsconfig.json
           - apps/web/tsconfig.json
+          - apps/web/api/tsconfig.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -1,3 +1,4 @@
+import type { PreviousPollRun } from "@aerobrief/core";
 import { desc, eq } from "drizzle-orm";
 import { jobRuns } from "../schema";
 import type { Db } from "./client";
@@ -38,8 +39,24 @@ export function latestFailureQuery(db: Db) {
   return db.select().from(jobRuns).where(eq(jobRuns.outcome, "failed")).orderBy(desc(jobRuns.startedAt)).limit(1);
 }
 
+/** Newest poll-job row, outcome and start time only. Read-only; uses job_runs_started_at_idx. */
+export function latestPollRunQuery(db: Db) {
+  return db
+    .select({ outcome: jobRuns.outcome, startedAt: jobRuns.startedAt })
+    .from(jobRuns)
+    .where(eq(jobRuns.job, "poll"))
+    .orderBy(desc(jobRuns.startedAt))
+    .limit(1);
+}
+
 export function jobRunRepository(db: Db) {
   return {
+    /** The newest `job = "poll"` run, or null when there is none or its outcome is not success or failed. */
+    async latestPollRun(): Promise<PreviousPollRun | null> {
+      const row = (await latestPollRunQuery(db))[0];
+      if (!row || (row.outcome !== "success" && row.outcome !== "failed")) return null;
+      return { outcome: row.outcome, startedAt: row.startedAt };
+    },
     async recordSuccess(startedAt: Date, finishedAt: Date, snapshotId?: string | null): Promise<void> {
       await successJobRunQuery(db, { startedAt, finishedAt, snapshotId: snapshotId ?? null });
     },

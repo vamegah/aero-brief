@@ -36,7 +36,7 @@ const KNOWN_REPO_KEYS = new Set(["snapshots", "jobRuns", "pollerLease", "storePo
 function makeRepos() {
   return {
     snapshots: { latestSnapshot: vi.fn(async () => ({ id: "s", capturedAt: now.toISOString(), airports: [] })) },
-    jobRuns: { recordFailure: vi.fn(async () => undefined) },
+    jobRuns: { recordFailure: vi.fn(async () => undefined), latestPollRun: vi.fn(async () => null) },
     pollerLease: { acquire: vi.fn(async () => "token"), release: vi.fn(async () => undefined) },
     storePollResult: vi.fn(async (_input: unknown): Promise<unknown[]> => [gsEvent]),
     subscriptions: {

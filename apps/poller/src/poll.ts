@@ -4,6 +4,7 @@ import {
   eventKey,
   explain,
   normalizeResponse,
+  shouldWarnUpstreamFailure,
   type Logger,
 } from "@aerobrief/core";
 import { createDb, createRepositories, type FailureKind, type Repositories } from "@aerobrief/db";
@@ -22,7 +23,7 @@ const MAX_DETAIL_CHARS = 200;
 /** The repository methods the poll cycle uses. */
 export type PollRepositories = {
   snapshots: Pick<Repositories["snapshots"], "latestSnapshot">;
-  jobRuns: Pick<Repositories["jobRuns"], "recordFailure">;
+  jobRuns: Pick<Repositories["jobRuns"], "recordFailure" | "latestPollRun">;
   pollerLease: Pick<Repositories["pollerLease"], "acquire" | "release">;
   storePollResult: Repositories["storePollResult"];
   subscriptions: NotifierRepositories["subscriptions"];
@@ -86,6 +87,16 @@ export async function runPoll(env: Env, now: Date, deps: PollDeps = {}): Promise
 
   const startedAt = now;
   const fail = async (kind: FailureKind, detail: string): Promise<void> => {
+    if (kind === "http_status") {
+      // Read the previous run BEFORE recording this failure. A read failure never blocks the record.
+      let warn = true;
+      try {
+        warn = shouldWarnUpstreamFailure(await repos.jobRuns.latestPollRun(), now);
+      } catch (err) {
+        logger.error("poll_previous_run_read_failed", { error: err });
+      }
+      if (warn) logger.warn("faa_upstream_non_2xx", { kind, detail: truncate(redact(detail)) });
+    }
     try {
       await repos.jobRuns.recordFailure(kind, truncate(redact(detail)), startedAt, clock());
     } catch (err) {

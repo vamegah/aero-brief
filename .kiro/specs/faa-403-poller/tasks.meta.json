@@ -1,0 +1,396 @@
+{
+  "pbtResults": {
+    "3. Write preservation property tests (BEFORE implementing the fix)": {
+      "status": "passed",
+      "lastRunTimestamp": 1795307592885
+    }
+  },
+  "executionHistory": {
+    "1.1 Write the Probe source": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231040756
+      },
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231052528
+      },
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231204485
+      }
+    ],
+    "1.2 Deploy the Probe and call it. **NEEDS USER APPROVAL**": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231040941
+      },
+      {
+        "executionId": "780555e9-de58-486c-bcb2-d899736e16cc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795306304334
+      },
+      {
+        "executionId": "780555e9-de58-486c-bcb2-d899736e16cc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795306318942
+      }
+    ],
+    "1.3 Record the result": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231041162
+      },
+      {
+        "executionId": "780555e9-de58-486c-bcb2-d899736e16cc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795306322775
+      },
+      {
+        "executionId": "780555e9-de58-486c-bcb2-d899736e16cc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795306364934
+      }
+    ],
+    "1.4 Delete the Probe. **NEEDS USER APPROVAL**": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231041306
+      },
+      {
+        "executionId": "065bd79f-7a72-478d-b4db-7fcba0c71772",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795306815912
+      },
+      {
+        "executionId": "065bd79f-7a72-478d-b4db-7fcba0c71772",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795306834995
+      }
+    ],
+    "1.5 Decision gate": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231041486
+      }
+    ],
+    "2. Write bug condition exploration test (Branch A only)": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231041619
+      }
+    ],
+    "3. Write preservation property tests (BEFORE implementing the fix)": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231041736
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307476081
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307602658
+      }
+    ],
+    "4.1 Add the pure decision function and its tests": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231041858
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307609357
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307831692
+      }
+    ],
+    "4.2 Add the repository read": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231041935
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307834871
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307940357
+      }
+    ],
+    "4.3 Wire the warning into `runPoll`": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231042004
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307944331
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308230153
+      }
+    ],
+    "5.1 Implement the fix": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231042187
+      }
+    ],
+    "5.2 Verify the bug condition exploration test now passes": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231042387
+      }
+    ],
+    "5.3 Verify preservation tests still pass": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231042531
+      }
+    ],
+    "6. Stop and present options (Branch B only)": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231042624
+      }
+    ],
+    "7. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231042713
+      }
+    ],
+    "8. Ship and verify in production (owner steps)": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231042804
+      }
+    ],
+    "9. Housekeeping, independent of the 403 fix: update `docs/phase2-rollout.md` section 3.2": [
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231042900
+      },
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231215705
+      },
+      {
+        "executionId": "b4e28354-c048-4deb-9fc7-77ec53c290eb",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795231309852
+      }
+    ],
+    "6.1 Add the entry to `docs/decisions.md`": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307465184
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308234583
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308266956
+      }
+    ],
+    "6.2 Add an \"Approved exceptions\" note to `.kiro/steering/tech.md`": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307465421
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308269797
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308291088
+      }
+    ],
+    "10.1 Write the minimal relay (version 0) and its project wiring": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307465572
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308294884
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308479980
+      }
+    ],
+    "10.2 Deploy the Preview and prepare the call. **NEEDS USER ACTION**": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307465642
+      }
+    ],
+    "10.3 Call the Preview relay and record the result (the gate)": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307465709
+      }
+    ],
+    "11. Write bug condition exploration test (replaces the headers exploration test)": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307465858
+      }
+    ],
+    "12.1 Add `packages/core/src/faa-relay.ts` and its unit tests": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307465955
+      }
+    ],
+    "12.2 Property tests for the relay logic": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307466103
+      }
+    ],
+    "13.1 Replace the version 0 handler with the full relay": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307466208
+      }
+    ],
+    "13.2 Unit tests for the handler": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307466314
+      }
+    ],
+    "13.3 Property tests for the handler": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307466472
+      }
+    ],
+    "14. Full relay on Preview: routing and module check. **NEEDS USER ACTION**": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307466531
+      }
+    ],
+    "15.1 Implement the fix": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307466590
+      }
+    ],
+    "15.2 Verify the bug condition exploration test now passes": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307466757
+      }
+    ],
+    "15.3 Verify preservation tests still pass": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307466934
+      }
+    ],
+    "15.4 Add the relay-mode destination and secret property tests": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307467000
+      }
+    ],
+    "16. Docs for the new variables and the relay": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307467094
+      }
+    ],
+    "17. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307467208
+      }
+    ],
+    "18. Ship and verify in production (owner steps). **NEEDS USER ACTION**": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795307467323
+      }
+    ],
+    "4. Log a rate-limited warning on non-2xx (all branches)": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308230533
+      }
+    ],
+    "6. Record the owner's decision and the `tech.md` deviation (replaces \"stop and present options\")": [
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308291166
+      }
+    ]
+  }
+}

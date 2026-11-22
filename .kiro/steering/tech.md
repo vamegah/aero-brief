@@ -45,3 +45,8 @@ Never suggest a technology outside this list without flagging the deviation expl
 
 - Frontend: Vercel Git integration, auto-deploys on push to `main`.
 - Workers: GitHub Actions (`.github/workflows/deploy-workers.yml`) with `cloudflare/wrangler-action`.
+
+## Approved exceptions
+
+- One Vercel Function, `apps/web/api/internal/faa-relay.ts`, fetches only the fixed FAA URL on behalf of the poller, because the FAA edge blocks Cloudflare Workers egress. Approved by the owner on 2026-11-22. See `.kiro/specs/faa-403-poller/design.md` and `docs/decisions.md`.
+- This exception permits no other Vercel Functions and no other backend logic on Vercel. The "no unflagged deviations" rule above still applies to everything else.

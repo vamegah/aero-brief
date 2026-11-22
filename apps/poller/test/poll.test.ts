@@ -1,4 +1,4 @@
-import { createLogger, type Logger } from "@aerobrief/core";
+import { createLogger, type Logger, type PreviousPollRun } from "@aerobrief/core";
 import { describe, expect, it, vi } from "vitest";
 import type { Env } from "../src/env";
 import { FAA_API_URL, type FetchFn } from "../src/faa-client";
@@ -19,7 +19,10 @@ const okBody = JSON.stringify([{ airportId: "JFK", airportLongName: "John F Kenn
 function setup(opts: { token?: string | null; fetchFn?: FetchFn } = {}) {
   const repos = {
     snapshots: { latestSnapshot: vi.fn(async () => null) },
-    jobRuns: { recordFailure: vi.fn(async () => undefined) },
+    jobRuns: {
+      recordFailure: vi.fn(async () => undefined),
+      latestPollRun: vi.fn(async (): Promise<PreviousPollRun | null> => null),
+    },
     pollerLease: {
       acquire: vi.fn(async () => (opts.token === undefined ? TOKEN : opts.token)),
       release: vi.fn(async () => undefined),
@@ -208,5 +211,79 @@ describe("runPoll", () => {
     const log = lines.join("\n");
     expect(log).toContain("poll_notify_failed");
     expect(log).not.toContain(env.RESEND_API_KEY);
+  });
+});
+
+describe("runPoll upstream warning", () => {
+  const http403: FetchFn = async () => new Response("Access Denied", { status: 403 });
+  const warns = (lines: string[]) => lines.filter((l) => l.includes("faa_upstream_non_2xx"));
+
+  it("warns once on the first 403 and still records the failure", async () => {
+    const { repos, lines, run } = setup({ fetchFn: http403 });
+    await run();
+    expect(warns(lines)).toHaveLength(1);
+    expect(warns(lines)[0]).toContain("HTTP 403");
+    expect(repos.jobRuns.recordFailure).toHaveBeenCalledTimes(1);
+  });
+
+  it("reads the previous run before recording the failure", async () => {
+    const { repos, run } = setup({ fetchFn: http403 });
+    await run();
+    const read = repos.jobRuns.latestPollRun.mock.invocationCallOrder[0] as number;
+    const write = repos.jobRuns.recordFailure.mock.invocationCallOrder[0] as number;
+    expect(read).toBeLessThan(write);
+  });
+
+  it("does not warn when the previous run failed in the same UTC hour", async () => {
+    const { repos, lines, run } = setup({ fetchFn: http403 });
+    repos.jobRuns.latestPollRun.mockResolvedValueOnce({
+      outcome: "failed",
+      startedAt: new Date("2025-01-02T12:00:00.000Z"),
+    });
+    await run();
+    expect(warns(lines)).toHaveLength(0);
+    expect(repos.jobRuns.recordFailure).toHaveBeenCalledTimes(1);
+  });
+
+  it("warns when the previous failure was in an earlier UTC hour", async () => {
+    const { repos, lines, run } = setup({ fetchFn: http403 });
+    repos.jobRuns.latestPollRun.mockResolvedValueOnce({
+      outcome: "failed",
+      startedAt: new Date("2025-01-02T11:55:00.000Z"),
+    });
+    await run();
+    expect(warns(lines)).toHaveLength(1);
+  });
+
+  it("still records the failure and warns when reading the previous run throws", async () => {
+    const { repos, lines, run } = setup({ fetchFn: http403 });
+    repos.jobRuns.latestPollRun.mockRejectedValueOnce(new Error(`down ${env.DATABASE_URL}`));
+    await expect(run()).resolves.toBeUndefined();
+    expect(repos.jobRuns.recordFailure).toHaveBeenCalledTimes(1);
+    expect(warns(lines)).toHaveLength(1);
+    expect(lines.join("\n")).not.toContain(env.DATABASE_URL);
+    expect(repos.pollerLease.release).toHaveBeenCalledTimes(1);
+  });
+
+  it("contains no secret in the warning line", async () => {
+    const { lines, run } = setup({ fetchFn: async () => new Response(env.RESEND_API_KEY, { status: 403 }) });
+    await run();
+    const log = lines.join("\n");
+    for (const s of [env.DATABASE_URL, env.RESEND_API_KEY, env.UNSUBSCRIBE_SECRET]) expect(log).not.toContain(s);
+  });
+
+  it("does not read the previous run or warn on success or non-http failures", async () => {
+    const ok = setup();
+    await ok.run();
+    expect(ok.repos.jobRuns.latestPollRun).not.toHaveBeenCalled();
+    expect(warns(ok.lines)).toHaveLength(0);
+    const net = setup({
+      fetchFn: async () => {
+        throw new TypeError("reset");
+      },
+    });
+    await net.run();
+    expect(net.repos.jobRuns.latestPollRun).not.toHaveBeenCalled();
+    expect(warns(net.lines)).toHaveLength(0);
   });
 });

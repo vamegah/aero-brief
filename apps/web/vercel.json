@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "api/internal/faa-relay.ts": { "maxDuration": 15, "regions": ["iad1"] }
+  },
   "rewrites": [
     { "source": "/api/:path*", "destination": "https://aerobrief-api.vamegah.workers.dev/api/:path*" },
     { "source": "/auth/callback", "destination": "/index.html" },
