@@ -228,7 +228,7 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
   - No file in the repo gets a real secret value
   - _Requirements: 2.4, 3.4_
 
-- [-] 17. Checkpoint - Ensure all tests pass
+- [x] 17. Checkpoint - Ensure all tests pass
   - Run `npm test` and `npm run typecheck`. `tests/repo-guard.test.ts`, `tests/deploy-guard.test.ts`, `tests/import-rules.test.ts` and `tests/flags-off-guard.test.ts` must pass. Ask the owner if questions arise
   - Remove `tools/faa-probe/` and its entry in the root `typecheck` script, unless the owner wants it kept (task 1.4). Confirm `deploy-workers.yml` is unchanged
   - Commit on branch `phase-2` (no push)
