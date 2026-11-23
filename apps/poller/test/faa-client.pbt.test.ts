@@ -284,3 +284,50 @@ describe("runPoll preservation (direct mode, no relay config)", () => {
     );
   });
 });
+
+describe("fetchFaa destinations (Property 5)", () => {
+  const RELAY_URL = "https://www.aerobriefs.com/api/internal/faa-relay";
+  const relayOpt = fc.oneof(
+    fc.constant(undefined),
+    fc.stringMatching(/^[A-Za-z0-9]{32,64}$/).map((secret) => ({ url: RELAY_URL, secret })),
+  );
+  const respArb = fc.oneof(
+    failureStatus.map((status) => ({ kind: "status" as const, status })),
+    fc.constant({ kind: "ok" as const }),
+    fc.constant({ kind: "bad" as const }),
+    fc.string({ maxLength: 30 }).map((message) => ({ kind: "throw" as const, message })),
+  );
+
+  // Feature: faa-403-poller, Property 5: The poller calls only the FAA URL or the configured relay URL
+  // **Validates: Requirements 2.4, 2.5, 3.1**
+  it("makes exactly one call: to the relay URL with the key in relay mode, to FAA_API_URL with no key otherwise", async () => {
+    await fc.assert(
+      fc.asyncProperty(relayOpt, respArb, async (relay, r) => {
+        const calls: { url: string; headers: Record<string, string> }[] = [];
+        const fn: FetchFn = async (url, init) => {
+          calls.push({ url, headers: init.headers ?? {} });
+          if (r.kind === "throw") throw new TypeError(r.message);
+          if (r.kind === "status") return new Response(null, { status: r.status });
+          if (r.kind === "bad") return new Response("<html>", { status: 200 });
+          return new Response(okBody, { status: 200 });
+        };
+        await fetchFaa(fn, relay);
+        expect(calls).toHaveLength(1);
+        const call = calls[0];
+        if (relay === undefined) {
+          expect(call?.url).toBe(FAA_API_URL);
+        } else {
+          expect(call?.url).toBe(relay.url);
+          expect(call?.headers["x-aerobrief-relay-key"]).toBe(relay.secret);
+        }
+        // The key header goes only to the relay host, never to the FAA host.
+        for (const c of calls) {
+          if (new URL(c.url).host === "nasstatus.faa.gov") {
+            expect(Object.keys(c.headers).map((k) => k.toLowerCase())).not.toContain("x-aerobrief-relay-key");
+          }
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    );
+  });
+});

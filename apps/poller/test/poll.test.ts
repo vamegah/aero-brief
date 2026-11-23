@@ -1,4 +1,5 @@
 import { createLogger, type Logger, type PreviousPollRun } from "@aerobrief/core";
+import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import type { Env } from "../src/env";
 import { FAA_API_URL, type FetchFn } from "../src/faa-client";
@@ -285,5 +286,128 @@ describe("runPoll upstream warning", () => {
     await net.run();
     expect(net.repos.jobRuns.latestPollRun).not.toHaveBeenCalled();
     expect(warns(net.lines)).toHaveLength(0);
+  });
+});
+
+describe("runPoll relay destinations (Property 5)", () => {
+  const VALID_URL = "https://www.aerobriefs.com/api/internal/faa-relay";
+  const secretArb = fc.stringMatching(/^[A-Za-z0-9]{32,64}$/);
+  const shortSecretArb = fc.stringMatching(/^[A-Za-z0-9]{1,31}$/);
+  const badUrlArb = fc.constantFrom(
+    "http://www.aerobriefs.com/api/internal/faa-relay",
+    "https://www.aerobriefs.com.evil.com/api/internal/faa-relay",
+    "https://evil.example/api/internal/faa-relay",
+    "https://user:pw@www.aerobriefs.com/api/internal/faa-relay",
+    "https://www.aerobriefs.com:8443/api/internal/faa-relay",
+    "https://www.aerobriefs.com/api/internal/faa-relay?x=1",
+    "https://www.aerobriefs.com/other",
+    "https://nasstatus.faa.gov/api/airport-events",
+    "not a url",
+  );
+  const unsetArb = fc.constantFrom<string | undefined>(undefined, "");
+
+  type Cfg = { url: string | undefined; secret: string | undefined };
+  const cfgArb: fc.Arbitrary<Cfg> = fc.oneof(
+    fc.record({ url: unsetArb, secret: unsetArb }),
+    fc.record({ url: fc.constant<string | undefined>(VALID_URL), secret: secretArb }),
+    fc.record({ url: fc.constant<string | undefined>(VALID_URL), secret: unsetArb }),
+    fc.record({ url: unsetArb, secret: secretArb }),
+    fc.record({ url: fc.constant<string | undefined>(VALID_URL), secret: shortSecretArb }),
+    fc.record({ url: badUrlArb, secret: secretArb }),
+  );
+  const outcomeArb = fc.oneof(
+    fc.constant({ kind: "ok" as const }),
+    fc.integer({ min: 300, max: 599 }).map((status) => ({ kind: "status" as const, status })),
+    fc.constant({ kind: "throw" as const }),
+    fc.constant({ kind: "bad" as const }),
+  );
+
+  // Feature: faa-403-poller, Property 5: The poller calls only the FAA URL or the configured relay URL
+  // **Validates: Requirements 2.4, 2.5, 3.1**
+  it("calls the FAA URL (unset), the relay URL (valid) or nothing (invalid, validation failure naming keys only)", async () => {
+    await fc.assert(
+      fc.asyncProperty(cfgArb, outcomeArb, async (cfg, outcome) => {
+        const calls: { url: string; headers: Record<string, string> }[] = [];
+        const recorded: { kind: string; detail: string }[] = [];
+        const levels: { level: string; line: string }[] = [];
+        const sink = (level: string) => (line: string) => void levels.push({ level, line });
+        const logger = createLogger([], { debug: sink("debug"), info: sink("info"), warn: sink("warn"), error: sink("error") });
+        const repos = {
+          snapshots: { latestSnapshot: async () => null },
+          jobRuns: {
+            latestPollRun: async () => null,
+            recordFailure: async (kind: string, detail: string) => void recorded.push({ kind, detail }),
+          },
+          pollerLease: { acquire: async () => "t", release: vi.fn(async () => undefined) },
+          storePollResult: async () => [],
+          subscriptions: { watchersOfAirport: async () => [], usersWithWatchlist: async () => [] },
+          alertLog: { claim: async () => [], recordOutcome: async () => undefined, recordLatency: async () => undefined },
+        };
+        const fetchFn: FetchFn = async (url, init) => {
+          calls.push({ url, headers: init.headers ?? {} });
+          if (outcome.kind === "throw") throw new TypeError("boom");
+          if (outcome.kind === "status") return new Response(null, { status: outcome.status });
+          if (outcome.kind === "bad") return new Response("<html>", { status: 200 });
+          return new Response(okBody, { status: 200 });
+        };
+        await runPoll(
+          { ...env, ...(cfg.url !== undefined ? { FAA_RELAY_URL: cfg.url } : {}), ...(cfg.secret !== undefined ? { FAA_RELAY_SECRET: cfg.secret } : {}) },
+          now,
+          { fetchFn, createRepositories: () => repos as unknown as PollRepositories, logger, notifyFn: (async () => ({})) as unknown as NonNullable<PollDeps["notifyFn"]> },
+        );
+
+        const url = cfg.url ?? "";
+        const secret = cfg.secret ?? "";
+        const mode = url === "" && secret === "" ? "direct" : url === VALID_URL && secret.length >= 32 ? "relay" : "invalid";
+        if (mode === "direct") {
+          expect(calls.map((c) => c.url)).toEqual([FAA_API_URL]);
+          expect(Object.keys(calls[0]?.headers ?? {})).toHaveLength(0);
+        } else if (mode === "relay") {
+          expect(calls.map((c) => c.url)).toEqual([VALID_URL]);
+          expect(calls[0]?.headers["x-aerobrief-relay-key"]).toBe(secret);
+        } else {
+          expect(calls).toHaveLength(0);
+          expect(recorded).toHaveLength(1);
+          expect(recorded[0]?.kind).toBe("validation");
+          expect(recorded[0]?.detail).toMatch(/^Invalid relay settings: FAA_RELAY_(URL|SECRET)(, FAA_RELAY_SECRET)?$/);
+          if (url.length >= 8) expect(recorded[0]?.detail).not.toContain(url);
+          if (secret.length >= 8) expect(recorded[0]?.detail).not.toContain(secret);
+          const entry = levels.filter((l) => l.line.includes("faa_relay_config_invalid"));
+          expect(entry).toHaveLength(1);
+          expect(entry[0]?.level).toBe("error");
+          if (secret.length >= 8) expect(levels.some((l) => l.line.includes(secret))).toBe(false);
+        }
+        expect(repos.pollerLease.release).toHaveBeenCalledTimes(1);
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it.each([
+    ["only the URL is set", VALID_URL, undefined, "FAA_RELAY_SECRET"],
+    ["only the secret is set", undefined, "s".repeat(32), "FAA_RELAY_URL"],
+    ["http: URL", "http://www.aerobriefs.com/api/internal/faa-relay", "s".repeat(32), "FAA_RELAY_URL"],
+    ["lookalike host", "https://www.aerobriefs.com.evil.com/api/internal/faa-relay", "s".repeat(32), "FAA_RELAY_URL"],
+    ["other host", "https://evil.example/api/internal/faa-relay", "s".repeat(32), "FAA_RELAY_URL"],
+    ["userinfo", "https://u:p@www.aerobriefs.com/api/internal/faa-relay", "s".repeat(32), "FAA_RELAY_URL"],
+    ["short secret", VALID_URL, "short", "FAA_RELAY_SECRET"],
+  ])("invalid relay config (%s) makes no request and names only %s", async (_label, url, secret, key) => {
+    const { repos, fetchFn, lines } = setup();
+    await runPoll(
+      { ...env, ...(url ? { FAA_RELAY_URL: url } : {}), ...(secret ? { FAA_RELAY_SECRET: secret } : {}) },
+      now,
+      {
+        fetchFn,
+        createRepositories: () => repos as unknown as PollRepositories,
+        logger: createLogger([], { debug: () => undefined, info: () => undefined, warn: () => undefined, error: (l) => void lines.push(l) }),
+      },
+    );
+    expect(fetchFn).not.toHaveBeenCalled();
+    expect(repos.jobRuns.recordFailure).toHaveBeenCalledTimes(1);
+    const [kind, detail] = repos.jobRuns.recordFailure.mock.calls[0] as unknown as [string, string];
+    expect(kind).toBe("validation");
+    expect(detail).toBe(`Invalid relay settings: ${key}`);
+    expect(lines.some((l) => l.includes("faa_relay_config_invalid"))).toBe(true);
+    expect(repos.pollerLease.release).toHaveBeenCalledTimes(1);
   });
 });

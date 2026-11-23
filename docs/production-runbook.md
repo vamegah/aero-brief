@@ -430,3 +430,122 @@ Add a third monitor, Keyword, on `https://www.aerobriefs.com/api/status/national
 - [ ] Monitors stayed Up for at least 10 minutes after restoring the keyword.
 - [ ] Interval actually used is recorded in `docs/decisions.md`.
 - [ ] (Optional) `"stale":true` monitor on `/api/status/national`.
+
+---
+
+## FAA relay
+
+### What it is and why
+
+The FAA answers requests from Cloudflare Workers with HTTP 403 ("Access Denied"). A probe on 2026-11-21 from a Worker in the DFW data center got 403 with no headers, with the AeroBrief `User-Agent` and with a browser-like `User-Agent`. The same URL returned 200 from the owner's own network. Changing headers does not help, so the poller asks a small Vercel Function to fetch the FAA data for it. A probe on a Vercel Preview deployment got 200 and JSON from the FAA. Evidence: `.kiro/specs/faa-403-poller/probe-result.md` and `relay-probe-result.md`. The approval is recorded in `docs/decisions.md`.
+
+- The relay is `apps/web/api/internal/faa-relay.ts`, at `https://www.aerobriefs.com/api/internal/faa-relay`.
+- It answers only `GET` with the right key header (`x-aerobrief-relay-key`). It fetches one fixed FAA URL and nothing else, and it returns the FAA status and JSON.
+- The relay is optional. With the relay settings unset, the poller calls the FAA directly, as before.
+- The only Vercel project is `aero-brief`. The older `aerobrief` project was deleted on 2026-11-22.
+
+### The variables
+
+| Variable | Where | Notes |
+| --- | --- | --- |
+| `FAA_RELAY_SECRET` | Vercel project `aero-brief`, Production scope, in the dashboard | At least 32 characters. Without it the relay answers 500. A new value applies from the next deployment |
+| `FAA_RELAY_SECRET` | Worker `aerobrief-poller`, secret | The same value as on Vercel |
+| `FAA_RELAY_URL` | Worker `aerobrief-poller`, secret | `https://www.aerobriefs.com/api/internal/faa-relay`. Must be `https` and host `www.aerobriefs.com` |
+
+Set both Worker secrets or neither. Never write a value in a file, commit, chat or screenshot.
+
+### Generate the secret
+
+Run in PowerShell. It copies a random value to the clipboard and prints only its length:
+
+```powershell
+$b = New-Object byte[] 48
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($b); $rng.Dispose()
+$s = ([Convert]::ToBase64String($b) -replace '[+/=]', '')
+Set-Clipboard -Value $s
+"Copied $($s.Length) characters to the clipboard."
+```
+
+Paste it into the password manager first, then the Vercel dashboard, then the `wrangler secret put` prompt. Afterwards clear the clipboard: `Set-Clipboard -Value ' '`.
+
+### Order of steps
+
+1. **Push.** The owner pushes the branch that contains the relay to `main`. The push deploys the web app and the relay on Vercel, and the "Deploy Workers" run deploys both Workers. The poller stays in direct mode because the relay settings are still unset.
+2. **Set the key on Vercel.** In the Vercel dashboard, project `aero-brief`, Settings, Environment Variables, add `FAA_RELAY_SECRET` with the Production scope only. Vercel may ask for 2FA. Redeploy (or push again) so the new variable applies.
+3. **Check the relay** (next section).
+4. **Set the Worker secrets.** From `apps/poller`, with the same value as on Vercel, typed at the prompt (not piped):
+
+   ```powershell
+   $env:NODE_OPTIONS = "--use-system-ca"
+   npx wrangler secret put FAA_RELAY_SECRET --name aerobrief-poller
+   npx wrangler secret put FAA_RELAY_URL --name aerobrief-poller
+   ```
+
+   A secret takes effect without a deploy.
+5. **Check the poll** (see "Check that polling works" below).
+
+### Check the relay
+
+Replace `<KEY>` with the value from the password manager. Keep it out of shared terminals and saved history.
+
+```powershell
+curl.exe -i https://www.aerobriefs.com/api/internal/faa-relay
+curl.exe -i -X POST -H "x-aerobrief-relay-key: <KEY>" https://www.aerobriefs.com/api/internal/faa-relay
+curl.exe -i -H "x-aerobrief-relay-key: <KEY>" https://www.aerobriefs.com/api/internal/faa-relay
+```
+
+- No key: `401` and `{"error":"unauthorized"}`.
+- `POST` with the key: `405`.
+- `GET` with the key: `200`, `Content-Type: application/json`, `Cache-Control: no-store`, and the FAA JSON array (starting `[{"airportId":...`).
+
+### Check that polling works
+
+After the next cron run (every 5 minutes):
+
+- The newest `poll` row in `job_runs` has `outcome = 'success'`, and a new row exists in `snapshots` (the queries in 13.3, step 2).
+- `curl.exe https://www.aerobriefs.com/api/status/national` returns `"state":"ok"`.
+
+### What a failed `job_runs` row means
+
+Read `failure_kind` and `detail` of the newest `poll` row.
+
+| `failure_kind` and `detail` | Meaning | What to do |
+| --- | --- | --- |
+| `http_status`, `HTTP 401` | The Worker key and the Vercel key differ, or the Vercel value was not redeployed. | Set the same value on both and redeploy Vercel. |
+| `http_status`, `HTTP 405` | The relay got a method other than `GET`. | Check `FAA_RELAY_URL` points at the relay and nothing sits in between. |
+| `http_status`, `HTTP 500` | `FAA_RELAY_SECRET` is missing or shorter than 32 characters on Vercel Production. | Set it in the dashboard and redeploy. |
+| `http_status`, `HTTP 502` or `HTTP 504` | The relay could not reach the FAA (502), or the FAA took longer than 10 seconds (504). | Usually temporary. If it lasts, check the FAA site from your own network. |
+| `http_status`, `HTTP 403` | The FAA denied Vercel's network too. | The relay does not help now. Delete the Worker secrets (rollback below) and tell the owner. |
+| `validation`, `Invalid relay settings: ...` | A Worker setting is wrong: only one of the two set, the URL is not `https://www.aerobriefs.com/...`, or the secret is under 32 characters. The detail names the settings, not their values. | Fix or delete the named secrets. |
+
+An invalid relay setting fails closed. The poller makes no request at all and records the `validation` failure. It does not fall back to a direct FAA call, so a typo cannot hide behind a call that is known to be blocked.
+
+### Warning log
+
+When the FAA or the relay answers with a non-2xx status, the poller writes a `faa_upstream_non_2xx` warning to the Worker log. It writes it at most once per UTC hour for a continuing failure, so a long outage does not flood the log. The log has the failure kind and `HTTP <status>`, and no secret. To watch it: `npx wrangler tail aerobrief-poller` from `apps/poller`.
+
+### Rollback
+
+Delete both Worker secrets. The next poll calls the FAA directly again. No deploy is needed.
+
+```powershell
+$env:NODE_OPTIONS = "--use-system-ca"
+npx wrangler secret delete FAA_RELAY_URL --name aerobrief-poller
+npx wrangler secret delete FAA_RELAY_SECRET --name aerobrief-poller
+```
+
+The relay and the Vercel variable can stay in place. With direct mode the polls fail with HTTP 403 until the FAA stops denying Cloudflare.
+
+### Abuse limit (unchecked)
+
+Each unauthenticated call to the relay counts as a Vercel Function invocation, and a Hobby project that goes over its limits can be paused, website included. If the Vercel plan includes Firewall custom rules, add a rate limit on the path `/api/internal/faa-relay` in the dashboard (Firewall, Custom Rules). This has not been checked: confirm that the plan has the feature, and choose the limit yourself. Nothing in the repo depends on it.
+
+### FAA relay verification checklist
+
+- [ ] `FAA_RELAY_SECRET` set on Vercel project `aero-brief`, Production scope, and redeployed.
+- [ ] Relay check: no key gives 401, `POST` gives 405, the right key gives 200 and JSON.
+- [ ] `FAA_RELAY_URL` and `FAA_RELAY_SECRET` set on `aerobrief-poller`, same key value as Vercel.
+- [ ] Newest `poll` row in `job_runs` is `success`, and `/api/status/national` returns `"state":"ok"`.
+- [ ] Clipboard cleared. The value is only in the password manager.
+- [ ] Preview-scope `FAA_RELAY_SECRET` deleted from Vercel after go-live.

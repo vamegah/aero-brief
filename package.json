@@ -12,7 +12,7 @@
     "test": "vitest --run",
     "rotate-secrets": "node scripts/rotate-secrets.ts",
     "migrate-phase2": "node scripts/migrate-phase2.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p scripts/tsconfig.json && tsc --noEmit -p tools/faa-probe/tsconfig.json && npm run typecheck --workspaces --if-present"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p scripts/tsconfig.json && npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250101.0",

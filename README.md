@@ -42,6 +42,8 @@ To receive webhooks, see [`docs/webhooks.md`](docs/webhooks.md). The related API
 | Tests | Vitest, fast-check (property-based) |
 | CI | GitHub Actions |
 
+One Vercel Function, the FAA relay, is an approved exception to the Workers-only backend. See [`docs/decisions.md`](docs/decisions.md) and the "FAA relay" section of [`docs/production-runbook.md`](docs/production-runbook.md).
+
 Runtime validation uses Zod. Its approval and the approval of the dev-only accessibility tools (vitest-axe, jsdom, @testing-library/react) are recorded in [`docs/decisions.md`](docs/decisions.md).
 
 ## Repository layout
@@ -93,6 +95,18 @@ Copy-Item apps/poller/.dev.vars.example apps/poller/.dev.vars
 ```
 
 Then edit both `.dev.vars` files (gitignored). They hold `DATABASE_URL`, `RESEND_API_KEY`, `UNSUBSCRIBE_SECRET`, `FRONTEND_URL` and `MAIL_FROM`. Environment variables are validated with Zod at startup.
+
+### FAA relay variables (optional)
+
+The FAA blocks requests that come from Cloudflare Workers, so the poller can fetch the FAA data through a relay on Vercel. These variables are optional. When they are unset, the poller calls the FAA directly. Placeholders only here, never real values.
+
+| Variable | Where it lives | Purpose |
+| --- | --- | --- |
+| `FAA_RELAY_URL` | Poller Worker secret (`aerobrief-poller`) | `https://www.aerobriefs.com/api/internal/faa-relay`. Set together with `FAA_RELAY_SECRET`, or not at all |
+| `FAA_RELAY_SECRET` | Poller Worker secret (`aerobrief-poller`) | Shared key, at least 32 characters. Sent to the relay in a request header |
+| `FAA_RELAY_SECRET` | Vercel project `aero-brief`, Production scope | The same value as on the Worker. The relay rejects calls without it |
+
+Setup, checks and rollback are in the "FAA relay" section of [`docs/production-runbook.md`](docs/production-runbook.md).
 
 ## Database: migrate and seed
 

@@ -45,3 +45,6 @@ Quote these Reference numbers, the time (2026-11-21, about 23:55 UTC), the targe
 - `18.2b51db17.1795306310.70cf39be`
 - `18.2551db17.1795306310.bca222fd`
 - `18.2b51db17.1795306310.70cf39f7`
+
+## Probe tooling (removed)
+The probe lived in `tools/faa-probe/` as the Worker `aerobrief-faa-probe`. It was deployed from `apps/poller` with `npx wrangler deploy --config ..\..\tools\faa-probe\wrangler.jsonc` and deleted on Cloudflare on 2026-11-22 with `npx wrangler delete --name aerobrief-faa-probe`. Its source was removed from git in the task 17 commit. It needed `$env:NODE_OPTIONS = "--use-system-ca"` behind local HTTPS inspection.

@@ -1,4 +1,4 @@
-import { parseFaaBody, type FaaResponse } from "@aerobrief/core";
+import { RELAY_KEY_HEADER, parseFaaBody, type FaaResponse } from "@aerobrief/core";
 
 /** The only host the poller may call (Requirement 1.2). Matches FAA_API in requirements.md. */
 export const FAA_API_URL = "https://nasstatus.faa.gov/api/airport-events";
@@ -13,10 +13,38 @@ export type FaaFetchResult =
   | { ok: true; response: FaaResponse; fetchedAt?: string }
   | { ok: false; kind: FaaFailureKind; detail: string };
 
-export type FetchFn = (input: string, init: { signal: AbortSignal }) => Promise<Response>;
+export type FetchFn = (
+  input: string,
+  init: { signal: AbortSignal; headers?: Record<string, string> },
+) => Promise<Response>;
+
+/** A validated relay config, as returned by `resolveRelayConfig` in relay mode. */
+export type RelayTarget = { url: string; secret: string };
 
 function truncate(text: string, max = MAX_DETAIL_CHARS): string {
   return text.length > max ? `${text.slice(0, max)}…` : text;
+}
+
+const MIN_LEAK_CHARS = 8;
+
+/**
+ * Replace the secret, and any run of 8 or more characters that is a substring of it,
+ * with [REDACTED]. Runs before truncation so a cut cannot leave a partial secret.
+ */
+export function scrubSecret(text: string, secret: string | undefined): string {
+  if (!secret || secret.length < MIN_LEAK_CHARS) return text;
+  const covered = new Array<boolean>(text.length).fill(false);
+  for (let i = 0; i + MIN_LEAK_CHARS <= text.length; i++) {
+    if (secret.includes(text.slice(i, i + MIN_LEAK_CHARS))) {
+      for (let j = i; j < i + MIN_LEAK_CHARS; j++) covered[j] = true;
+    }
+  }
+  let out = "";
+  for (let i = 0; i < text.length; i++) {
+    if (!covered[i]) out += text[i];
+    else if (i === 0 || !covered[i - 1]) out += "[REDACTED]";
+  }
+  return out;
 }
 
 function errorName(err: unknown): string {
@@ -35,18 +63,26 @@ function errorMessage(err: unknown): string {
  * the timeout signal is the only signal this module passes to fetch.
  * Other rejections (DNS, connection reset) are reported as `network`.
  */
-function classifyThrown(err: unknown): FaaFetchResult {
+function classifyThrown(err: unknown, secret?: string): FaaFetchResult {
   const name = errorName(err);
   if (name === "TimeoutError" || name === "AbortError") {
     return { ok: false, kind: "timeout", detail: `FAA request exceeded ${FAA_TIMEOUT_MS} ms` };
   }
-  return { ok: false, kind: "network", detail: truncate(`${name}: ${errorMessage(err)}`) };
+  return { ok: false, kind: "network", detail: truncate(scrubSecret(`${name}: ${errorMessage(err)}`, secret)) };
 }
 
 /** Fetch and validate the FAA airport events. Never throws. */
-export async function fetchFaa(fetchFn: FetchFn = (input, init) => fetch(input, init)): Promise<FaaFetchResult> {
+export async function fetchFaa(
+  fetchFn: FetchFn = (input, init) => fetch(input, init),
+  relay?: RelayTarget,
+): Promise<FaaFetchResult> {
   try {
-    const res = await fetchFn(FAA_API_URL, { signal: AbortSignal.timeout(FAA_TIMEOUT_MS) });
+    const res = relay
+      ? await fetchFn(relay.url, {
+          signal: AbortSignal.timeout(FAA_TIMEOUT_MS),
+          headers: { [RELAY_KEY_HEADER]: relay.secret, Accept: "application/json" },
+        })
+      : await fetchFn(FAA_API_URL, { signal: AbortSignal.timeout(FAA_TIMEOUT_MS) });
     if (!res.ok) {
       return { ok: false, kind: "http_status", detail: `HTTP ${res.status}` };
     }
@@ -55,8 +91,8 @@ export async function fetchFaa(fetchFn: FetchFn = (input, init) => fetch(input, 
     if (parsed.kind === "ok") {
       return { ok: true, response: parsed.response, fetchedAt: new Date().toISOString() };
     }
-    return { ok: false, kind: parsed.kind, detail: truncate(parsed.detail) };
+    return { ok: false, kind: parsed.kind, detail: truncate(scrubSecret(parsed.detail, relay?.secret)) };
   } catch (err) {
-    return classifyThrown(err);
+    return classifyThrown(err, relay?.secret);
   }
 }

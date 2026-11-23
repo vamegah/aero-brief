@@ -3,6 +3,15 @@
     "3. Write preservation property tests (BEFORE implementing the fix)": {
       "status": "passed",
       "lastRunTimestamp": 1795307592885
+    },
+    "11. Write bug condition exploration test (replaces the headers exploration test)": {
+      "status": "passed",
+      "failingExample": "Counterexample: [\"AA00aA0aaaAaA0A0aAA0a0000AA0AAAA\"] (secret, shrunk). Expected relay URL \"https://www.aerobriefs.com/api/internal/faa-relay\", received \"https://nasstatus.faa.gov/api/airport-events\" (no key header sent)",
+      "lastRunTimestamp": 1795471579769
+    },
+    "15.2 Verify the bug condition exploration test now passes": {
+      "status": "passed",
+      "lastRunTimestamp": 1795473861340
     }
   },
   "executionHistory": {
@@ -271,6 +280,21 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307465642
+      },
+      {
+        "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795308509927
+      },
+      {
+        "executionId": "4283d48e-8257-4d73-97e7-e111c6fa04b7",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471215459
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471432975
       }
     ],
     "10.3 Call the Preview relay and record the result (the gate)": [
@@ -278,6 +302,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307465709
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471437258
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471475527
       }
     ],
     "11. Write bug condition exploration test (replaces the headers exploration test)": [
@@ -285,6 +319,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307465858
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471484888
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471590826
       }
     ],
     "12.1 Add `packages/core/src/faa-relay.ts` and its unit tests": [
@@ -292,6 +336,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307465955
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471598665
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471718387
       }
     ],
     "12.2 Property tests for the relay logic": [
@@ -299,6 +353,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307466103
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471722842
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471837023
       }
     ],
     "13.1 Replace the version 0 handler with the full relay": [
@@ -306,6 +370,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307466208
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471841340
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795472326724
       }
     ],
     "13.2 Unit tests for the handler": [
@@ -313,6 +387,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307466314
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795472331477
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795472805907
       }
     ],
     "13.3 Property tests for the handler": [
@@ -320,6 +404,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307466472
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795472806227
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795472813184
       }
     ],
     "14. Full relay on Preview: routing and module check. **NEEDS USER ACTION**": [
@@ -327,6 +421,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307466531
+      },
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795472857659
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795473676848
       }
     ],
     "15.1 Implement the fix": [
@@ -334,6 +438,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307466590
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795473681392
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795473796595
       }
     ],
     "15.2 Verify the bug condition exploration test now passes": [
@@ -341,6 +455,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307466757
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795473804011
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795473872544
       }
     ],
     "15.3 Verify preservation tests still pass": [
@@ -348,6 +472,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307466934
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795473872892
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795473877076
       }
     ],
     "15.4 Add the relay-mode destination and secret property tests": [
@@ -355,6 +489,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307467000
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795473881593
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795474409096
       }
     ],
     "16. Docs for the new variables and the relay": [
@@ -362,6 +506,16 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307467094
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795474413418
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795474484237
       }
     ],
     "17. Checkpoint - Ensure all tests pass": [
@@ -369,6 +523,11 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307467208
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795474488745
       }
     ],
     "18. Ship and verify in production (owner steps). **NEEDS USER ACTION**": [
@@ -390,6 +549,34 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795308291166
+      }
+    ],
+    "10. Relay probe: does Vercel's network get HTTP 200 from the FAA? (the gate)": [
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471475729
+      }
+    ],
+    "12. Pure relay logic in `packages/core`": [
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795471837142
+      }
+    ],
+    "13. Full relay function in `apps/web/api`": [
+      {
+        "executionId": "e8404ccc-bd94-44f4-9c18-3f72785aaed3",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795472813510
+      }
+    ],
+    "15. Fix: the poller uses the relay when configured": [
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795474409295
       }
     ]
   }

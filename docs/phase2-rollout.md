@@ -48,6 +48,8 @@ Read from `apps/api/src/env.ts`, `apps/api/src/features.ts`, `apps/api/src/webho
 | `UNSUBSCRIBE_SECRET_PREVIOUS`, `UNSUBSCRIBE_SECRET_PREVIOUS_EXPIRES_AT` | secret and variable, optional | yes | no | Only during a secret rotation (`docs/secret-rotation.md`). The API accepts the previous secret for checking. |
 | `FRONTEND_URL` | variable, in `wrangler.jsonc` | yes | yes | Base URL for links in emails. Digest unsubscribe links use it. |
 | `MAIL_FROM` | variable, in `wrangler.jsonc` | yes | yes | Sender of the digest. |
+| `FAA_RELAY_URL` | secret, optional | no | yes | Not a Phase 2 flag. Set both relay secrets or neither. Value: `https://www.aerobriefs.com/api/internal/faa-relay`. With both set, the poll goes through the FAA relay on Vercel because the FAA blocks Cloudflare Workers. With both unset, the poll calls the FAA directly. Only one set, or a wrong URL, fails the poll with `validation`. See `docs/production-runbook.md`, section "FAA relay". |
+| `FAA_RELAY_SECRET` | secret, optional | no | yes | Same value as `FAA_RELAY_SECRET` in the Vercel project `aero-brief` (Production scope). At least 32 characters. Set and delete it together with `FAA_RELAY_URL`. |
 | `DATABASE_URL`, `RESEND_API_KEY` | secrets, already set | yes | yes | Unchanged. `DATABASE_URL` must use the runtime role. |
 
 A flag is on only when its value is exactly `true`. Any other value, or no value, is off, and the Worker logs a warning that names the flag and not its value.

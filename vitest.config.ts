@@ -11,7 +11,6 @@ export default defineConfig({
             "tests/**/*.test.ts",
             "packages/*/test/**/*.test.ts",
             "apps/*/test/**/*.test.ts",
-            "tools/*/test/**/*.test.ts",
           ],
           exclude: ["**/node_modules/**", "apps/web/**"],
           environment: "node",

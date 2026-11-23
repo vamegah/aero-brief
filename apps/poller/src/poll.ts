@@ -4,6 +4,7 @@ import {
   eventKey,
   explain,
   normalizeResponse,
+  resolveRelayConfig,
   shouldWarnUpstreamFailure,
   type Logger,
 } from "@aerobrief/core";
@@ -65,6 +66,11 @@ export async function runPoll(env: Env, now: Date, deps: PollDeps = {}): Promise
   if (typeof env.WEBHOOK_MASTER_SECRET === "string" && env.WEBHOOK_MASTER_SECRET.length > 0) {
     secrets.push(env.WEBHOOK_MASTER_SECRET);
   }
+  // Values under 8 characters are never sent (invalid config makes no request), and redacting
+  // them would mangle the key names in the validation detail.
+  if (typeof env.FAA_RELAY_SECRET === "string" && env.FAA_RELAY_SECRET.length >= 8) {
+    secrets.push(env.FAA_RELAY_SECRET);
+  }
   const logger = deps.logger ?? createLogger(secrets);
   const clock = deps.clock ?? (() => new Date());
   const repos = (deps.createRepositories ?? defaultRepositories)(validEnv.DATABASE_URL);
@@ -107,7 +113,14 @@ export async function runPoll(env: Env, now: Date, deps: PollDeps = {}): Promise
   let inserted: Awaited<ReturnType<Repositories["storePollResult"]>> = [];
   let storedAt: Date | null = null;
   try {
-    const result = await fetchFaa(deps.fetchFn);
+    const relay = resolveRelayConfig({ url: env.FAA_RELAY_URL, secret: env.FAA_RELAY_SECRET });
+    if (relay.mode === "invalid") {
+      // Fail closed: no request is made, so the secret can never go to a wrong host.
+      logger.error("faa_relay_config_invalid", { keys: relay.keys });
+      await fail("validation", `Invalid relay settings: ${relay.keys.join(", ")}`);
+      return;
+    }
+    const result = await fetchFaa(deps.fetchFn, relay.mode === "relay" ? { url: relay.url, secret: relay.secret } : undefined);
     if (!result.ok) {
       await fail(result.kind, result.detail);
       return;

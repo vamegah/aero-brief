@@ -15,6 +15,9 @@ export interface Env {
   SAFE_SEND_MODE?: string;
   SAFE_SEND_ALLOWLIST_EMAILS?: string;
   SAFE_SEND_ALLOWLIST_HOSTS?: string;
+  /** Optional FAA relay settings. Read raw by runPoll and validated by resolveRelayConfig, not by parseEnv. */
+  FAA_RELAY_URL?: string;
+  FAA_RELAY_SECRET?: string;
 }
 
 export const envSchema = z.object({

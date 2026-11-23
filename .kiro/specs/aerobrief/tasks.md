@@ -424,7 +424,7 @@ All code is TypeScript with `"strict": true`. Stack is fixed by workspace steeri
   - [x] 13.4 Verify Resend production domain (not onboarding@resend.dev)
   - [x] 13.5 Add /api/health uptime monitoring (Better Stack or UptimeRobot)
 
-- [~] 14. Contest compliance artifacts
+- [ ] 14. Contest compliance artifacts
   - [x] 14.1 Write docs/kiro-usage.md (answers Agents, Hooks, Specs, Steering, MCP, PBT questions)
   - [x] 14.2 Write README with setup steps a judge can follow
   - [x] 14.3 Add LICENSE (MIT) and confirm it shows in GitHub About

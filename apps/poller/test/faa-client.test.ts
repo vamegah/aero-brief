@@ -1,3 +1,4 @@
+import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import { FAA_API_URL, FAA_TIMEOUT_MS, fetchFaa } from "../src/faa-client";
 
@@ -83,5 +84,45 @@ describe("fetchFaa", () => {
     });
     const result = await fetchFaa(fn);
     expect(result).toMatchObject({ ok: false, kind: "network", detail: "TypeError: Network connection lost" });
+  });
+});
+
+/**
+ * Bug condition exploration (faa-403-poller task 11).
+ * Property 1: with a valid relay config, fetchFaa calls exactly the relay URL with the
+ * secret in the x-aerobrief-relay-key header and an AbortSignal.
+ * EXPECTED TO FAIL on unfixed code: fetchFaa ignores its second argument and calls the FAA URL.
+ *
+ * **Validates: Requirements 2.1**
+ */
+describe("fetchFaa relay mode (Property 1, bug condition exploration)", () => {
+  type RelayConfig = { url: string; secret: string };
+  type RelayInit = { signal: AbortSignal; headers?: Record<string, string> };
+  // The fixed signature is fetchFaa(fetchFn, relay?). The unfixed one takes one argument,
+  // so call it through a cast: the test fails by assertion, not by a type error.
+  const fetchFaaWithRelay = fetchFaa as unknown as (
+    fetchFn: (input: string, init: RelayInit) => Promise<Response>,
+    relay: RelayConfig,
+  ) => Promise<unknown>;
+
+  const RELAY_URL = "https://www.aerobriefs.com/api/internal/faa-relay";
+  const secretArb = fc.stringMatching(/^[A-Za-z0-9]{32,80}$/);
+
+  it("calls the relay URL once with the key header and a timeout signal", async () => {
+    await fc.assert(
+      fc.asyncProperty(secretArb, async (secret) => {
+        const calls: Array<{ url: string; init: RelayInit }> = [];
+        const fn = async (url: string, init: RelayInit): Promise<Response> => {
+          calls.push({ url, init });
+          return new Response("[]", { status: 200 });
+        };
+        await fetchFaaWithRelay(fn, { url: RELAY_URL, secret });
+        expect(calls).toHaveLength(1);
+        expect(calls[0]?.url).toBe(RELAY_URL);
+        expect(calls[0]?.init.headers?.["x-aerobrief-relay-key"]).toBe(secret);
+        expect(calls[0]?.init.signal).toBeInstanceOf(AbortSignal);
+      }),
+      { numRuns: 25 },
+    );
   });
 });

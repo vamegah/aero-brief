@@ -16,3 +16,7 @@ WEBHOOK_MASTER_SECRET=
 SAFE_SEND_MODE=true
 SAFE_SEND_ALLOWLIST_EMAILS=
 SAFE_SEND_ALLOWLIST_HOSTS=
+# FAA relay (optional Worker secrets). Both empty means the poller calls the FAA directly. Set both or neither.
+# FAA_RELAY_SECRET: at least 32 random characters, same value as on Vercel. FAA_RELAY_URL: https://www.aerobriefs.com/api/internal/faa-relay
+FAA_RELAY_URL=
+FAA_RELAY_SECRET=

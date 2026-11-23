@@ -95,7 +95,7 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
   - No agent sets any variable or secret. This task only edits the document
   - _Requirements: 3.6_
 
-- [ ] 10. Relay probe: does Vercel's network get HTTP 200 from the FAA? (the gate)
+- [x] 10. Relay probe: does Vercel's network get HTTP 200 from the FAA? (the gate)
   - Deploy a minimal relay to a Vercel **Preview** deployment first and call it. Nothing in the poller changes in this task. If Vercel's egress is also denied, stop and report (requirement 2.7)
 
   - [x] 10.1 Write the minimal relay (version 0) and its project wiring
@@ -108,7 +108,7 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
     - Do not commit to `main`. Commit on `phase-2` only when the owner asks
     - _Requirements: 2.2, 3.7, 3.8_
 
-  - [~] 10.2 Deploy the Preview and prepare the call. **NEEDS USER ACTION**
+  - [x] 10.2 Deploy the Preview and prepare the call. **NEEDS USER ACTION**
     - Owner generates a **throwaway** Preview secret (clipboard only, not shown). PowerShell 5.1 and 7:
       ```powershell
       $b = New-Object byte[] 48
@@ -124,7 +124,7 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
     - Clear the clipboard afterwards: `Set-Clipboard -Value ' '`
     - _Requirements: 2.2_
 
-  - [~] 10.3 Call the Preview relay and record the result (the gate)
+  - [x] 10.3 Call the Preview relay and record the result (the gate)
     - Calls (PowerShell, `curl.exe`; keep the secret in session variables, not in the command text):
       ```powershell
       $env:RELAY_KEY = Get-Clipboard        # paste the throwaway secret first, or type it
@@ -141,7 +141,7 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
     - Delete the Preview-scope `FAA_RELAY_SECRET` in the dashboard when the Preview checks are finished (task 14)
     - _Requirements: 2.2, 2.7, 3.8_
 
-- [~] 11. Write bug condition exploration test (replaces the headers exploration test)
+- [x] 11. Write bug condition exploration test (replaces the headers exploration test)
   - **Property 1: Bug Condition** - Poll reaches the FAA through the relay
   - **CRITICAL**: This test MUST FAIL on unfixed code. Do not fix the code when it fails
   - **GOAL**: Show that `fetchFaa` today has no relay path: it always calls the FAA URL and never sends a key header
@@ -151,38 +151,38 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
   - Run on UNFIXED code. **EXPECTED OUTCOME**: FAILS
   - _Requirements: 1.1, 1.4, 2.1_
 
-- [ ] 12. Pure relay logic in `packages/core`
+- [x] 12. Pure relay logic in `packages/core`
 
-  - [~] 12.1 Add `packages/core/src/faa-relay.ts` and its unit tests
+  - [x] 12.1 Add `packages/core/src/faa-relay.ts` and its unit tests
     - Constants, `timingSafeEqualStrings`, `decideRelayRequest`, `shapeRelayResponse`, `relayEnvSchema`, `resolveRelayConfig` as listed in `design.md`. Pure: no I/O, no env, no network, imports only from itself and Zod
     - Add `"./faa-relay": "./src/faa-relay.ts"` to the `exports` of `packages/core/package.json`. Also export from the core index for the poller
     - `packages/core/test/faa-relay.test.ts`: the cases listed in `design.md` (405, 401, 500, fetch; 2xx and non-2xx shaping, 300-character cut; 31 and 32 character secrets; `http:` URL, other host, `www.aerobriefs.com.evil.com`, userinfo, port, short secret, one setting only, both unset)
     - Set `RELAY_MAX_BODY_BYTES` from the size recorded in task 10.3 (default 1,048,576)
     - _Requirements: 2.2, 2.5, 2.6_
 
-  - [~] 12.2 Property tests for the relay logic
+  - [x] 12.2 Property tests for the relay logic
     - `packages/core/test/faa-relay.pbt.test.ts` (fast-check): `timingSafeEqualStrings(a, b) === (a === b)` for generated strings; `decideRelayRequest` returns `fetch` only for `GET` with a key equal to the secret; `resolveRelayConfig` returns `relay` only for `https` URLs on exactly `www.aerobriefs.com` with a secret of at least 32 characters, and never includes a value in `invalid`
     - _Requirements: 2.2, 2.5_
 
-- [ ] 13. Full relay function in `apps/web/api`
+- [x] 13. Full relay function in `apps/web/api`
 
-  - [~] 13.1 Replace the version 0 handler with the full relay
+  - [x] 13.1 Replace the version 0 handler with the full relay
     - `apps/web/api/internal/faa-relay.ts`: `createRelayHandler({ env, fetchFn })` plus the default export `{ fetch }` wired to the real `fetch` and `process.env`. Imports only `@aerobrief/core/faa-relay`. Follow steps 1 to 9 of the behavior list in `design.md`: env validated with Zod, `GET` only, constant-time key check, fixed URL and fixed headers, 10 s timeout, byte-capped body read, status pass-through, `Cache-Control: no-store`, one log line per outcome without the secret
     - Keep `apps/web/vercel.json` `functions` entry and any rewrite adjustment that task 10.3 needed
     - If the function build fails on the `@aerobrief/core/faa-relay` import in Preview, use the fallback in `design.md` (pure file under `apps/web/relay/` plus a sync test) and tell the owner
     - `apps/web` imports nothing from `packages/db` or `apps/poller`. Run `npm run typecheck` and the guards
     - _Requirements: 2.2, 2.6, 3.8_
 
-  - [~] 13.2 Unit tests for the handler
+  - [x] 13.2 Unit tests for the handler
     - `apps/web/test/faa-relay.test.ts` with `// @vitest-environment node`. Injected `fetchFn`. Cases: wrong method (405, no fetch call, `Allow: GET`), missing key (401, no fetch call), wrong key (401), missing or short secret env (500 `relay_misconfigured`, no fetch call), right key and FAA 200 (200, JSON, `Cache-Control: no-store`), FAA 403 (403 and a text excerpt of at most 300 characters), timeout (504), network error (502), body over the cap (502), and that the secret is absent from every response and every captured log line
     - _Requirements: 2.2, 2.6_
 
-  - [~] 13.3 Property tests for the handler
+  - [x] 13.3 Property tests for the handler
     - **Property 4: Relay is not an open proxy** and **Property 6: The secret never leaks** (relay side)
     - `apps/web/test/faa-relay.pbt.test.ts` (fast-check, `// @vitest-environment node`): over generated requests (method, path suffix, query, headers, body) and generated secrets, a recording `fetchFn` is called zero times or once, only with the FAA URL, and the call carries none of the caller's URL parts, query or headers. It is called only for `GET` with the right key. The secret never appears in a response (body or headers) or in captured log lines
     - _Requirements: 2.2, 2.6_
 
-- [~] 14. Full relay on Preview: routing and module check. **NEEDS USER ACTION**
+- [x] 14. Full relay on Preview: routing and module check. **NEEDS USER ACTION**
   - Owner pushes `phase-2` again (new Preview) with the Preview-scope `FAA_RELAY_SECRET` still set
   - Repeat the three calls from task 10.3 (401, 405, 200) against the full relay. Expect the `200` response to be the FAA body as JSON with `Cache-Control: no-store`
   - Also check that nothing else changed: `GET https://<preview-host>/api/health` returns `{"status":"ok"}` from the Worker, `GET https://<preview-host>/sign-in` returns the app's `index.html`, and the home page loads. Add the result to `relay-probe-result.md` under a "Full relay" heading
@@ -190,9 +190,9 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
   - When done, the owner deletes the Preview-scope `FAA_RELAY_SECRET` in the Vercel dashboard
   - _Requirements: 2.2, 3.8_
 
-- [ ] 15. Fix: the poller uses the relay when configured
+- [x] 15. Fix: the poller uses the relay when configured
 
-  - [~] 15.1 Implement the fix
+  - [x] 15.1 Implement the fix
     - `apps/poller/src/env.ts`: add optional `FAA_RELAY_URL?: string` and `FAA_RELAY_SECRET?: string` to `Env`. Do not add them to the required `envSchema`
     - `apps/poller/src/faa-client.ts`: `fetchFaa(fetchFn, relay?)`. Without `relay`, the same URL and init as today. With `relay`, call `relay.url` with `{ signal, headers: { "x-aerobrief-relay-key": relay.secret, Accept: "application/json" } }`, same 10 s timeout, same `parseFaaBody`, same failure kinds, never throws. `FetchFn`'s init type gains an optional `headers`. Keep `FAA_API_URL` exported
     - `apps/poller/src/poll.ts`: call `resolveRelayConfig({ url: env.FAA_RELAY_URL, secret: env.FAA_RELAY_SECRET })` before `fetchFaa`. `invalid`: `logger.error("faa_relay_config_invalid", { keys })` and `fail("validation", "Invalid relay settings: <keys>")`, no outbound request, lease released. `relay`: pass it on. `direct`: as today. Add a non-empty `FAA_RELAY_SECRET` to the logger's secret list
@@ -203,37 +203,37 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
     - _Preservation: FAA URL or the one relay URL only, never throws, same failure recording, flags-off equals MVP, relay unset equals today_
     - _Requirements: 2.1, 2.4, 2.5, 2.6, 3.1, 3.2, 3.3_
 
-  - [~] 15.2 Verify the bug condition exploration test now passes
+  - [x] 15.2 Verify the bug condition exploration test now passes
     - **Property 1: Expected Behavior** - Poll reaches the FAA through the relay
     - Re-run the SAME test from task 11. Do not write a new test
     - **EXPECTED OUTCOME**: PASSES
     - _Requirements: 2.1_
 
-  - [~] 15.3 Verify preservation tests still pass
+  - [x] 15.3 Verify preservation tests still pass
     - **Property 2: Preservation** - Poller behavior outside the bug
     - Re-run the SAME tests from task 3 (direct mode). **EXPECTED OUTCOME**: PASS
     - Run `npm test` and `npm run typecheck`
 
-  - [~] 15.4 Add the relay-mode destination and secret property tests
+  - [x] 15.4 Add the relay-mode destination and secret property tests
     - **Property 5: The poller calls only the FAA URL or the configured relay URL**
     - In `apps/poller/test/faa-client.pbt.test.ts` and `apps/poller/test/poll.test.ts`: for generated relay configs (unset, valid, invalid) and generated FAA or relay responses, every URL called is `FAA_API_URL` (unset), the configured relay URL (valid), or no call is made (invalid, with a failed `job_run` of `failure_kind=validation` whose `detail` names only keys). Cases: only one setting set, `http:` URL, `https://www.aerobriefs.com.evil.com/...`, `https://evil.example/...`, userinfo, short secret
     - **Property 6: The secret never leaks** (poller side): `apps/poller/test/relay-secret.pbt.test.ts` generates secrets (32 or more characters) and failure outcomes (HTTP statuses, thrown errors whose message contains the secret, unparseable bodies that echo it). The secret and its substrings of 8 or more characters are absent from the `detail` passed to `recordFailure` and from every logger call
     - A test that the poller never sends the key header to the FAA URL in direct mode
     - _Requirements: 2.4, 2.5, 2.6, 3.1_
 
-- [~] 16. Docs for the new variables and the relay
+- [x] 16. Docs for the new variables and the relay
   - `README.md`: in the environment variables section list `FAA_RELAY_URL` and `FAA_RELAY_SECRET` (poller Worker secrets) and `FAA_RELAY_SECRET` (Vercel, Production), say they are optional and that unset means direct mode. In the stack section add a one-line pointer to the approved exception in `docs/decisions.md`. Placeholders only, no values
   - `docs/production-runbook.md`: a new section "FAA relay": what it is, the three variables and where each one lives, the secret generation command (clipboard version from task 10.2), the order of steps (push, check relay, set secrets, check), how to check (`curl.exe` with and without the key), what each relay status in `job_runs` means (`HTTP 401` secret mismatch, `HTTP 405` wrong method, `HTTP 500` relay secret missing or short on Vercel, `HTTP 502` or `504` FAA unreachable or slow, `HTTP 403` the FAA denied Vercel's egress, `validation` with `Invalid relay settings` a bad Worker setting), and the rollback (delete the two Worker secrets)
   - `docs/phase2-rollout.md`: add the two poller secrets to the variables table in section 3.1 (poller only, stored as secrets, optional). Change nothing else
   - No file in the repo gets a real secret value
   - _Requirements: 2.4, 3.4_
 
-- [~] 17. Checkpoint - Ensure all tests pass
+- [-] 17. Checkpoint - Ensure all tests pass
   - Run `npm test` and `npm run typecheck`. `tests/repo-guard.test.ts`, `tests/deploy-guard.test.ts`, `tests/import-rules.test.ts` and `tests/flags-off-guard.test.ts` must pass. Ask the owner if questions arise
   - Remove `tools/faa-probe/` and its entry in the root `typecheck` script, unless the owner wants it kept (task 1.4). Confirm `deploy-workers.yml` is unchanged
   - Commit on branch `phase-2` (no push)
 
-- [~] 18. Ship and verify in production (owner steps). **NEEDS USER ACTION**
+- [ ] 18. Ship and verify in production (owner steps). **NEEDS USER ACTION**
   - Only before December 4, 2026, 2:00 PM PT. The owner fast-forwards `main` from `phase-2` and runs `git push`. Agents do not push or fast-forward `main`
   - The push deploys the web app and the relay on Vercel, and the "Deploy Workers" run deploys both Workers. The owner checks that the run is green. The poller is still in direct mode: the relay settings are unset
   - Production relay check. Vercel Production needs `FAA_RELAY_SECRET`, set in the Vercel dashboard (Production scope only) and then redeployed (a new variable applies to the next deployment). Generate the value with the command in task 10.2 and keep it in the password manager. Then call `https://www.aerobriefs.com/api/internal/faa-relay`: no key gives `401`, `POST` gives `405`, the right key gives `200` and the FAA JSON
