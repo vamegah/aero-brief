@@ -540,6 +540,11 @@
         "executionId": "dffc4576-c7a4-4455-aab2-9af4ccbdfc41",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795307467323
+      },
+      {
+        "executionId": "ced59004-887f-4701-9135-8599496d4ae5",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795474863479
       }
     ],
     "4. Log a rate-limited warning on non-2xx (all branches)": [

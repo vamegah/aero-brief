@@ -233,7 +233,7 @@ Write exploration and preservation tests before the fix. Run them on the unfixed
   - Remove `tools/faa-probe/` and its entry in the root `typecheck` script, unless the owner wants it kept (task 1.4). Confirm `deploy-workers.yml` is unchanged
   - Commit on branch `phase-2` (no push)
 
-- [ ] 18. Ship and verify in production (owner steps). **NEEDS USER ACTION**
+- [-] 18. Ship and verify in production (owner steps). **NEEDS USER ACTION**
   - Only before December 4, 2026, 2:00 PM PT. The owner fast-forwards `main` from `phase-2` and runs `git push`. Agents do not push or fast-forward `main`
   - The push deploys the web app and the relay on Vercel, and the "Deploy Workers" run deploys both Workers. The owner checks that the run is green. The poller is still in direct mode: the relay settings are unset
   - Production relay check. Vercel Production needs `FAA_RELAY_SECRET`, set in the Vercel dashboard (Production scope only) and then redeployed (a new variable applies to the next deployment). Generate the value with the command in task 10.2 and keep it in the password manager. Then call `https://www.aerobriefs.com/api/internal/faa-relay`: no key gives `401`, `POST` gives `405`, the right key gives `200` and the FAA JSON
