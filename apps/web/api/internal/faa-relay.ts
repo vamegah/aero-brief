@@ -1,4 +1,5 @@
 // Relay probe, version 0 (task 10.1 of .kiro/specs/faa-403-poller).
+// Version 0 only checks that Vercel's egress reaches the FAA (task 10.3); the full relay replaces it in task 13.1.
 // Approved exception in .kiro/steering/tech.md: one function, one fixed upstream URL.
 // Self-contained on purpose: no workspace imports, so a module-resolution problem
 // cannot hide the egress result. Replaced by the full relay in task 13.
