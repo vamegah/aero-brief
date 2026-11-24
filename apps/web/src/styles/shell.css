@@ -1,0 +1,88 @@
+/*
+ * App shell (ui-refresh task 5.1): container, header, nav. Loaded after index.css.
+ * Pairs: text-primary on surface-raised (header), accent on accent-surface (current link),
+ * text-primary on page. All are in palettePairs. Color repeats what weight and border say.
+ */
+
+.site-header__inner,
+main,
+.site-footer__inner {
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  box-sizing: border-box;
+}
+
+main {
+  min-width: 0;
+  overflow-wrap: break-word;
+  padding-block: var(--space-5);
+}
+
+.site-header {
+  background: var(--color-surface-raised);
+  border-bottom: 1px solid var(--color-table-rule);
+}
+
+/* Narrow: brand above the nav. */
+.site-header__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+}
+
+.site-header__brand {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.nav-bar__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-bar a,
+.nav-bar button {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  transition: background-color var(--motion-fast);
+}
+
+.nav-bar a[aria-current="page"] {
+  background: var(--color-accent-surface);
+  color: var(--color-accent);
+  font-weight: 600;
+  border-bottom-color: var(--color-accent);
+}
+
+/* Wide: brand and nav on one row. */
+@media (min-width: 641px) {
+  .site-header__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-bar a,
+  .nav-bar button {
+    transition: none;
+  }
+}

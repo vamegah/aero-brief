@@ -11,7 +11,7 @@ export interface WatchlistTableProps {
 
 export function WatchlistTable({ airports, watchlist, disabled, onAdd, onRemove }: WatchlistTableProps) {
   return (
-    <table className="airport-table">
+    <table className="airport-table airport-table--watchlist">
       <caption>Airports you can watch</caption>
       <thead>
         <tr>

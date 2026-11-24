@@ -12,13 +12,13 @@
 
 export const palette = {
   "color-bg": "#ffffff",
-  "color-page": "#f8fafc",
-  "color-surface": "#f3f5f7",
+  "color-page": "#f4f6f8",
+  "color-surface": "#eef1f5",
   "color-text": "#0f172a",
   "color-text-muted": "#4a4a4a",
-  "color-link": "#1d4ed8",
+  "color-link": "#1e40af",
   "color-border": "#646b78",
-  "color-focus": "#1d4ed8",
+  "color-focus": "#1e40af",
   "color-ok-fg": "#14532d",
   "color-ok-bg": "#dcfce7",
   "color-warn-fg": "#713f12",
@@ -28,7 +28,7 @@ export const palette = {
   // Semantic roles (Task 16.1)
   "color-surface-raised": "#ffffff",
   "color-text-primary": "#0f172a",
-  "color-accent": "#1d4ed8",
+  "color-accent": "#1e40af",
   "color-accent-surface": "#dbeafe",
   "color-on-accent": "#ffffff",
   "color-warning": "#92400e",
@@ -50,7 +50,7 @@ export const palette = {
   "color-chip-text": "#475569",
   // Modern airport table (Task 17.3)
   "color-table-head-bg": "#f8fafc",
-  "color-table-muted": "#64748b",
+  "color-table-muted": "#566478",
   "color-table-rule": "#e2e8f0",
   "color-pill-danger-text": "#991b1b",
   // Event alert cards (Task 17.4). Decorative 4px left-border accents only. The card's type label
@@ -186,4 +186,10 @@ export const palettePairs: readonly PalettePair[] = [
   { fg: "color-danger", bg: "color-surface-raised", size: "ui" },
   { fg: "color-danger", bg: "color-page", size: "ui" },
   { fg: "color-text-muted", bg: "color-page", size: "normal" }, // account helper text
+
+  // ui-refresh task 8.1: disabled nav-bar button (Sign out) sits on the raised header surface.
+  // color-table-rule stays unlisted: Card, table, header and tab-bar borders are decorative
+  // separators next to text, background and spacing cues (WCAG 1.4.11 covers only the
+  // boundaries of controls, which use color-border).
+  { fg: "color-disabled-fg", bg: "color-surface-raised", size: "normal" },
 ];

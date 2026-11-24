@@ -8,13 +8,13 @@
 :root {
   /* Legacy color keys (still used by app.css) */
   --color-bg: #ffffff;
-  --color-page: #f8fafc;
-  --color-surface: #f3f5f7;
+  --color-page: #f4f6f8;
+  --color-surface: #eef1f5;
   --color-text: #0f172a;
   --color-text-muted: #4a4a4a;
-  --color-link: #1d4ed8;
+  --color-link: #1e40af;
   --color-border: #646b78;
-  --color-focus: #1d4ed8;
+  --color-focus: #1e40af;
 
   --color-ok-fg: #14532d;
   --color-ok-bg: #dcfce7;
@@ -26,7 +26,7 @@
   /* Semantic color roles (Task 16.1) */
   --color-surface-raised: #ffffff;
   --color-text-primary: #0f172a;
-  --color-accent: #1d4ed8;
+  --color-accent: #1e40af;
   --color-accent-surface: #dbeafe;
   --color-on-accent: #ffffff;
   --color-warning: #92400e;
@@ -49,7 +49,7 @@
 
   /* Modern airport table (Task 17.3). --color-table-rule is a decorative row separator, not a UI boundary. */
   --color-table-head-bg: #f8fafc;
-  --color-table-muted: #64748b;
+  --color-table-muted: #566478;
   --color-table-rule: #e2e8f0;
   --color-pill-danger-text: #991b1b;
 
@@ -67,6 +67,10 @@
   --space-6: 32px;
   --space-7: 48px;
   --space-8: 64px;
+
+  /* Layout (ui-refresh D11) */
+  --layout-max: 1120px;
+  --gutter: 16px;
 
   /* Type scale */
   --text-xs: 12px;
@@ -94,6 +98,12 @@
   --focus-outline-width: 3px;
   --focus-outline-offset: 2px;
   --focus-outline: var(--focus-outline-width) solid var(--color-focus);
+}
+
+@media (min-width: 641px) {
+  :root {
+    --gutter: 24px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

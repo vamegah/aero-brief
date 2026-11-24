@@ -89,11 +89,11 @@ Build a Settings page, an app shell and a quieter palette, and fix the table and
     - In `test/a11y/themes/all-variants.test.tsx`: replace the case "Watchlist with digest and webhook sections" with a plain Watchlist case (ready when "Remove New York JFK from watchlist" shows). Add four Settings cases (`#display`, `#digest`, `#webhooks`, `#account`) with all flags on, signed in, ready when the pane's heading is visible. Update the matrix comment.
     - _Requirements: 16.3_
 
-- [-] 3. Checkpoint - Settings page works
+- [x] 3. Checkpoint - Settings page works
   - Run `npm test -w @aerobrief/web` and `npm run typecheck`. Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Palette
-  - [~] 4.1 Retune light and dark tokens and update the guard
+- [x] 4. Palette
+  - [x] 4.1 Retune light and dark tokens and update the guard
     - Decisions D3, D10 and D11 apply. The values in `design.md` are the starting point; the owner reviews them on a Vercel Preview in task 10.
     - Change the starting values in `design.md` ("Palette and themes") in `tokens.css`, `palette.ts`, `themes.css` and `themes.ts`, with identical lowercase hex in each pair of files. Leave `hc-light` and `hc-dark` values unchanged.
     - Add `--layout-max: 1120px` and `--gutter: 16px` (24px at `min-width: 641px`) to `tokens.css`.
@@ -101,8 +101,8 @@ Build a Settings page, an app shell and a quieter palette, and fix the table and
     - Recompute the LF-normalized SHA-256 of `tokens.css` and `palette.ts` and update both hashes and the comment in `tests/flags-off-guard.test.ts`.
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.6, 13.7_
 
-- [ ] 5. App shell
-  - [~] 5.1 Build the shell and scaffold the stylesheets
+- [x] 5. App shell
+  - [x] 5.1 Build the shell and scaffold the stylesheets
     - `App.tsx`: header brand becomes `<h1 className="site-header__brand">AeroBrief</h1>`; remove the `<h1>` and tagline from `<main>`.
     - `StatusPage.tsx`: `PageHeader` subtitle "FAA ground stop status for 20 major US airports."
     - Create `shell.css`, `tables.css`, `controls.css`, `settings.css`, `surfaces.css` in `apps/web/src/styles/` and import them in `main.tsx` after `index.css`, in that order.
@@ -110,53 +110,53 @@ Build a Settings page, an app shell and a quieter palette, and fix the table and
     - Add a shell test in `test/components/app-shell-headings.test.tsx`: one `h1` "AeroBrief" in the header on `/`, `/watchlist`, `/settings` and an unknown path; no `h1` or tagline text inside `main`; the Status page shows the subtitle.
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.2, 10.3, 10.6_
 
-- [ ] 6. Tables and controls
-  - [~] 6.1 Style the Airport_Tables wide and stacked
+- [x] 6. Tables and controls
+  - [x] 6.1 Style the Airport_Tables wide and stacked
     - `AirportTable.tsx`: add `airport-table--status` to the `<table>` class. `WatchlistTable.tsx`: add `airport-table--watchlist`. No other DOM change.
     - Write `tables.css` with the wide and `@media (max-width: 640px)` rules in `design.md` ("Tables"). Delete every `.airport-table` rule from `app.css`, `primitives.css` and `index.css`, including both `overflow-wrap: anywhere` declarations, the sticky header, the striping and the `max-width: 480px` block, after moving anything still needed.
     - Run `status-view`, `status-page`, `airport-table-details`, `watchlist-and-sign-in` and `watchlist-page-layout` tests unchanged.
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 9.1, 9.2, 9.3, 9.4, 9.5, 12.2, 15.3, 15.6_
 
-  - [~] 6.2 Style pills, buttons and touch targets, and set the row button variants
+  - [x] 6.2 Style pills, buttons and touch targets, and set the row button variants
     - `AirportWatchRow.tsx`: "Add" uses `variant="secondary"`, "Remove" uses `variant="ghost"`. Keep the names, labels and `disabled` behavior (decision D5).
     - Write `controls.css` as in `design.md` ("Controls, pills and touch targets"): nowrap and `flex: none` for `.status-pill`, nowrap for `.btn`, `min-width: 5.5rem` for table row buttons, 44 px targets at Narrow or coarse pointer for buttons, standalone links, menu links, labels, selects and inputs, full-width fields at Narrow. Delete the redefined `.btn`, `.status-pill` and `button` rules from `app.css`, `primitives.css` and `index.css`.
     - Extend the Watchlist page test from task 2.5: assert `.btn--secondary` on Add, `.btn--ghost` on Remove, and no `.btn--primary` on the page.
     - _Requirements: 4.4, 4.5, 10.1, 10.2, 10.3, 10.4, 10.5, 14.4_
 
-- [ ] 7. Page styles and themes
-  - [~] 7.1 Style the Settings page
+- [x] 7. Page styles and themes
+  - [x] 7.1 Style the Settings page
     - Write `settings.css`: `.settings` grid with a 14rem menu column at Wide and a single column at Narrow; vertical list at Wide, horizontal wrapping tab bar at Narrow; active item with bold text and a 3px underline (Narrow) or left border (Wide); `.settings__pane[hidden] { display: none; }`; `.settings__pane` as a Card.
     - Update `display-settings.css`, `digest-settings.css` and `webhook-settings.css`: remove `max-width: 960px`, `margin: ... auto` and the surface background and border (the pane is the Card); keep field and list rules; 44 px option labels and select; full-width fields at Narrow.
     - _Requirements: 7.1, 10.3, 10.5, 11.1, 11.2, 11.3, 11.4, 12.1_
 
-  - [~] 7.2 Style Cards, type scale and the remaining pages
+  - [x] 7.2 Style Cards, type scale and the remaining pages
     - Write `surfaces.css`: Card rules (raised surface, 1px `color-table-rule`, `--radius-md`, no shadow) for `.summary-card`, `.event-card`, `.empty-state`, `.loading-state`; type scale from Requirement 7.3; spacing from tokens; `.page-header` wrapping; `.form` full width at Narrow; sign-in, unsubscribe, digest unsubscribe, airport detail and not-found layouts. Delete the redefined rules in `app.css`, `primitives.css` and `index.css`, including the `--shadow-card` uses.
     - Use `overflow-wrap: break-word` for long strings (emails, URLs, times), never `anywhere` on table cells, never `overflow-x: hidden` on `html`, `body` or `main`.
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 12.1, 12.2, 12.3, 14.2_
 
-  - [~] 7.3 Restyle the dark and high-contrast themes
+  - [x] 7.3 Restyle the dark and high-contrast themes
     - `themes.css`: add the new classes (`.settings-menu a`, `.settings__pane`, `.site-header`, `.airport-table`, Card classes) to the `html[data-theme^="hc-"]` border-width and outline rules. Every new selector that mentions `hc-` starts with `html[data-theme`. Keep `prefers-color-scheme` and `prefers-contrast` out of the file.
     - Check the dark look against the new light surfaces (header, Cards, table, pills, menu).
     - Run `themes-sync` and `themes-contrast`.
     - _Requirements: 13.5, 13.6, 13.8_
 
-- [ ] 8. Verification
-  - [~] 8.1 Audit palette pairs for the new stylesheets
+- [x] 8. Verification
+  - [x] 8.1 Audit palette pairs for the new stylesheets
     - List every foreground/background combination used by `shell.css`, `tables.css`, `controls.css`, `settings.css` and `surfaces.css`. Add any missing combination to `palettePairs` with the right size class. Fix failing pairs by changing tokens in all four places.
     - Run `contrast`, `themes-contrast`, `palette-sync`, `themes-sync`. If `palette.ts` changes, recompute the guard hash again (decision D3 covers this).
     - **Property 4: Every palette pair meets its threshold in every theme**
     - **Validates: Requirements 13.1, 13.2, 13.3, 13.4**
 
-  - [~] 8.2 Add the CSS regression test
+  - [x] 8.2 Add the CSS regression test
     - Extend `css.include` in `apps/web/vite.config.ts` to match the five new stylesheets.
     - Create `apps/web/test/helpers/css.ts` (rule lookup by selector and media block) and `apps/web/test/layout-css.test.ts` with the assertions in `design.md` ("Testing Strategy").
     - _Requirements: 8.1, 8.2, 8.3, 9.1, 10.1, 10.2, 10.3, 12.3, 16.5, 7.2_
 
-  - [~] 8.3 Pin the Vercel catch-all rewrite
+  - [x] 8.3 Pin the Vercel catch-all rewrite
     - Create `apps/web/test/vercel-rewrites.test.ts`: import `../vercel.json?raw`, parse it, assert the last rewrite is `{ source: "/(.*)", destination: "/index.html" }` and that the `/api/:path*` rule comes before it.
     - _Requirements: 2.7_
 
-- [~] 9. Final checkpoint - full suite
+- [-] 9. Final checkpoint - full suite
   - Run `npm test`, `npm run typecheck` and `npm run build -w @aerobrief/web` at the repository root. Ensure all tests pass, ask the user if questions arise.
 
 - [~] 10. Owner review on a Vercel Preview of `phase-2` (**needs user action**)

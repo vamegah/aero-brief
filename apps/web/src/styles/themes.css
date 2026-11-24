@@ -9,8 +9,8 @@ html[data-theme="dark"] {
   color-scheme: dark;
   /* Legacy color keys */
   --color-bg: #0b1220;
-  --color-page: #0f172a;
-  --color-surface: #131c2e;
+  --color-page: #0f141b;
+  --color-surface: #151b24;
   --color-text: #e2e8f0;
   --color-text-muted: #a3b1c6;
   --color-link: #8bb4ff;
@@ -23,7 +23,7 @@ html[data-theme="dark"] {
   --color-danger-fg: #fca5a5;
   --color-danger-bg: #3b1219;
   /* Semantic color roles */
-  --color-surface-raised: #172033;
+  --color-surface-raised: #1a212c;
   --color-text-primary: #e2e8f0;
   --color-accent: #8bb4ff;
   --color-accent-surface: #172554;
@@ -42,10 +42,10 @@ html[data-theme="dark"] {
   --color-status-normal: #4ade80;
   --color-status-warning: #fbbf24;
   --color-status-alert: #f87171;
-  --color-chip-bg: #1e293b;
+  --color-chip-bg: #232b38;
   --color-chip-text: #cbd5e1;
   /* Airport table */
-  --color-table-head-bg: #111a2c;
+  --color-table-head-bg: #131a24;
   --color-table-muted: #94a3b8;
   --color-table-rule: #1e293b;
   --color-pill-danger-text: #fca5a5;
@@ -56,7 +56,6 @@ html[data-theme="dark"] {
   /* Shadows are not palette colors. Darker and stronger so they read on a dark page. */
   --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
   --elevation-2: 0 4px 8px rgba(0, 0, 0, 0.55), 0 8px 24px rgba(0, 0, 0, 0.45);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 /*
@@ -107,7 +106,6 @@ html[data-theme="hc-light"] {
   --color-event-accent-ended: #006600;
   --elevation-1: none;
   --elevation-2: none;
-  --shadow-card: none;
 }
 
 html[data-theme="hc-dark"] {
@@ -155,7 +153,6 @@ html[data-theme="hc-dark"] {
   --color-event-accent-ended: #8dffa8;
   --elevation-1: none;
   --elevation-2: none;
-  --shadow-card: none;
 }
 
 /* Shared high-contrast rules. CSS only, no DOM change. Every selector starts with the attribute. */
@@ -169,9 +166,37 @@ html[data-theme^="hc-"] .metric-chip,
 html[data-theme^="hc-"] .confirm-dialog,
 html[data-theme^="hc-"] .summary-card,
 html[data-theme^="hc-"] .event-card,
-html[data-theme^="hc-"] .airport-table th,
-html[data-theme^="hc-"] .airport-table td {
+html[data-theme^="hc-"] .settings__pane,
+html[data-theme^="hc-"] .empty-state,
+html[data-theme^="hc-"] .loading-state,
+html[data-theme^="hc-"] .airport-table {
   border-width: 2px;
+}
+
+/* Table rows are separated by bottom rules only; thicken them. */
+html[data-theme^="hc-"] .airport-table thead th,
+html[data-theme^="hc-"] .airport-table tbody th,
+html[data-theme^="hc-"] .airport-table tbody td {
+  border-bottom-width: 2px;
+}
+
+/* The event Card keeps its wider left stripe: the 2px rule above would shrink it. */
+html[data-theme^="hc-"] .event-card {
+  border-left-width: 4px;
+}
+
+/* Pills have no border by default. A visible edge keeps them readable without color. */
+html[data-theme^="hc-"] .status-pill {
+  border: 2px solid var(--color-border);
+}
+
+/* Settings menu: thicker current-item marker and link underline-style border. */
+html[data-theme^="hc-"] .settings-menu a {
+  border-bottom-width: 4px;
+}
+
+html[data-theme^="hc-"] .nav-bar a[aria-current="page"] {
+  border-bottom-width: 4px;
 }
 
 html[data-theme^="hc-"] .site-header {

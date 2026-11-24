@@ -1,14 +1,4 @@
-/* Webhooks section of the Watchlist page (Task 4.34). Tokens only; secondary Buttons only. */
-.webhook-settings {
-  max-width: 960px;
-  margin: var(--space-5) auto 0;
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text);
-}
-
+/* Webhooks section of the Settings page (Task 4.34). Tokens only; secondary Buttons only. The pane is the Card (settings.css). */
 .webhook-settings__help,
 .webhook-settings__hint {
   margin: var(--space-1) 0 var(--space-3);

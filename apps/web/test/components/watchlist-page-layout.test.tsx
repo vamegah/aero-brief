@@ -48,6 +48,16 @@ describe("WatchlistPage layout", () => {
     expect(screen.getByRole("button", { name: "Remove Airport ATL from watchlist" })).not.toBeNull();
   });
 
+  it("uses a secondary Add, a ghost Remove and no primary button", async () => {
+    const { container } = render(<WatchlistPage />);
+    await screen.findByText("2 of 10 airports watched");
+    const remove = screen.getByRole("button", { name: "Remove Airport ATL from watchlist" });
+    const add = screen.getByRole("button", { name: "Add Airport EWR to watchlist" });
+    expect(remove.classList.contains("btn--ghost")).toBe(true);
+    expect(add.classList.contains("btn--secondary")).toBe(true);
+    expect(container.querySelector(".btn--primary")).toBeNull();
+  });
+
   it("removes via the table row and updates the counter", async () => {
     render(<WatchlistPage />);
     fireEvent.click(await screen.findByRole("button", { name: "Remove Airport ATL from watchlist" }));

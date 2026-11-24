@@ -1,0 +1,117 @@
+/*
+ * Settings page layout (ui-refresh task 7.1): side menu at Wide, scrollable tab bar at Narrow.
+ * Pairs: text-primary and accent on page and on accent-surface; text-primary on surface-raised.
+ * The current item is marked by bold text and a border, so color only repeats it.
+ */
+.settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+.settings__panes,
+.settings-menu {
+  min-width: 0;
+}
+
+/* Narrow: horizontal tab bar. The list scrolls inside itself, the page never does. */
+.settings-menu__list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--color-table-rule);
+}
+.settings-menu__list li {
+  flex: 0 0 auto;
+}
+.settings-menu a {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color var(--motion-fast), border-color var(--motion-fast);
+}
+.settings-menu a:hover {
+  background: var(--color-accent-surface);
+}
+.settings-menu a:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: calc(-1 * var(--focus-outline-width));
+}
+.settings-menu a[aria-current="true"] {
+  background: var(--color-accent-surface);
+  border-bottom-color: var(--color-accent);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* Each pane is a Card. */
+.settings__pane {
+  padding: var(--space-4);
+  border: 1px solid var(--color-table-rule);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  overflow-wrap: break-word;
+}
+.settings__pane[hidden] {
+  display: none;
+}
+
+/* 44px touch targets for options and the digest select; fields fill the pane. */
+.settings__pane .display-settings__option,
+.settings__pane .digest-settings__option {
+  box-sizing: border-box;
+  min-height: 44px;
+}
+.settings__pane .digest-settings__select {
+  box-sizing: border-box;
+  min-height: 44px;
+  max-width: 100%;
+}
+.settings__pane .digest-settings__form {
+  align-items: stretch;
+}
+.settings__pane .webhook-settings__secret .text-input,
+.settings__pane .webhook-settings__form .text-input {
+  max-width: 100%;
+}
+
+/* Wide: side menu. */
+@media (min-width: 641px) {
+  .settings {
+    grid-template-columns: 14rem minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+  .settings-menu__list {
+    flex-direction: column;
+    overflow-x: visible;
+    border-bottom: 0;
+  }
+  .settings-menu a {
+    display: flex;
+    border-bottom: 0;
+    border-left: 3px solid transparent;
+  }
+  .settings-menu a[aria-current="true"] {
+    border-left-color: var(--color-accent);
+  }
+  .settings__pane .digest-settings__form {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-menu a {
+    transition: none;
+  }
+}

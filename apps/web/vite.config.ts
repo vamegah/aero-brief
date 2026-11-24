@@ -13,7 +13,12 @@ export default defineConfig({
     include: ["test/**/*.test.{ts,tsx}"],
     setupFiles: ["./test/setup.ts"],
     // Vitest blanks every CSS id (even `?raw`) unless it matches css.include.
-    // palette-sync.test.ts and themes-sync.test.ts need the real text of tokens.css and themes.css.
-    css: { include: [/styles\/(?:tokens|themes)\.css(?:\?.*)?$/] },
+    // palette-sync.test.ts, themes-sync.test.ts and layout-css.test.ts need the real CSS text.
+    css: {
+      include: [
+        /styles\/(?:tokens|themes|shell|tables|controls|settings|surfaces|primitives|app)\.css(?:\?.*)?$/,
+        /src\/index\.css(?:\?.*)?$/,
+      ],
+    },
   },
 });

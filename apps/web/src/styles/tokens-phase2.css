@@ -6,7 +6,4 @@
  * The values below are the light values. Dark mode (Task 2.5, themes.css)
  * may redefine them under html[data-theme="dark"].
  */
-:root {
-  /* Card and table shadow formerly written as a literal in index.css. */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
+/* No tokens remain. --shadow-card was removed in the UI refresh (Cards have no shadow). */

@@ -1,0 +1,179 @@
+/*
+ * Both Airport_Tables, wide and stacked (task 6.1). CSS only: the DOM is pinned by tests.
+ * Cells never use overflow-wrap: anywhere, because it lets a column shrink to one character.
+ * Pairs: table-muted on table-head-bg and on surface-raised, text-primary on surface-raised,
+ * link on surface-raised. table-rule is a decorative row separator.
+ */
+
+/* Wide */
+.airport-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-table-rule);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.airport-table caption {
+  caption-side: top;
+  text-align: left;
+  padding: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.airport-table th,
+.airport-table td {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--color-table-rule);
+  overflow-wrap: normal;
+  color: var(--color-text-primary);
+}
+
+.airport-table thead th {
+  position: static;
+  box-shadow: none;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-table-muted);
+  background: var(--color-table-head-bg);
+}
+
+.airport-table tbody tr {
+  background: transparent;
+}
+
+.airport-table tbody tr:last-child th,
+.airport-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.airport-table tbody th[scope="row"] {
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+/* The name cell is the only cell allowed to break inside a word. */
+.airport-table tbody td.airport-table__name {
+  overflow-wrap: break-word;
+  color: var(--color-table-muted);
+}
+
+/* Status column and watchlist cells shrink to their content. */
+.airport-table--status tbody td:last-child,
+.airport-table--watchlist tbody td {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.airport-table--status tbody td:last-child .airport-table__detail {
+  white-space: normal;
+}
+
+.airport-table tbody th[scope="row"] a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.airport-table tbody th[scope="row"] a:hover {
+  text-decoration: underline;
+}
+
+.airport-table tbody a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.airport-table__detail {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-table-muted);
+  overflow-wrap: break-word;
+}
+
+.airport-table__detail a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+/* Narrow: each row becomes a small grid. The header row is clipped, not removed. */
+@media (max-width: 640px) {
+  .airport-table,
+  .airport-table tbody,
+  .airport-table caption {
+    display: block;
+  }
+
+  .airport-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .airport-table tbody tr {
+    display: grid;
+    column-gap: var(--space-3);
+    row-gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-table-rule);
+  }
+
+  .airport-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .airport-table th,
+  .airport-table td,
+  .airport-table tbody th[scope="row"],
+  .airport-table tbody tr:last-child th,
+  .airport-table tbody tr:last-child td {
+    display: block;
+    min-width: 0;
+    width: auto;
+    padding: 0;
+    border: 0;
+  }
+
+  .airport-table--status tbody tr {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .airport-table--status tbody td:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .airport-table--watchlist tbody tr {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .airport-table--watchlist tbody th {
+    grid-column: 1 / -1;
+  }
+
+  .airport-table--watchlist tbody td:last-child {
+    justify-self: end;
+  }
+
+  .airport-table tbody th a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

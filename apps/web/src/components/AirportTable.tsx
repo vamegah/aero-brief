@@ -18,7 +18,7 @@ function hasDetails(stop: ActiveGroundStop): boolean {
 
 export function AirportTable({ airports }: AirportTableProps) {
   return (
-    <table className="airport-table">
+    <table className="airport-table airport-table--status">
       <caption>Ground stop status by airport</caption>
       <thead>
         <tr>

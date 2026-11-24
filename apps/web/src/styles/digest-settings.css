@@ -1,14 +1,4 @@
-/* Daily digest section of the Watchlist page (Task 5.19). Tokens only. */
-.digest-settings {
-  max-width: 960px;
-  margin: var(--space-5) auto 0;
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text);
-}
-
+/* Daily digest section of the Settings page (Task 5.19). Tokens only. The pane is the Card (settings.css). */
 .digest-settings__form {
   display: flex;
   flex-direction: column;

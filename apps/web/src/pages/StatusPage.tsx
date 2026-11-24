@@ -16,7 +16,7 @@ export function StatusPage() {
 
   return (
     <>
-      <PageHeader title="National status" />
+      <PageHeader title="National status" subtitle="FAA ground stop status for 20 major US airports." />
       <ErrorRegion message={message} />
       <StatusView status={status} events={events} loading={loading} />
     </>

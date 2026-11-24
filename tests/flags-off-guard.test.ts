@@ -14,11 +14,10 @@ import { routes } from "../apps/api/src/routes";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 /**
- * Baseline hashes of the two frozen design files. The baseline is `main` at HEAD
- * (`git show main:<path>`), because the guard's purpose is "Phase 2 never edits these files".
- * The tag `mvp-contest-2026` is not the baseline: `main` moved past it, and the spec says to
- * guard what `main` holds. (At the time of writing both files are byte-identical on `main` and
- * on the tag, so the values are the same either way.)
+ * Baseline hashes of the two frozen design files. The baseline is the ui-refresh palette
+ * retune (spec `.kiro/specs/ui-refresh`, task 4.1, decisions D3 and D8), which replaced the
+ * earlier `main` baseline. Task 8.1 added one palettePairs entry (disabled-fg on surface-raised)
+ * and recomputed the palette.ts hash. Phase 2 work still must not edit these files.
  *
  * The hash is SHA-256 of the UTF-8 text with CRLF normalized to LF, so a Windows checkout with
  * CRLF and the Linux CI checkout produce the same value. Computed once with:
@@ -28,11 +27,11 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const FROZEN_FILES: ReadonlyArray<{ path: string; sha256: string }> = [
   {
     path: "apps/web/src/styles/tokens.css",
-    sha256: "34a8b6e96e560f10b2fd9161b1e0123409aea069b87b028640c42ff325adb51e",
+    sha256: "15d8aa657ddf80be723797a186a8c7dc978288cac880c29f0f8c86a0ad31e47b",
   },
   {
     path: "apps/web/src/styles/palette.ts",
-    sha256: "1944bb94988ac9541749cc403b754a30564b1c28e15c900e221b831d5606e345",
+    sha256: "5cfb746957fdc16c044f91cc6f3c3c2a0fd9e624a3b6fe8e44c1f82837a9ce5a",
   },
 ];
 

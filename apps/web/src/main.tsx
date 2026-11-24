@@ -12,6 +12,11 @@ import "./styles/display-settings.css";
 import "./styles/webhook-settings.css";
 import "./styles/digest-settings.css";
 import "./index.css";
+import "./styles/shell.css";
+import "./styles/tables.css";
+import "./styles/controls.css";
+import "./styles/settings.css";
+import "./styles/surfaces.css";
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Root element #root not found");

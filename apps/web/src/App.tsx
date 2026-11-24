@@ -45,13 +45,11 @@ export function App() {
     <>
       <header className="site-header">
         <div className="site-header__inner">
-          <span className="site-header__brand">AeroBrief</span>
+          <h1 className="site-header__brand">AeroBrief</h1>
           <NavBar pathname={pathname} />
         </div>
       </header>
       <main>
-        <h1>AeroBrief</h1>
-        <p>FAA ground stop status for 20 major US airports.</p>
         {pageFor(pathname, digests)}
       </main>
       <Footer />

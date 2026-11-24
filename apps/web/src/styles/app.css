@@ -6,57 +6,11 @@ body {
   line-height: 1.5;
 }
 
-main {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: var(--space-4);
-}
-
 a {
   color: var(--color-link);
 }
 
-/* Header shell: brand text + nav. Pairs: text-primary/accent on surface. */
-.site-header {
-  background: var(--color-surface);
-  border-bottom: 2px solid var(--color-border);
-}
-
-.site-header__inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-5);
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: var(--space-2) var(--space-4);
-}
-
-.site-header__brand {
-  color: var(--color-text-primary);
-  font-size: var(--text-lg);
-  font-weight: bold;
-}
-
-.nav-bar {
-  background: transparent;
-}
-
-.nav-bar__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.nav-bar a {
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  transition: background-color var(--motion-fast);
-}
+/* Header, nav and container rules live in shell.css. */
 
 /* Footer: text-muted and link on surface. */
 .site-footer {
@@ -71,20 +25,10 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-5);
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: var(--space-4);
 }
 
 .site-footer__item {
   margin: 0;
-}
-
-.nav-bar a[aria-current="page"] {
-  color: var(--color-text);
-  font-weight: bold;
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
 }
 
 .nav-bar a:focus-visible,
@@ -141,29 +85,6 @@ a {
 .banner__heading {
   margin: 0 0 var(--space-1);
 }
-.airport-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1.5rem;
-}
-
-.airport-table caption {
-  text-align: left;
-  font-weight: bold;
-  padding-bottom: 0.5rem;
-}
-
-.airport-table th,
-.airport-table td {
-  text-align: left;
-  padding: 0.5rem;
-  border: 1px solid var(--color-border);
-}
-
-.airport-table thead th {
-  background: var(--color-surface);
-}
-
 .status {
   display: inline-block;
   padding: 0.125rem 0.5rem;
@@ -181,63 +102,7 @@ a {
   color: var(--color-ok-fg);
 }
 
-.event-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.event-list li {
-  margin-bottom: var(--space-2);
-}
-
-.event-card {
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-raised);
-  color: var(--color-text-primary);
-}
-
-.event-card__header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-}
-
-.event-card__type {
-  font-weight: 600;
-}
-
-.event-card__time {
-  margin-left: auto;
-}
-
-.event-card__duration {
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-}
-
-.event-card__explanation {
-  margin: var(--space-2) 0 0;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-width: 24rem;
-}
-
-.form input {
-  padding: 0.5rem;
-  border: 2px solid var(--color-border);
-  border-radius: 4px;
-  font: inherit;
-}
+/* Event cards, .form and the page surfaces live in surfaces.css. */
 
 button {
   padding: 0.5rem 1rem;
@@ -254,12 +119,4 @@ button:disabled {
   border-color: var(--color-disabled-border);
   color: var(--color-disabled-fg);
   cursor: not-allowed;
-}
-
-.airport-events-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  flex-wrap: wrap;
 }

@@ -1,0 +1,168 @@
+/*
+ * Buttons, pills, form controls and touch targets (task 6.2). Tokens only.
+ * Text carries the meaning; color repeats it. Focus indicators come from the global
+ * :focus-visible rule (focus color, 3:1 against every surface) and the hc-* override.
+ */
+
+/* Button */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    box-shadow var(--motion-fast);
+}
+
+.btn:disabled,
+.btn--primary:disabled,
+.btn--secondary:disabled,
+.btn--danger:disabled,
+.btn--ghost:disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-fg);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.btn--secondary {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.btn--danger {
+  background: var(--color-danger);
+  color: var(--color-on-danger);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.btn--ghost:hover:not(:disabled),
+.btn--secondary:hover:not(:disabled) {
+  background: var(--color-surface);
+}
+
+.btn--primary:hover:not(:disabled),
+.btn--danger:hover:not(:disabled) {
+  box-shadow: var(--elevation-1);
+}
+
+/* Table row buttons share one width so Add and Remove line up. */
+.airport-table .btn {
+  min-width: 5.5rem;
+}
+
+/* The Sign out button in the nav bar is a bare <button>: make it read like the nav links. */
+.nav-bar button {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-bar button:hover:not(:disabled) {
+  background: var(--color-surface);
+}
+
+.nav-bar button:disabled {
+  color: var(--color-disabled-fg);
+  cursor: not-allowed;
+}
+
+/* StatusPill: never wraps, never shrinks. */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-pill--normal {
+  background: var(--color-success-surface);
+  color: var(--color-success);
+}
+
+.status-pill--active {
+  background: var(--color-danger-surface);
+  color: var(--color-pill-danger-text);
+}
+
+.status-pill--neutral {
+  background: var(--color-chip-bg);
+  color: var(--color-chip-text);
+}
+
+/* Form controls and labels that are their own hit area. */
+select,
+.text-input {
+  min-height: 44px;
+}
+
+.display-settings__option,
+.digest-settings__option,
+.settings-menu a,
+.nav-bar a,
+.nav-bar button {
+  min-height: 44px;
+}
+
+.settings-menu a {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Narrow or coarse pointer: standalone links get a 44px target; fields fill their container. */
+@media (max-width: 640px), (pointer: coarse) {
+  a.standalone,
+  .site-footer a,
+  .page-header__action a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 640px) {
+  select,
+  .text-input,
+  .form input {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+}
