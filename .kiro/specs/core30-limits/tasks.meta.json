@@ -534,6 +534,11 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795551767196
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795552567316
       }
     ],
     "10.1 Apply `0006_watchlist_cap_30.sql` to the `phase-2` branch": [
@@ -541,6 +546,16 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795547367232
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795552569538
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795552595564
       }
     ],
     "10.2 Run the integration test against the phase-2 branch": [
@@ -548,6 +563,11 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795547367430
+      },
+      {
+        "executionId": "c8e8639f-91d7-4832-808c-643c1ac35201",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795552984093
       }
     ],
     "11.1 Take a restore point": [

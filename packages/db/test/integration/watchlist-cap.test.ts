@@ -1,3 +1,4 @@
+import { MONITORED_IDS } from "@aerobrief/core";
 import { airports, createRepositories, subscriptions, SubscriptionLimitError, type Db } from "@aerobrief/db";
 import { eq, inArray } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -8,21 +9,30 @@ describe.skipIf(!hasTestDb)("watchlist cap trigger (integration)", () => {
   let db: Db;
   let airportIds: string[];
   const userIds: string[] = [];
+  // The registry has exactly 30 airports, so the race needs 5 more rows to exceed the cap.
+  const tempIds = [1, 2, 3, 4, 5].map((n) => `ZT${n}`);
 
   beforeAll(async () => {
     db = connectTestDb();
     airportIds = await seededAirportIds(db);
+    await db
+      .insert(airports)
+      .values(tempIds.map((id, i) => ({ id, name: `Test airport ${i + 1}`, artcc: "ZZZ" })))
+      .onConflictDoNothing();
   });
   afterAll(async () => {
     if (db === undefined) return;
+    // Users first: their subscriptions cascade and would otherwise reference the temporary airports.
     for (const id of userIds) await deleteUserById(db, id);
+    await db.delete(airports).where(inArray(airports.id, tempIds));
   });
 
   const count = async (userId: string) =>
     (await db.select().from(subscriptions).where(eq(subscriptions.userId, userId))).length;
 
-  it("the migrated database has at least 35 seeded airports (30 after migration 0006 would be too few for the race test)", () => {
-    expect(airportIds.length).toBeGreaterThanOrEqual(35);
+  it("the migrated database has exactly the 30 seeded airports (fails if migration 0006 is missing)", () => {
+    expect([...airportIds].sort()).toEqual([...MONITORED_IDS].sort());
+    expect(airportIds).toHaveLength(30);
   });
 
   it("concurrent adds of 35 distinct airports never exceed 30", async () => {
@@ -32,7 +42,7 @@ describe.skipIf(!hasTestDb)("watchlist cap trigger (integration)", () => {
     const now = new Date();
 
     const results = await Promise.allSettled(
-      airportIds.slice(0, 35).map((a) => repos.subscriptions.add(user.id, a, now)),
+      [...airportIds, ...tempIds].map((a) => repos.subscriptions.add(user.id, a, now)),
     );
 
     const fulfilled = results.filter((r) => r.status === "fulfilled");
@@ -52,8 +62,8 @@ describe.skipIf(!hasTestDb)("watchlist cap trigger (integration)", () => {
     userIds.push(user.id);
     const now = new Date();
 
-    for (const a of airportIds.slice(0, 30)) expect(await repos.subscriptions.add(user.id, a, now)).toBe(true);
-    await expect(repos.subscriptions.add(user.id, airportIds[30] as string, now)).rejects.toBeInstanceOf(
+    for (const a of airportIds) expect(await repos.subscriptions.add(user.id, a, now)).toBe(true);
+    await expect(repos.subscriptions.add(user.id, tempIds[0] as string, now)).rejects.toBeInstanceOf(
       SubscriptionLimitError,
     );
     expect(await repos.subscriptions.add(user.id, airportIds[0] as string, now)).toBe(false);

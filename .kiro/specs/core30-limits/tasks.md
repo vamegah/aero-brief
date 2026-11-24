@@ -165,17 +165,17 @@ Change two core product limits (20 airports to the FAA Core 30, watchlist 10 to 
     - Search `README.md`, `docs/`, `apps/*/src`, `packages/*/src`, `apps/*/test`, `packages/*/test`, `tests/` and `.kiro/steering/` for "20 airports", "20 major", "twenty", "of 20", "toHaveLength(20)", "All (20)", "of 10", "10 airports", "up to 10", "limit of 10" and "cap of 10". Each hit is either changed or is a legitimate other use (for example the 10-minute stale threshold, the 10-second timeout, the `subscription limit of 10 reached` negative cases in tests, `.kiro/specs/aerobrief*` and `ui-refresh` records). List the kept hits in the final report.
     - _Requirements: 6.3, 6.5, 6.6, 7.7_
 
-- [-] 9. Checkpoint - full local check
+- [x] 9. Checkpoint - full local check
   - Run the repo's typecheck, the full unit and property test run (single run, not watch mode), and the web build. Confirm the opt-in integration tests skip without a database URL. Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 10. Apply 0006 to the phase-2 Neon branch and verify it there
-  - [~] 10.1 Apply `0006_watchlist_cap_30.sql` to the `phase-2` branch
+  - [x] 10.1 Apply `0006_watchlist_cap_30.sql` to the `phase-2` branch
     - Use the Neon MCP `run_sql_transaction` with the file's statements split at the `--> statement-breakpoint` lines, in one transaction, on the `phase-2` branch only. Confirm the project and branch ids against `docs/decisions.md` first; if the target is not the `phase-2` branch, stop and ask.
     - Check read-only afterwards: `SELECT count(*) FROM airports` is 30, the 10 new ids exist, `pg_get_functiondef('enforce_subscription_cap'::regproc)` shows 30 and the new message, the trigger still exists on `subscriptions`.
     - Append one dated line to `docs/decisions.md` in the style of the 0004 line ("Migration 0006 applied to branch phase-2 via Neon MCP run_sql_transaction").
     - _Requirements: 3.3, 9.2_
 
-  - [~] 10.2 Run the integration test against the phase-2 branch
+  - [-] 10.2 Run the integration test against the phase-2 branch
     - Run `packages/db/test/integration/watchlist-cap.test.ts` with the repo's documented opt-in test database variable pointing at the `phase-2` branch (the existing `phase2-target` guard refuses other hosts). Never print the connection string. If the variable is not set, say so and mark this sub-task as needing the owner.
     - _Requirements: 3.9, 8.6, 9.2_
 
