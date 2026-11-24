@@ -219,7 +219,7 @@ Build a Settings page, an app shell and a quieter palette, and fix the table and
     - Recompute and update the two hashes in `tests/flags-off-guard.test.ts` only if `tokens.css` or `palette.ts` changed. If neither changed, leave the guard alone.
     - _Requirements: 23.6_
 
-- [-] 14. Checkpoint - dashboard works
+- [x] 14. Checkpoint - dashboard works
   - Run `npm test`, `npm run typecheck` and `npm run build -w @aerobrief/web` at the repository root. Ensure all tests pass, ask the user if questions arise.
   - _Requirements: 23.8_
 
