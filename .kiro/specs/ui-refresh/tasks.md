@@ -156,10 +156,10 @@ Build a Settings page, an app shell and a quieter palette, and fix the table and
     - Create `apps/web/test/vercel-rewrites.test.ts`: import `../vercel.json?raw`, parse it, assert the last rewrite is `{ source: "/(.*)", destination: "/index.html" }` and that the `/api/:path*` rule comes before it.
     - _Requirements: 2.7_
 
-- [-] 9. Final checkpoint - full suite
+- [x] 9. Final checkpoint - full suite
   - Run `npm test`, `npm run typecheck` and `npm run build -w @aerobrief/web` at the repository root. Ensure all tests pass, ask the user if questions arise.
 
-- [~] 10. Owner review on a Vercel Preview of `phase-2` (**needs user action**)
+- [-] 10. Owner review on a Vercel Preview of `phase-2` (**needs user action**)
   - The owner pushes `phase-2`. A Preview is built only when the push changes files under `apps/web`, and the owner cannot use Vercel's Redeploy button (2FA). The refresh changes `apps/web`, so its push builds one. If a later fix changes nothing under `apps/web`, the agent tells the owner to include a change under `apps/web` in the push, so a new Preview is built.
   - Palette review (D10): the owner reviews the starting palette on the Preview in light and dark (and high contrast if the flag is on). Palette changes the owner asks for go back to task 4.1 and task 8.1 (and a new guard hash).
   - Layout check: the owner checks these pages at 320, 375, 390 and 430 px in browser device emulation, then on the iPhone: Status, one Airport detail, Watchlist, Settings (each section, signed in and signed out), Sign-in, Unsubscribe, Digest unsubscribe.
