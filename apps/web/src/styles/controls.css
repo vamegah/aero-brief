@@ -129,13 +129,13 @@ select,
 
 .display-settings__option,
 .digest-settings__option,
-.settings-menu a,
+.section-menu a,
 .nav-bar a,
 .nav-bar button {
   min-height: 44px;
 }
 
-.settings-menu a {
+.section-menu a {
   display: inline-flex;
   align-items: center;
 }

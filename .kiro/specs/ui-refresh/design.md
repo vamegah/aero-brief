@@ -6,6 +6,8 @@ The refresh has three parts: a Settings page with a menu, an app shell and resty
 
 The design follows the steering rules in `.kiro/steering/design.md`: restyle with CSS and class names, keep the pinned DOM (airport tables, banners, nav bar, `aria-live` region), pass WCAG 2.1 AA in every theme by changing tokens, one primary Button per view, text carries every status.
 
+**Addendum 2026-11-24.** A fourth part turns the Status page into a dashboard with a section menu (Overview, Events, Airports), because the owner wants the events of the last 24 hours near the top. It reuses the Settings menu pattern, adds one pure filter function and changes no API. See "Status dashboard" below and Requirements 17 to 23. Parts 1 to 3 are unchanged.
+
 ### What the code review found
 
 | Finding | Where | Effect on the design |
@@ -352,15 +354,268 @@ For any Theme_Variant and any pair in the pair list of that variant, the contras
 
 **Validates: Requirements 13.1, 13.2, 13.3**
 
+Reflection for the dashboard properties (5 to 8): "exact result" (Property 6) implies "ordered subset" (Property 5) for the current implementation, but Property 5 does not mention the filter values, so it still catches a reimplementation that reorders, duplicates or invents events. The owner asked for both. Property 7 covers the identity case and non-mutation, which Property 6 does not state. Property 8 is separate because it covers arbitrary hash strings, not events.
+
+### Property 5: A filtered list is an ordered subset of the input
+
+For any list of events and any Event_Filter, every event of `filterEvents(events, filter)` SHALL be an event of the input, SHALL appear in the same relative order as in the input, and SHALL appear no more often than in the input.
+
+**Validates: Requirements 20.9, 22.3, 22.4**
+
+### Property 6: A filtered list holds exactly the events that match both values
+
+For any list of events and any Event_Filter, `filterEvents(events, filter)` SHALL contain every event whose airport equals `filter.airportId` (or any airport when it is null, including events with no airport) and whose type equals `filter.type` (or any type when it is null), and SHALL contain no other event. In particular, WHEN `filter.airportId` is an airport code, no result has a null airport.
+
+**Validates: Requirements 20.5, 20.6, 20.7, 20.8, 22.3, 22.5, 22.6**
+
+### Property 7: No filter returns every event and nothing is mutated
+
+For any list of events, `filterEvents(events, NO_EVENT_FILTER)` SHALL equal the input in content and order and SHALL be a new array, and for any Event_Filter the input list and its events SHALL be unchanged after the call.
+
+**Validates: Requirements 20.4, 22.1, 22.2**
+
+### Property 8: A hash always resolves to a dashboard section
+
+For any string used as the hash, `resolveStatusSection` SHALL return one of `overview`, `events`, `airports`, and SHALL return `overview` when the string, with or without a leading `#`, is not one of those ids. For any Dashboard_Section_Id, `resolveStatusSection("#" + id)` SHALL return that id.
+
+**Validates: Requirements 18.1, 18.2**
+
 ## Testing Strategy
 
 - **Property tests** (fast-check, at least 100 runs, tag `Feature: ui-refresh, Property N: ...`): Properties 1 to 3 in `test/settings-sections.pbt.test.ts`. Property 4 is the existing `contrast.test.ts` and `themes-contrast.test.ts` loops over `palettePairs` and `themePairs`; the new pairs join those loops.
+- **Dashboard property tests** (fast-check, at least 100 runs): Properties 5 to 7 in `test/filter-events.pbt.test.ts` (generate events with `fc.record` over `fc.constantFrom` known types plus arbitrary strings, `airportId` from a small code set or null, and filters from the same sets or null) and Property 8 in `test/status-sections.pbt.test.ts`. Unit tests in `test/filter-events.test.ts` and `test/status-sections.test.ts` cover named examples: one airport, one type, both, a nationwide event under "all" and excluded under an airport, an unknown type shown only under "all types", `""`, `"#"`, `"#nope"`, `"#EVENTS"`.
+- **Dashboard component tests**: `test/components/status-dashboard.test.tsx` (menu links, order, hrefs, one `aria-current`, pane ids and order, hash on load, unknown hash falls back, `hashchange` switches without moving focus, panes mounted with `hidden`, live region before the menu and outside every pane with banners shown on each section, Overview shows 0, 3, 5 and 8 events as 0, 3, 5 and 5 cards and always the "View all events" link with `href="#events"`, Events filters and count line "Showing N of M events", both empty states, search text and filter values kept across switches, no `fetch` call on a filter change, no primary Button, no event type code in the text, no `svg`, `img` or "map"), `test/components/event-filters.test.tsx` (labels, option order and text, selection calls `onChange`), `test/components/section-menu.test.tsx` (generic markup).
 - **Component tests** (Testing Library): `settings-page.test.tsx` (visibility per flag, no request for a hidden Section, hash on load, `hashchange`, focus not moved, panes mounted and `hidden`, webhook secret survives a switch, `aria-current`, pane ids differ from section ids, loading, 401, other error, delete success and failure, Tab order of the menu), `settings-menu.test.tsx`, `account-section.test.tsx`, shell test (one `h1`, no tagline in `main`, Status subtitle), nav test (Settings link).
-- **axe**: Settings with each Section active, in all four themes, flags on, in `all-variants.test.tsx`. jsdom cannot compute color-contrast, so the pair tests cover contrast.
+- **axe**: Status with Overview, Events (with events) and Airports active, and Settings with each Section active, in all four themes, flags on, in `all-variants.test.tsx`. jsdom cannot compute color-contrast, so the pair tests cover contrast.
 - **CSS regression test** (`test/layout-css.test.ts`): reads the new stylesheets (`?raw`, with `css.include` extended) and asserts: no `overflow-wrap: anywhere` or `word-break: break-all` in any `.airport-table` rule; `thead th` has `white-space: nowrap`; `.btn` and `.status-pill` have `white-space: nowrap`; `.status-pill` has `flex: none`; row buttons have `min-width: 5.5rem`; a `@media (max-width: 640px)` block contains `display: grid` for `.airport-table` rows and the clipped `thead`; Touch_Target `min-height: 44px` rules exist; `[hidden]` panes are `display: none`; no raw hex color in the new files; no `overflow-x: hidden` on `html`, `body` or `main`.
 - **Vercel test**: the last rewrite is `/(.*)` to `/index.html` and follows `/api/:path*`.
 - **Manual**: browser device emulation at 320, 375, 390, 430 and 1024+, then the owner's phone. Browser automation tools are outside the approved stack, so layout cannot be asserted in jsdom.
 - **Commands**: `npm test`, `npm run typecheck`, `npm run build -w @aerobrief/web`.
+
+## Status dashboard
+
+Added 2026-11-24 at the owner's request (option A). Requirements 17 to 23. All code is TypeScript (strict) in `apps/web`. No API, database, poller or dependency change.
+
+### What the code shows
+
+| Finding | Where | Effect |
+|---|---|---|
+| `StatusView` renders the live region, then the summary card, the All/Affected group, the search field, the count, the table, the empty states, an `<h2>` "Events in the last 24 hours" and the `EventList`, in one column. The events sit below 20 table rows. | `StatusView.tsx` | Split the content into three panes under a menu. The live region stays first. |
+| `useStatus` already returns `events` limited to the last 24 hours and sorted newest first (`selectDisplayEvents`). An `EventSummary` is `{ type, airportId: string \| null, occurredAt, explanation }`. System-wide events have `airportId: null`. Known types: `GROUND_STOP_STARTED`, `GROUND_STOP_ENDED`, `NATIONWIDE_EVENT`. | `use-status.ts`, `api/client.ts` | Filtering is a pure function over this list. No request. |
+| The type labels live in a private map inside `EventCard.tsx`. | `EventCard.tsx` | Move the labels to `lib/event-types.ts` so the type filter and the card share one source. |
+| `SettingsMenu` hard-codes its nav, list and class names, and `settings.css`, `controls.css`, `themes.css` and `layout-css.test.ts` select `.settings-menu`. | components, styles, tests | Generalize into `SectionMenu` with the class `section-menu` and rename those selectors (listed under Test compatibility). |
+| The Settings tab bar scrolls inside itself at Narrow (`overflow-x: auto`, `flex-wrap: nowrap`). Requirement 11.2 says the tabs wrap. The shipped code and `layout-css.test.ts` follow the scrolling form, and the owner's request says "scrollable". | `settings.css` | Both menus keep the scrolling form. Requirement 11.2 is left as written; this is a known wording gap, see D18. |
+| Several tests render `StatusView` directly and use `getByRole`, which skips `hidden` elements. Others use `querySelector` or `getByLabelText`, which do not. | tests | Keep inactive panes mounted with `hidden`. Only role queries for the table, the filter buttons and their axe runs need a hash. |
+| `status-page.test.tsx` asserts the text "Last updated" appears once in the whole container, and `textContent` includes hidden panes. | tests | The Events and Airports panes use "Data as of", not "Last updated". |
+| `status-view.test.tsx` and `summary-card.test.tsx` assert no "map" text and no class name that contains "map". | tests | New copy and class names avoid that substring. |
+
+### Files
+
+New:
+
+| File | Purpose |
+|---|---|
+| `apps/web/src/lib/event-types.ts` | `EVENT_TYPE_LABELS` and `EVENT_TYPES`: the three known event types and their plain-language labels. |
+| `apps/web/src/lib/filter-events.ts` | `EventFilter`, `NO_EVENT_FILTER`, and the pure `filterEvents`. |
+| `apps/web/src/lib/status-sections.ts` | `STATUS_SECTION_IDS`, `STATUS_SECTION_LABELS`, and the pure `resolveStatusSection(hash)`. |
+| `apps/web/src/components/SectionMenu.tsx` | The shared `<nav>` of native hash links. |
+| `apps/web/src/components/EventFilters.tsx` | The two labelled `<select>` controls. |
+
+Changed: `SettingsMenu.tsx` (becomes a thin wrapper over `SectionMenu`), `EventCard.tsx` (imports the labels), `StatusView.tsx` (menu, three panes, filter state, Overview and Events content), `settings.css`, `controls.css`, `themes.css` (menu selector rename, shared layout selectors), `surfaces.css` (dashboard rules), `layout-css.test.ts`, and the tests under "Test compatibility: Status dashboard".
+
+`StatusPage.tsx`, `use-status.ts`, `SummaryCard.tsx`, `AirportTable.tsx`, `EventList.tsx`, `EventCard.tsx` markup and every API file keep their behavior. Layering holds: `lib/` stays pure, `StatusView` stays free of fetching, and nothing imports across `apps/web` boundaries.
+
+### Pure functions
+
+```ts
+// lib/event-types.ts
+export const EVENT_TYPE_LABELS = {
+  GROUND_STOP_STARTED: "Ground stop started",
+  GROUND_STOP_ENDED: "Ground stop ended",
+  NATIONWIDE_EVENT: "System-wide disruption",
+} as const;
+export type KnownEventType = keyof typeof EVENT_TYPE_LABELS;
+export const EVENT_TYPES = Object.keys(EVENT_TYPE_LABELS) as KnownEventType[]; // insertion order
+
+// lib/filter-events.ts
+/** `null` means "all". */
+export interface EventFilter {
+  airportId: string | null;
+  type: string | null;
+}
+export const NO_EVENT_FILTER: EventFilter = { airportId: null, type: null };
+
+/** A new array in input order. Events with no airport match only when `airportId` is null. */
+export function filterEvents<T extends { type: string; airportId: string | null }>(
+  events: readonly T[],
+  filter: EventFilter,
+): T[] {
+  return events.filter(
+    (event) =>
+      (filter.airportId === null || event.airportId === filter.airportId) &&
+      (filter.type === null || event.type === filter.type),
+  );
+}
+
+// lib/status-sections.ts
+export const STATUS_SECTION_IDS = ["overview", "events", "airports"] as const;
+export type StatusSectionId = (typeof STATUS_SECTION_IDS)[number];
+export const STATUS_SECTION_LABELS: Readonly<Record<StatusSectionId, string>> = {
+  overview: "Overview",
+  events: "Events",
+  airports: "Airports",
+};
+
+/** `hash` is `window.location.hash`. Any value that does not name a section resolves to "overview". */
+export function resolveStatusSection(hash: string): StatusSectionId {
+  const wanted = hash.startsWith("#") ? hash.slice(1) : hash;
+  return STATUS_SECTION_IDS.find((id) => id === wanted) ?? "overview";
+}
+```
+
+### Components
+
+```ts
+// SectionMenu.tsx
+export interface SectionMenuItem { id: string; label: string }
+export interface SectionMenuProps {
+  ariaLabel: string;
+  items: readonly SectionMenuItem[];
+  active: string;
+  className?: string; // extra class, for example "settings-menu"
+}
+// <nav aria-label={ariaLabel} className="section-menu [className]">
+//   <ul className="section-menu__list">
+//     <li><a href={`#${id}`} aria-current={id === active ? "true" : undefined}>{label}</a></li>
+//   </ul>
+// </nav>
+
+// SettingsMenu.tsx: same props as today, renders
+//   <SectionMenu ariaLabel="Settings sections" className="settings-menu" items={...} active={active} />
+
+// EventFilters.tsx
+export interface EventFiltersProps {
+  airports: readonly { airportId: string; name: string }[]; // the Monitored_Airports; the component sorts a copy by code
+  value: EventFilter;
+  onChange: (next: EventFilter) => void;
+}
+// <div role="group" aria-label="Filter events" className="event-filters">
+//   <FormLabel htmlFor="event-filter-airport">Airport</FormLabel>
+//   <select id="event-filter-airport">  "" = All airports, then "<code> – <name>" per airport
+//   <FormLabel htmlFor="event-filter-type">Event type</FormLabel>
+//   <select id="event-filter-type">     "" = All types, then the three labels
+// </div>
+```
+
+Native links only, as in the Settings menu. They are not ARIA tabs, because tabs would need a roving tab index and arrow-key handling. Native links give Tab, Enter, Back and Forward, and a deep link, with no extra code.
+
+`StatusView` keeps its props (`status`, `events`, `loading`). It adds `const hash = useLocationHash()`, `const active = resolveStatusSection(hash)` and `const [eventFilter, setEventFilter] = useState(NO_EVENT_FILTER)`. Its existing `affectedOnly` and `query` state stays. Structure when `ok !== null`:
+
+```tsx
+<div className="status-view">
+  <div aria-live="polite" className="status-view__live">{/* stale and system-wide banners, unchanged */}</div>
+  {/* loading and empty states, unchanged */}
+  {ok !== null ? (
+    <div className="status-layout">
+      <SectionMenu ariaLabel="Status sections" items={STATUS_SECTION_IDS.map(...)} active={active} />
+      <div className="status-layout__panes">
+        <div id="status-pane-overview" className="status-pane" hidden={active !== "overview"}>
+          <h3>Overview</h3>
+          <SummaryCard ... />
+          <h4>Latest events</h4>
+          <EventList events={events.slice(0, LATEST_EVENT_COUNT)} />   {/* LATEST_EVENT_COUNT = 5 */}
+          <p><a className="standalone" href="#events">View all events</a></p>
+        </div>
+        <div id="status-pane-events" className="status-pane" hidden={active !== "events"}>
+          <h3>Events in the last 24 hours</h3>
+          <DataAsOfLine capturedAt={ok.capturedAt} />
+          <EventFilters airports={ok.airports} value={eventFilter} onChange={setEventFilter} />
+          <p className="event-count">{`Showing ${shownEvents.length} of ${events.length} events`}</p>
+          {events.length === 0 ? <EmptyState text="No events in the last 24 hours." /> : null}
+          {events.length > 0 && shownEvents.length === 0 ? <EmptyState text="No events match these filters." /> : null}
+          {shownEvents.length > 0 ? <EventList events={shownEvents} /> : null}
+        </div>
+        <div id="status-pane-airports" className="status-pane" hidden={active !== "airports"}>
+          <h3>Airports</h3>
+          <DataAsOfLine capturedAt={ok.capturedAt} />
+          {/* the existing filter group, search field, count, AirportTable and empty states, unchanged */}
+        </div>
+      </div>
+    </div>
+  ) : null}
+</div>
+```
+
+`shownEvents = filterEvents(events, eventFilter)`. `DataAsOfLine` is a small local element: `<p className="data-as-of">Data as of <time dateTime={capturedAt}>{formatUtc(capturedAt)}</time></p>`. The count line and the filters sit outside the live region, as the airport count does today. The airport table, banners, Nav_Bar and the live region keep their DOM; the table only moves into a pane `<div>`.
+
+The Overview pane shows the empty text through `EventList` itself ("No events in the last 24 hours."), so Requirement 19.4 needs no extra code. The Events pane renders its own empty states because it must tell "no events" from "no match", and so it calls `EventList` only with a non-empty list.
+
+Inactive panes stay mounted with `hidden` (D15). The filter and search values already live in `StatusView`, so they would survive an unmount too. The reasons to keep the panes mounted are the existing tests that read the table and the search field from the DOM at the default hash, the absence of a remount on every switch, and parity with the Settings page, where mounting is required for the one-time webhook secret.
+
+### Wireframes
+
+Wide (at least 641 px), Events section active:
+
+```
+header   AeroBrief (h1)                              Status  Watchlist  Settings  Sign in
+main     h2 National status
+         FAA ground stop status for 20 major US airports.
+         [ banners: stale data / system-wide, when active ]      <- aria-live region, above the menu
+         | Overview  |  h3 Events in the last 24 hours                        |
+         | Events  < |  Data as of 2026-11-24 15:00 UTC                        |
+         | Airports  |  Airport [All airports v]   Event type [All types v]    |
+         |           |  Showing 7 of 12 events                                 |
+         |           |  [event card] [event card] ...                          |
+```
+
+Narrow (at most 640 px):
+
+```
+National status
+[banners]
+[Overview] [Events] [Airports]      <- tab bar, scrolls inside itself, 44 px high
+Events in the last 24 hours
+Data as of ...
+Airport [ All airports        v ]   <- full width
+Event type [ All types        v ]
+Showing 7 of 12 events
+```
+
+### Styling
+
+- `settings.css`: rename every `.settings-menu` selector to `.section-menu` (so `.section-menu__list`, `.section-menu a`, `.section-menu a[aria-current="true"]`). Extend the layout selectors with the Status ones: `.settings, .status-layout` (grid and the 14rem column at Wide), `.settings__panes, .status-layout__panes`. Add `.status-pane[hidden] { display: none; }`. The Status panes are not Cards, because the summary card, event cards and table are already Cards.
+- `controls.css`: rename `.settings-menu a` to `.section-menu a` in the 44 px target rule. `select` already has `min-height: 44px` and fills its container at Narrow.
+- `themes.css`: rename `.settings-menu a` to `.section-menu a`, so `hc-*` keeps its 4px marker.
+- `surfaces.css`: `.event-filters` (flex, wrap, `gap: var(--space-3)`, labels `--text-sm`, selects `min-width: 12rem; max-width: 100%`), `.data-as-of` and `.event-count` (`--text-sm`), spacing between pane children from tokens, no raw color value.
+- Pairs: every rule above uses the pairs that already exist (`text-primary` and `text-muted` on `page`, `accent` on `accent-surface`, `border` on `page` for the select boundary). Task 13.2 audits this. If an audit adds a pair or changes a token, the guard hashes change; if not, they stay.
+
+### States
+
+| State | What shows |
+|---|---|
+| Loading, `no_data`, no response | Existing text. No menu, no panes. |
+| Ok, no events | Overview: "No events in the last 24 hours." with the "View all events" link. Events: the filters, "Showing 0 of 0 events" and "No events in the last 24 hours." |
+| Ok, filter matches nothing | Events: "Showing 0 of M events" and "No events match these filters." |
+| Stale or refresh failed | Cached data in every pane. The banner stays in the live region above the menu, and the error region stays above the dashboard. |
+| Unknown hash | Overview, no message. |
+
+### Test compatibility: Status dashboard
+
+Existing tests that change, and the only edit allowed in each:
+
+| Test file | Edit |
+|---|---|
+| `test/components/airport-filter.test.tsx` | `getByRole` skips `hidden` panes. Set the hash to `#airports` (`window.history.replaceState(null, "", "/#airports")`) before render and reset it to `/` after each test. Nothing else. |
+| `test/components/airport-search.test.tsx` | The case that uses `getByRole("button", { name: "Affected only" })` needs the same `#airports` hash. Apply it in `setup()` for all cases. Reset after each test. |
+| `test/a11y/status-filter.test.tsx`, `test/a11y/airport-search.test.tsx` | Set `#airports` so that axe checks the visible Airports pane, and reset after each test. |
+| `test/a11y/status.test.tsx` | Existing cases stay and check the Overview pane. Add cases for `#events` (with events, with a filter that matches nothing) and `#airports`. |
+| `test/a11y/themes/all-variants.test.tsx` | Rename the "Status" case to "Status #overview". Add "Status #events" (with events) and "Status #airports". The matrix grows from 13 to 15 pages, 60 cases. Update the header comment. Add `okStatusWithEvents()` to `test/a11y/fixtures.ts`, with event times relative to `Date.now()`, because `useStatus` drops events older than 24 hours. |
+| `test/layout-css.test.ts` | Rename the `.settings-menu` selectors to `.section-menu`. Add assertions: the Status layout selectors share the Settings grid rules, `.status-pane[hidden]` is `display: none`, no raw hex color in the new `surfaces.css` rules. |
+| `test/components/settings-menu.test.tsx` | No change. `SettingsMenu` keeps the nav class `settings-menu` and its markup. |
+
+Unchanged and must keep passing, with the reason: `status-view.test.tsx` (hidden panes stay in the DOM, so `querySelector("table")` and the order checks hold; the live region precedes the table; no "map" text), `summary-card.test.tsx` (the card follows the live region and precedes the table), `status-page.test.tsx` ("Last updated" appears once because the other panes say "Data as of"; `tbody tr` count 20), `status-view-states.test.tsx` (one `aria-live`, no panes in loading and `no_data`), `status-banners.test.tsx`, `app-shell-headings.test.tsx`, `app.test.tsx`, `a11y/app-shell.test.tsx`, `shared-watchlist.test.tsx`, `airport-table-details.test.tsx` (renders `AirportTable` directly), `event-card.test.tsx` (labels come from the shared constants with the same text), `a11y/themes/dark.test.tsx` and `high-contrast.test.tsx` (check the Overview pane).
+
+Any test that sets a hash must reset it in `afterEach` (`window.history.pushState({}, "", "/")`), so that later Status renders start on Overview.
 
 ## Decisions (approved 2026-11-24)
 
@@ -377,3 +632,15 @@ The owner approved every recommendation.
 - **D9:** The refresh ships to `main` before December 4, 2026, 2:00 PM PT, unflagged. Rollback is `git revert` of the refresh commit range. It is MVP polish, not a Phase 2 item, so the "contest set only" merge rule does not cover it. Task 0.1 records the owner's approval in `docs/decisions.md`.
 - **D10:** The palette values in this document are the starting point. The owner reviews them on a Vercel Preview of `phase-2` before `main` (task 10). A Preview is built only when a push changes files under `apps/web`, and the owner cannot use Vercel's Redeploy button (2FA), so every Preview needs a push that touches `apps/web`.
 - **D11:** Content max width is 1120 px.
+
+### Status dashboard decisions (2026-11-24)
+
+The owner approved option A on 2026-11-24 (D12). D13 to D18 are defaults chosen in this spec. The owner can change any of them at the Preview review (task 10); none blocks the work.
+
+- **D12 (approved):** The Status page (`/`) becomes a dashboard with a section menu in the pattern of the Settings page. Sections: Overview (default), Events, Airports. Deep links `/#overview`, `/#events`, `/#airports`. An unknown hash shows Overview. The side menu shows at 641 px and wider, the scrollable tab bar at 640 px and narrower.
+- **D13 (default):** The stale-data and system-wide banners stay in the existing `aria-live` region above the menu and outside the panes, so they show on every section, not only on Overview. This keeps the region's DOM and its announcements.
+- **D14 (default):** Overview shows the newest 5 events and always shows the "View all events" link to `#events`, also when there are no events.
+- **D15 (default):** Inactive panes stay mounted with `hidden`. Filter and search state would survive an unmount too, because it lives in `StatusView`. Mounting keeps the existing DOM-based tests valid and avoids a remount on each switch.
+- **D16 (default):** The type filter uses the labels the event cards already show: "Ground stop started", "Ground stop ended" and "System-wide disruption" (the owner's "nationwide event"). Airport options are sorted by airport code and read "ATL – Atlanta Hartsfield-Jackson". System-wide events (no airport) show only under "All airports".
+- **D17 (default):** The Events and Airports panes show "Data as of <time>". The summary card keeps "Last updated". Using different words keeps `status-page.test.tsx` valid, which counts "Last updated" once in the whole container.
+- **D18 (default):** Filter choices are not stored in the URL or in local storage. A reload resets them to "All". The URL hash holds only the section. The shared menu keeps the shipped scrolling tab bar at Narrow; Requirement 11.2 still says "wrap", which the shipped code and `layout-css.test.ts` do not follow. The spec text is left as written because requirement text is not edited by this addendum.

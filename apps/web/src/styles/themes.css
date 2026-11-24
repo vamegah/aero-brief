@@ -167,6 +167,7 @@ html[data-theme^="hc-"] .confirm-dialog,
 html[data-theme^="hc-"] .summary-card,
 html[data-theme^="hc-"] .event-card,
 html[data-theme^="hc-"] .settings__pane,
+html[data-theme^="hc-"] .status-pane,
 html[data-theme^="hc-"] .empty-state,
 html[data-theme^="hc-"] .loading-state,
 html[data-theme^="hc-"] .airport-table {
@@ -191,7 +192,7 @@ html[data-theme^="hc-"] .status-pill {
 }
 
 /* Settings menu: thicker current-item marker and link underline-style border. */
-html[data-theme^="hc-"] .settings-menu a {
+html[data-theme^="hc-"] .section-menu a {
   border-bottom-width: 4px;
 }
 

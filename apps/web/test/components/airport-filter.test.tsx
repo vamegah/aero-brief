@@ -1,7 +1,14 @@
 import { fireEvent, render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { StatusView } from "../../src/components/StatusView";
 import { makeAirports, okStatus } from "./fixtures";
+
+beforeEach(() => {
+  window.history.replaceState(null, "", "/#airports");
+});
+afterEach(() => {
+  window.history.replaceState(null, "", "/");
+});
 
 function setup(status = okStatus()) {
   const utils = render(<StatusView status={status} events={[]} loading={false} />);

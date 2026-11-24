@@ -1,12 +1,17 @@
 import type { EventSummary } from "../api/client";
+import { EVENT_TYPE_LABELS, type KnownEventType } from "../lib/event-types";
 import { formatUtc } from "../lib/format-time";
 import { Icon, type IconName } from "./Icon";
 
-const TYPE_PRESENTATION: Record<string, { label: string; icon: IconName }> = {
-  GROUND_STOP_STARTED: { label: "Ground stop started", icon: "alert" },
-  GROUND_STOP_ENDED: { label: "Ground stop ended", icon: "check" },
-  NATIONWIDE_EVENT: { label: "System-wide disruption", icon: "info" },
+const TYPE_ICON: Record<KnownEventType, IconName> = {
+  GROUND_STOP_STARTED: "alert",
+  GROUND_STOP_ENDED: "check",
+  NATIONWIDE_EVENT: "info",
 };
+
+function isKnownType(type: string): type is KnownEventType {
+  return Object.prototype.hasOwnProperty.call(EVENT_TYPE_LABELS, type);
+}
 
 const MODIFIER: Record<string, string> = {
   GROUND_STOP_STARTED: "event-card--started",
@@ -27,7 +32,9 @@ export interface EventCardProps {
  * the Explanation exactly as received (own element), and the Event time.
  */
 export function EventCard({ event, duration }: EventCardProps) {
-  const { label, icon } = TYPE_PRESENTATION[event.type] ?? FALLBACK;
+  const { label, icon }: { label: string; icon: IconName } = isKnownType(event.type)
+    ? { label: EVENT_TYPE_LABELS[event.type], icon: TYPE_ICON[event.type] }
+    : FALLBACK;
   return (
     <div className={`event-card ${MODIFIER[event.type] ?? ""}`.trim()}>
       <div className="event-card__header">

@@ -402,6 +402,16 @@
         "executionId": "3148f54a-a1a2-4f13-ac71-5b25e9fc5a44",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795489951961
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492510354
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492512352
       }
     ],
     "0. Record the owner's decisions (docs only)": [
@@ -458,6 +468,192 @@
         "executionId": "3148f54a-a1a2-4f13-ac71-5b25e9fc5a44",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795489470184
+      }
+    ],
+    "11.1 Implement the event types, the filter and the section resolver": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492510593
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492518053
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492951995
+      }
+    ],
+    "11.2 Write property tests for the filter and the section resolver": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492510919
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492958953
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795493588208
+      }
+    ],
+    "11.3 Write unit tests for the filter and the section resolver": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492511220
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492960480
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795493589023
+      }
+    ],
+    "12.1 Generalize the menu into `SectionMenu`": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492511569
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492961192
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795493589658
+      }
+    ],
+    "12.2 Build the dashboard in `StatusView` and add `EventFilters`": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492511709
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795493595191
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795493928966
+      }
+    ],
+    "12.3 Update the existing Status tests that use role queries": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492511777
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795493936093
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494352903
+      }
+    ],
+    "12.4 Add the Status sections to the axe suites": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492511851
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795493935349
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494353578
+      }
+    ],
+    "13.1 Style the dashboard": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492511937
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494358682
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494607671
+      }
+    ],
+    "13.2 Audit the palette pairs for the dashboard": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492512056
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494613235
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494810097
+      }
+    ],
+    "14. Checkpoint - dashboard works": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795492512123
+      },
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494810842
+      }
+    ],
+    "11. Dashboard logic (pure functions and shared constants)": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795493589106
+      }
+    ],
+    "12. Dashboard UI": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494353761
+      }
+    ],
+    "13. Dashboard styles and palette audit": [
+      {
+        "executionId": "9f08a9e7-b9b5-4df9-9fbd-ff3cb103d12d",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795494810261
       }
     ]
   }

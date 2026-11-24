@@ -1,13 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StatusView } from "../../src/components/StatusView";
 import { runAxe } from "./axe";
 import { NORMAL, okStatus } from "./fixtures";
 
 const AIRPORTS_OK = okStatus() as Extract<ReturnType<typeof okStatus>, { state: "ok" }>;
 
+beforeEach(() => {
+  window.history.replaceState(null, "", "/#airports");
+});
 afterEach(() => {
   vi.unstubAllGlobals();
+  window.history.replaceState(null, "", "/");
 });
 
 describe("a11y: status view 'Affected only' filter", () => {

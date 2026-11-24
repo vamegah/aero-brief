@@ -12,8 +12,8 @@ import { WatchlistPage } from "../../../src/pages/WatchlistPage";
 import { runAxe } from "../axe";
 import { apiError, CAPTURED_AT, json, NORMAL, stubFetch } from "../fixtures";
 
-// Requirements 8.13, 9.11 and 16.3. Matrix: 13 pages x 4 theme variants = 52 cases, every flag on, zero tolerated
-// violations. The pages are Status, Airport, Watchlist, Sign-in, Unsubscribe, Settings signed in at each of
+// Requirements 8.13, 9.11 and 16.3. Matrix: 15 pages x 4 theme variants = 60 cases, every flag on, zero tolerated
+// violations. The pages are Status at each of #overview, #events and #airports, Airport, Watchlist, Sign-in, Unsubscribe, Settings signed in at each of
 // #display, #digest, #webhooks and #account, and Settings signed out at each of the same four hashes.
 // color-contrast is disabled in jsdom (see axe.ts). Contrast for every variant is covered by the palette pair
 // tests (contrast.test.ts over palettePairs in palette.ts) and the themes-contrast tests over themePairs.
@@ -59,13 +59,39 @@ const SETTINGS_SECTIONS = [
   { hash: "account", heading: "Account" },
 ] as const;
 
+const STATUS_SECTIONS = [
+  { hash: "overview", heading: "Overview" },
+  { hash: "events", heading: "Events in the last 24 hours" },
+  { hash: "airports", heading: "Airports" },
+] as const;
+
+/** NORMAL plus three events with times computed from now, so they stay inside the 24-hour window. */
+function statusWithEvents() {
+  const minutesAgo = (n: number) => new Date(Date.now() - n * 60_000).toISOString();
+  return {
+    ...NORMAL,
+    events: [
+      { type: "GROUND_STOP_STARTED", airportId: "JFK", occurredAt: minutesAgo(10), explanation: "A ground stop started at JFK." },
+      { type: "GROUND_STOP_ENDED", airportId: "ATL", occurredAt: minutesAgo(60), explanation: "The ground stop at ATL ended." },
+      { type: "NATIONWIDE_EVENT", airportId: null, occurredAt: minutesAgo(120), explanation: "Ground stops are active at several airports." },
+    ],
+  };
+}
+
 const PAGES: PageCase[] = [
-  {
-    name: "Status",
-    element: () => <StatusPage />,
-    prepare: () => stubFetch({ "GET /api/status/national": () => json(NORMAL) }),
-    ready: () => screen.findByText("New York JFK"),
-  },
+  ...STATUS_SECTIONS.map(
+    ({ hash, heading }): PageCase => ({
+      name: `Status #${hash}`,
+      element: () => <StatusPage />,
+      prepare: () => {
+        stubFetch({ "GET /api/status/national": () => json(statusWithEvents()) });
+        window.history.replaceState(null, "", `/#${hash}`);
+      },
+      ready: async () => {
+        await screen.findByRole("heading", { name: heading });
+      },
+    }),
+  ),
   {
     name: "Airport",
     element: () => <AirportPage airportId="ATL" />,

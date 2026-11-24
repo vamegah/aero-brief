@@ -14,6 +14,8 @@ The change is built on branch `phase-2`. The owner reviews the palette on a Verc
 
 **Relationship to other specs.** The owner's decision of 2026-11-24 (D8) supersedes these Phase 2 items for this refresh: Requirement 3 ("flags off behaves as `main`", now read as same behavior, not same pixels, because the palette is retuned), 8.1 (Theme control "outside the nav bar and the footer", now inside `<main>` on `/settings`), 9.7, 9.12 (same controls "on every page", now on `/settings` only), 10.1 (digest section "on the Watchlist page"), and the Phase 2 guardrail against editing `tokens.css`, `palette.ts` and existing tests. The Webhooks section also leaves the Watchlist page. The refresh is MVP polish approved by the owner (D9). It is not a Phase 2 item, so the "contest set only" merge rule does not apply to it. The Phase 2 spec is edited only by task 0.2 (a one-line pointer to this spec above each affected requirement).
 
+**Addendum 2026-11-24: Status dashboard.** The owner reviewed the refresh and said: "The Events in the last 24 hours are the important part of the application. I don't like the fact that they are way below the page. Can we have it be a dashboard under a menu." The owner approved option A: the Status page (`/`) becomes a dashboard with its own section menu, in the same pattern as the Settings page. The sections are Overview, Events and Airports. Requirements 17 to 23 cover this. They change only `apps/web`: the filters are pure UI over the events the page already loads, so no API, database or poller change is needed and history stays 24 hours. Requirements 1 to 16 are unchanged. The owner's Preview review (task 10) runs after the dashboard tasks, so that the owner reviews everything at once.
+
 ## Glossary
 
 - **Frontend**: The React 18 + Vite app in `apps/web`.
@@ -39,6 +41,22 @@ The change is built on branch `phase-2`. The owner reviews the palette on a Verc
 - **palettePairs**: The list of foreground/background pairs in `apps/web/src/styles/palette.ts`.
 - **Flags_Guard**: `tests/flags-off-guard.test.ts`, which pins SHA-256 hashes of `tokens.css` and `palette.ts`.
 - **Superseded_Rules**: CSS rules in `app.css`, `primitives.css` or `index.css` that a new stylesheet of this spec redefines.
+- **Status_Page**: The page rendered at `/`, titled "National status".
+- **Dashboard**: The content of the Status_Page below its page header when the status response has `state` "ok". It holds the Status_Live_Region, the Dashboard_Menu and three Dashboard_Panes.
+- **Dashboard_Section**: One of Overview, Events, Airports.
+- **Dashboard_Section_Id**: The lowercase id of a Dashboard_Section: `overview`, `events`, `airports`.
+- **Active_Dashboard_Section**: The one Dashboard_Section that the Dashboard shows.
+- **Section_Menu**: The one shared component that renders a `<nav>` of native hash links. It renders both the Settings_Menu and the Dashboard_Menu.
+- **Dashboard_Menu**: The `<nav aria-label="Status sections">` rendered by the Section_Menu on the Dashboard.
+- **Dashboard_Pane**: The `<div>` that holds one Dashboard_Section, with the id `status-pane-<Dashboard_Section_Id>`.
+- **Status_Live_Region**: The existing `aria-live="polite"` element of the status view. It holds the stale-data banner and the system-wide banner.
+- **Event_Feed**: The `events` list that `useStatus` returns: events from the last 24 hours, newest first.
+- **Latest_Events**: The first 5 events of the Event_Feed, in Event_Feed order.
+- **Monitored_Airports**: The 20 airports in the `airports` list of the status response.
+- **Event_Type_Label**: The plain-language name of an event type: "Ground stop started", "Ground stop ended" or "System-wide disruption".
+- **Event_Filter**: The pair of an airport value and an event type value. Each value is either one choice or "all".
+- **Filter_Function**: The pure function `filterEvents` in `apps/web/src/lib/filter-events.ts`.
+- **Data_As_Of_Line**: The text "Data as of" followed by a `<time>` element that shows the `capturedAt` time of the status response.
 
 ## Requirements
 
@@ -246,3 +264,107 @@ The change is built on branch `phase-2`. The owner reviews the palette on a Verc
 5. THE test suite SHALL include a CSS regression test that reads the stylesheets and asserts the nowrap, minimum width, Touch_Target, hidden-header and Narrow_Viewport media-query rules.
 6. WHEN the work is complete, THE commands `npm test`, `npm run typecheck` and `npm run build -w @aerobrief/web` SHALL pass at the repository root.
 7. THE final task SHALL ask the owner to check the deployed pages on a phone.
+
+### Requirement 17: Status dashboard sections and menu
+
+**User Story:** As a visitor, I want the Status page split into sections under a menu, so that the events of the last 24 hours are one click away and not buried below the table.
+
+#### Acceptance Criteria
+
+1. WHEN the status response has `state` "ok", THE Dashboard SHALL render a Dashboard_Menu with one native link per Dashboard_Section, in the order Overview, Events, Airports, each with `href="#<Dashboard_Section_Id>"`.
+2. WHEN the status response has `state` "ok", THE Dashboard SHALL render three Dashboard_Panes in the DOM order Overview, Events, Airports, with the `<h3>` headings "Overview", "Events in the last 24 hours" and "Airports".
+3. THE Dashboard SHALL render the Dashboard_Menu from the same Section_Menu component as the Settings_Menu, with the same active marker, focus indicator and Touch_Target rules.
+4. WHILE the viewport is Wide, THE Dashboard SHALL show the Dashboard_Menu as a vertical list in a 14rem column at the left of the Active_Dashboard_Section.
+5. WHILE the viewport is Narrow, THE Dashboard SHALL show the Dashboard_Menu as a horizontal tab bar above the Active_Dashboard_Section, and the tab bar SHALL scroll inside itself when its links do not fit.
+6. THE Dashboard_Menu SHALL mark the Active_Dashboard_Section with bold text and a 3px underline or left border, so that the marker does not depend on color.
+7. THE Status_Page SHALL cause no horizontal page scroll at any Test_Width with any Dashboard_Section active.
+8. IF the status response is loading, has `state` "no_data", or is missing, THEN THE Status_Page SHALL render no Dashboard_Menu and no Dashboard_Pane, and SHALL show the existing loading or empty text.
+
+### Requirement 18: Dashboard deep links and section switching
+
+**User Story:** As a user, I want a link to one dashboard section, so that a bookmark or the "View all events" link opens the Events section.
+
+#### Acceptance Criteria
+
+1. THE Dashboard SHALL read the Active_Dashboard_Section from the URL hash: `#overview`, `#events` or `#airports`.
+2. IF the hash is empty or unknown, THEN THE Dashboard SHALL show the Overview section and SHALL show no error.
+3. WHEN the URL hash changes, THE Dashboard SHALL switch the Active_Dashboard_Section without reloading the page and without moving keyboard focus.
+4. THE Dashboard SHALL show only the Active_Dashboard_Section and SHALL keep the other two Dashboard_Panes mounted with the `hidden` attribute, so that the airport search text, the All or Affected only choice, and the Event_Filter values survive a switch.
+5. THE Dashboard_Menu SHALL mark the link of the Active_Dashboard_Section with `aria-current="true"` and no other link.
+6. THE Dashboard SHALL give each Dashboard_Pane an element id that differs from its Dashboard_Section_Id, so that following a deep link does not scroll the page.
+7. THE Dashboard SHALL render the Status_Live_Region above the Dashboard_Menu and outside every Dashboard_Pane, with its DOM unchanged, so that a stale-data banner or a system-wide banner is shown and announced whichever section is active.
+
+### Requirement 19: Overview section
+
+**User Story:** As a visitor, I want the overall status and the newest events on the first screen, so that I see what is happening without scrolling.
+
+#### Acceptance Criteria
+
+1. THE Overview section SHALL render the SummaryCard, which shows the "Last updated" time.
+2. THE Overview section SHALL render an `<h4>` "Latest events" followed by the Latest_Events as an event list.
+3. WHILE the Event_Feed holds fewer than 5 events, THE Overview section SHALL render every event of the Event_Feed in Latest_Events.
+4. IF the Event_Feed is empty, THEN THE Overview section SHALL show the text "No events in the last 24 hours." in place of the event list.
+5. THE Overview section SHALL render a link "View all events" with `href="#events"` after the Latest_Events, whether or not the Event_Feed is empty.
+
+### Requirement 20: Events section and filters
+
+**User Story:** As a user, I want the full last-24-hours feed with filters by airport and by event type, so that I can find the events I care about.
+
+#### Acceptance Criteria
+
+1. THE Events section SHALL render a Data_As_Of_Line and the Event_Filter controls above the event list.
+2. THE Events section SHALL render a `<select>` labelled "Airport" whose first option is "All airports", followed by one option per Monitored_Airport in ascending airport code order, each with the text "<code> – <name>".
+3. THE Events section SHALL render a `<select>` labelled "Event type" with the options "All types", "Ground stop started", "Ground stop ended" and "System-wide disruption", in that order.
+4. WHEN the Events section first renders, THE Events section SHALL show "All airports" and "All types" as the selected options and SHALL list every event of the Event_Feed, newest first.
+5. WHEN the user selects an airport, THE Events section SHALL list only the events whose airport equals the selected airport.
+6. WHILE the airport choice is "All airports", THE Events section SHALL include events that have no airport, such as system-wide disruptions.
+7. WHEN the user selects an event type, THE Events section SHALL list only the events of that type.
+8. WHILE both an airport and an event type are selected, THE Events section SHALL list only the events that match both.
+9. THE Events section SHALL list the filtered events in the order of the Event_Feed.
+10. THE Events section SHALL show the line "Showing N of M events", where N is the number of listed events and M is the number of events in the Event_Feed, outside the Status_Live_Region.
+11. IF the Event_Feed is empty, THEN THE Events section SHALL show the text "No events in the last 24 hours." in place of the event list.
+12. IF the Event_Feed holds events and none match the Event_Filter, THEN THE Events section SHALL show the text "No events match these filters." in place of the event list.
+13. WHEN the user changes an Event_Filter value, THE Frontend SHALL send no API request.
+14. THE Events section SHALL render no primary Button.
+
+### Requirement 21: Airports section and dashboard states
+
+**User Story:** As a user, I want the airport table to work as before, and every section to show how fresh its data is, so that I can trust what I read.
+
+#### Acceptance Criteria
+
+1. THE Airports section SHALL render a Data_As_Of_Line and the existing "Filter airports" group with the All and Affected only buttons, the "Search airports" field, the "Showing N of M airports" line, the airport table and its empty states, with the same text, behavior and DOM as before.
+2. WHEN the user leaves a Dashboard_Section and returns, THE Dashboard SHALL keep the airport search text, the All or Affected only choice and both Event_Filter values.
+3. THE Dashboard SHALL show a last-updated time in every Dashboard_Section: the SummaryCard "Last updated" time in the Overview section, and a Data_As_Of_Line in the Events section and the Airports section.
+4. WHILE the displayed status is stale or a refresh has failed, THE Dashboard SHALL keep showing the cached data in every Dashboard_Section and SHALL keep the existing stale or error banner visible.
+5. THE Dashboard SHALL write every label, heading and message in plain language and SHALL show no raw FAA code and no event type code such as "GROUND_STOP_STARTED".
+6. THE Status_Page SHALL render no primary Button.
+
+### Requirement 22: Event filter function
+
+**User Story:** As a maintainer, I want the filter logic as a pure function, so that the rules are tested without a browser.
+
+#### Acceptance Criteria
+
+1. THE Filter_Function SHALL take a list of events and an Event_Filter, and SHALL return a new list without changing the input list or its events.
+2. WHEN both values of the Event_Filter are "all", THE Filter_Function SHALL return every event of the input, in input order.
+3. THE Filter_Function SHALL return every event that matches both values of the Event_Filter, and SHALL return no other event.
+4. THE Filter_Function SHALL return the matching events in the order of the input.
+5. WHEN the airport value is an airport code, THE Filter_Function SHALL exclude every event that has no airport.
+6. WHEN the type value is an event type and the airport value is "all", THE Filter_Function SHALL return the events of that type, including events that have no airport.
+
+### Requirement 23: Dashboard constraints and tests
+
+**User Story:** As the maintainer, I want the dashboard to respect the steering and scope rules and to be covered by tests, so that it can ship with the rest of the refresh.
+
+#### Acceptance Criteria
+
+1. THE test suite SHALL cover the Filter_Function with unit tests and with fast-check property tests for: the result is a subset of the input, the result keeps input order, every result matches both filters and no match is omitted, and the "all" and "all" filter returns every event.
+2. THE test suite SHALL cover the Dashboard for: the menu links and their order, deep links and the fallback to Overview, a hash change without a focus move, panes that are mounted with `hidden`, `aria-current`, the Status_Live_Region outside the panes, the five Latest_Events and the "View all events" link, the filters, the count line, both empty states, state kept across a switch, and no API request on a filter change.
+3. THE axe suite in `a11y/themes/all-variants.test.tsx` SHALL run the Status_Page with the Overview, Events and Airports sections active, with events present, in all four Theme_Variants, and SHALL fail on any violation.
+4. THE test suite SHALL change an existing Status_Page test only as listed in `design.md` ("Test compatibility: Status dashboard").
+5. THE Frontend SHALL add no runtime dependency, SHALL draw no `<svg>` or `<img>` inside the status view, and SHALL keep the text "map" and class names that contain "map" out of the status view.
+6. THE Frontend SHALL give every new color pair a contrast ratio that meets Requirement 13, SHALL list it in palettePairs, and WHEN `tokens.css` or `palette.ts` change, THE repository SHALL update the two hashes in the Flags_Guard in the same commit.
+7. THE Frontend SHALL keep the 20 monitored airports and the 24-hour history, SHALL change no API route, database table or poller code, and SHALL add no map view and no push notification.
+8. WHEN the dashboard work is complete, THE commands `npm test`, `npm run typecheck` and `npm run build -w @aerobrief/web` SHALL pass at the repository root.
+9. THE owner SHALL review the dashboard on the Vercel Preview of `phase-2`, signed out, with the rest of the refresh in task 10, after the dashboard tasks are done.

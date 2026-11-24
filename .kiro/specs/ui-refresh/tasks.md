@@ -2,7 +2,7 @@
 
 ## Overview
 
-Build a Settings page, an app shell and a quieter palette, and fix the table and control layout on phones. All code is TypeScript (strict) in `apps/web`, plus two hashes in `tests/flags-off-guard.test.ts`. Work happens on branch `phase-2`. Order: pure logic, Settings page and wiring, palette, shell, tables and controls, page styles, verification, owner check on a phone.
+Build a Settings page, an app shell and a quieter palette, and fix the table and control layout on phones. All code is TypeScript (strict) in `apps/web`, plus two hashes in `tests/flags-off-guard.test.ts`. Work happens on branch `phase-2`. Order: pure logic, Settings page and wiring, palette, shell, tables and controls, page styles, verification, Status dashboard (tasks 11 to 14), owner check on a phone (task 10, last).
 
 **Guardrails for every task.**
 
@@ -159,17 +159,84 @@ Build a Settings page, an app shell and a quieter palette, and fix the table and
 - [x] 9. Final checkpoint - full suite
   - Run `npm test`, `npm run typecheck` and `npm run build -w @aerobrief/web` at the repository root. Ensure all tests pass, ask the user if questions arise.
 
-- [-] 10. Owner review on a Vercel Preview of `phase-2` (**needs user action**)
+- [x] 11. Dashboard logic (pure functions and shared constants)
+  - [x] 11.1 Implement the event types, the filter and the section resolver
+    - Create `apps/web/src/lib/event-types.ts` (`EVENT_TYPE_LABELS`, `KnownEventType`, `EVENT_TYPES`), `apps/web/src/lib/filter-events.ts` (`EventFilter`, `NO_EVENT_FILTER`, `filterEvents`) and `apps/web/src/lib/status-sections.ts` (`STATUS_SECTION_IDS`, `StatusSectionId`, `STATUS_SECTION_LABELS`, `resolveStatusSection`) exactly as in `design.md` ("Pure functions").
+    - In `EventCard.tsx`, import `EVENT_TYPE_LABELS` for the labels. Keep the icons, modifiers, fallback "Event" and markup unchanged. `event-card.test.tsx` must pass unchanged.
+    - `lib/` stays pure: no I/O, no React, no environment access.
+    - _Requirements: 20.3, 22.1, 22.2, 22.3, 22.4, 22.5, 22.6, 18.1, 18.2_
+
+  - [x] 11.2 Write property tests for the filter and the section resolver
+    - Create `apps/web/test/filter-events.pbt.test.ts` and `apps/web/test/status-sections.pbt.test.ts` with fast-check, `numRuns` of 100 or more, tag `// Feature: ui-refresh, Property N: ...`.
+    - **Property 5: A filtered list is an ordered subset of the input**
+    - **Property 6: A filtered list holds exactly the events that match both values**
+    - **Property 7: No filter returns every event and nothing is mutated**
+    - **Property 8: A hash always resolves to a dashboard section**
+    - Generate events with known and arbitrary type strings, airport codes from a small set and `null`, and filters from the same sets and `null`.
+    - **Validates: Requirements 18.1, 18.2, 20.4, 20.5, 20.6, 20.7, 20.8, 20.9, 22.1, 22.2, 22.3, 22.4, 22.5, 22.6**
+
+  - [x] 11.3 Write unit tests for the filter and the section resolver
+    - Create `apps/web/test/filter-events.test.ts`: one airport, one type, both, a system-wide event kept under "all" and dropped under an airport, an unknown type kept only under "all types", empty input, input unchanged.
+    - Create `apps/web/test/status-sections.test.ts`: `""`, `"#"`, `"#nope"`, `"#EVENTS"`, `"events"`, `"#events"`, `"#airports"`.
+    - _Requirements: 18.1, 18.2, 22.2, 22.3, 22.5, 22.6, 23.1_
+
+- [x] 12. Dashboard UI
+  - [x] 12.1 Generalize the menu into `SectionMenu`
+    - Create `apps/web/src/components/SectionMenu.tsx` as in `design.md` ("Components"). Rewrite `SettingsMenu.tsx` as a thin wrapper that keeps its props, the nav label "Settings sections", and the nav class `settings-menu`.
+    - Rename every `.settings-menu` selector to `.section-menu` (and `.settings-menu__list` to `.section-menu__list`) in `settings.css`, `controls.css` and `themes.css`. Change no declaration. Update the same selectors in `apps/web/test/layout-css.test.ts`.
+    - Create `apps/web/test/components/section-menu.test.tsx`: label, link order, hrefs, one `aria-current`, extra class, Tab order follows DOM order. `settings-menu.test.tsx` and `settings-page.test.tsx` pass unchanged.
+    - _Requirements: 17.3, 17.6, 18.5_
+
+  - [x] 12.2 Build the dashboard in `StatusView` and add `EventFilters`
+    - Create `apps/web/src/components/EventFilters.tsx` as in `design.md`: a group "Filter events" with two native `<select>` elements labelled "Airport" and "Event type" through `FormLabel`; the value `""` means "All airports" or "All types"; airport options sorted by code on a copy; text `<code> – <name>`; type options from `EVENT_TYPES` and `EVENT_TYPE_LABELS`. No Button.
+    - Restructure `StatusView.tsx` as in `design.md`: keep the live region, loading and empty states unchanged and first; when the status is ok render the `status-layout` with `SectionMenu` "Status sections", then three `status-pane` divs (ids `status-pane-overview`, `-events`, `-airports`, `hidden` unless active, DOM order Overview, Events, Airports). Use `useLocationHash` and `resolveStatusSection`.
+    - Overview: `h3` "Overview", the `SummaryCard`, `h4` "Latest events", `EventList` of `events.slice(0, 5)`, and the link "View all events" to `#events` (class `standalone`). Events: `h3` "Events in the last 24 hours", the "Data as of" line, `EventFilters`, the line "Showing N of M events", the two empty states ("No events in the last 24 hours." and "No events match these filters."), and `EventList` of `filterEvents(events, eventFilter)`. Airports: `h3` "Airports", the "Data as of" line, then the existing filter group, search field, count, table and empty states with no change to their text or DOM. Remove the old `h2` "Events in the last 24 hours" and the trailing `EventList`.
+    - Send no request on a filter change. Add no `svg`, `img`, text "map" or class name that contains "map". Render no primary Button.
+    - Create `apps/web/test/components/status-dashboard.test.tsx` and `apps/web/test/components/event-filters.test.tsx` with the cases listed in `design.md` ("Testing Strategy"). Reset the hash in `afterEach`.
+    - _Requirements: 17.1, 17.2, 17.8, 18.1, 18.2, 18.3, 18.4, 18.5, 18.6, 18.7, 19.1, 19.2, 19.3, 19.4, 19.5, 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7, 20.8, 20.9, 20.10, 20.11, 20.12, 20.13, 20.14, 21.1, 21.2, 21.3, 21.4, 21.5, 21.6, 23.2, 23.5_
+
+  - [x] 12.3 Update the existing Status tests that use role queries
+    - Apply the edits in `design.md` ("Test compatibility: Status dashboard") to `test/components/airport-filter.test.tsx`, `test/components/airport-search.test.tsx`, `test/a11y/status-filter.test.tsx` and `test/a11y/airport-search.test.tsx`: set the hash `#airports` before render and reset it after each test. Read each file first and change nothing else.
+    - Run the unchanged tests named in that section and confirm they pass: `status-view`, `summary-card`, `status-page`, `status-view-states`, `status-banners`, `app-shell-headings`, `app`, `a11y/app-shell`, `shared-watchlist`, `event-card`.
+    - _Requirements: 21.1, 23.4_
+
+  - [x] 12.4 Add the Status sections to the axe suites
+    - In `test/a11y/fixtures.ts`, add `okStatusWithEvents()`: the `NORMAL` airports plus three events (ground stop started at JFK, ground stop ended at ATL, a system-wide event with `airportId: null`) with `occurredAt` computed from `Date.now()` so they stay inside 24 hours.
+    - In `test/a11y/themes/all-variants.test.tsx`: rename the "Status" case to "Status #overview" and give it events; add "Status #events" and "Status #airports" (set the hash with `window.history.replaceState` in `prepare`). Ready when the pane heading is visible. Update the matrix comment (15 pages, 60 cases).
+    - In `test/a11y/status.test.tsx`: add axe cases for `#events` with events, `#events` after choosing a filter that matches nothing, and `#airports`. Reset the hash in `afterEach`.
+    - _Requirements: 23.3_
+
+- [x] 13. Dashboard styles and palette audit
+  - [x] 13.1 Style the dashboard
+    - `settings.css`: extend the layout selectors with the Status ones (`.settings, .status-layout`, `.settings__panes, .status-layout__panes`, in the base rule and in the `min-width: 641px` rule) and add `.status-pane[hidden] { display: none; }`. Do not create a new stylesheet.
+    - `surfaces.css`: add `.event-filters`, `.data-as-of`, `.event-count` and pane spacing, with tokens only and no raw color. Selects fill the width at Narrow (the existing `controls.css` rule already does) and the Events pane causes no horizontal scroll at 320 px.
+    - `themes.css`: no new `hc-*` rule is needed unless a new bordered surface appears; add one under `html[data-theme^="hc-"]` only if it does.
+    - Extend `test/layout-css.test.ts` with the assertions in `design.md` ("Test compatibility: Status dashboard").
+    - _Requirements: 17.4, 17.5, 17.6, 17.7, 20.1, 23.6_
+
+  - [x] 13.2 Audit the palette pairs for the dashboard
+    - List every foreground/background pair that the new rules in `settings.css` and `surfaces.css` use. Add any pair missing from `palettePairs` with the right size class and run `contrast`, `themes-contrast`, `palette-sync` and `themes-sync`. Fix a failing pair by changing the token in all four places, never the threshold.
+    - Recompute and update the two hashes in `tests/flags-off-guard.test.ts` only if `tokens.css` or `palette.ts` changed. If neither changed, leave the guard alone.
+    - _Requirements: 23.6_
+
+- [-] 14. Checkpoint - dashboard works
+  - Run `npm test`, `npm run typecheck` and `npm run build -w @aerobrief/web` at the repository root. Ensure all tests pass, ask the user if questions arise.
+  - _Requirements: 23.8_
+
+- [~] 10. Owner review on a Vercel Preview of `phase-2` (**needs user action**)
+  - Runs last, after tasks 11 to 14 (owner decision of 2026-11-24), so that the owner reviews the whole refresh, including the Status dashboard, at once.
   - The owner pushes `phase-2`. A Preview is built only when the push changes files under `apps/web`, and the owner cannot use Vercel's Redeploy button (2FA). The refresh changes `apps/web`, so its push builds one. If a later fix changes nothing under `apps/web`, the agent tells the owner to include a change under `apps/web` in the push, so a new Preview is built.
   - Palette review (D10): the owner reviews the starting palette on the Preview in light and dark (and high contrast if the flag is on). Palette changes the owner asks for go back to task 4.1 and task 8.1 (and a new guard hash).
-  - Layout check: the owner checks these pages at 320, 375, 390 and 430 px in browser device emulation, then on the iPhone: Status, one Airport detail, Watchlist, Settings (each section, signed in and signed out), Sign-in, Unsubscribe, Digest unsubscribe.
+  - Layout check: the owner checks these pages at 320, 375, 390 and 430 px in browser device emulation, then on the iPhone: Status (signed out works; check `/#overview`, `/#events` and `/#airports`), one Airport detail, Watchlist, Settings (each section, signed in and signed out), Sign-in, Unsubscribe, Digest unsubscribe.
+  - Dashboard check: the Events section lists the events of the last 24 hours without scrolling past the table; the airport and event type filters narrow the list and the line "Showing N of M events" matches; "View all events" opens Events; an unknown hash opens Overview; the banners stay visible on every section; the side menu becomes a tab bar at 640 px and narrower.
   - Pass criteria: no sideways page scroll; no word broken mid-word in headings, table headers, buttons or pills; "Not watching" and "Add" stay on one line; rows stack; every button and link is easy to tap; the menu becomes a tab bar; signed-out Settings shows Display and the sign-in state; VoiceOver still announces the airport tables as tables (D6). If VoiceOver loses table semantics, the agent adds the `role` attributes of Requirement 9.6 to the table elements as a follow-up change under `apps/web`, then the owner repeats this check.
   - Report failures to the agent, with page, width and theme, so that the fix goes into the matching task. When all checks pass, the owner ships to `main` (D9), unflagged, before December 4, 2026, 2:00 PM PT. The agent does not push, tag or merge.
-  - _Requirements: 12.4, 16.7_
+  - _Requirements: 12.4, 16.7, 23.9_
 
 ## Notes
 
-- No test sub-task is marked optional, because the owner asked for tests with each change. Property tests (1.2, 8.1) cover pure logic and contrast only. CSS and layout are example tests plus the manual check, because jsdom cannot compute layout and no browser automation tool is in the approved stack.
+- Tasks 11 to 14 were added on 2026-11-24 for the Status dashboard (Requirements 17 to 23). Task 10 keeps its ID and its in-progress mark and now runs last, after tasks 11 to 14, so the owner reviews everything at once. Tasks 0 to 9 are unchanged.
+- No test sub-task is marked optional, because the owner asked for tests with each change. Property tests (1.2, 8.1, 11.2) cover pure logic and contrast only. CSS and layout are example tests plus the manual check, because jsdom cannot compute layout and no browser automation tool is in the approved stack.
 - Rollback (D9): the refresh has no feature flag. `git revert` of the refresh commit range restores the previous look. The refresh is MVP polish approved by the owner, not a Phase 2 item.
 - The 20-airport cap, the 10-airport watchlist cap and 24-hour history stay as they are.
 
@@ -193,7 +260,14 @@ Build a Settings page, an app shell and a quieter palette, and fix the table and
     { "id": 12, "tasks": ["7.3"] },
     { "id": 13, "tasks": ["8.1", "8.2", "8.3"] },
     { "id": 14, "tasks": ["9"] },
-    { "id": 15, "tasks": ["10"] }
+    { "id": 15, "tasks": ["11.1"] },
+    { "id": 16, "tasks": ["11.2", "11.3", "12.1"] },
+    { "id": 17, "tasks": ["12.2"] },
+    { "id": 18, "tasks": ["12.3", "12.4"] },
+    { "id": 19, "tasks": ["13.1"] },
+    { "id": 20, "tasks": ["13.2"] },
+    { "id": 21, "tasks": ["14"] },
+    { "id": 22, "tasks": ["10"] }
   ]
 }
 ```

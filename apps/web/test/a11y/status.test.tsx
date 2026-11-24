@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { StaleDataBanner } from "../../src/components/StaleDataBanner";
 import { StatusView } from "../../src/components/StatusView";
@@ -49,6 +49,59 @@ describe("a11y: status view", () => {
       },
     ];
     const { container } = render(<StatusView status={both} events={events} loading={false} />);
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+});
+
+describe("a11y: status sections", () => {
+  const minutesAgo = (n: number) => new Date(Date.now() - n * 60_000).toISOString();
+  const events = [
+    { type: "GROUND_STOP_STARTED", airportId: "JFK", occurredAt: minutesAgo(10), explanation: "A ground stop started at JFK." },
+    { type: "GROUND_STOP_ENDED", airportId: "ATL", occurredAt: minutesAgo(60), explanation: "The ground stop at ATL ended." },
+    { type: "NATIONWIDE_EVENT", airportId: null, occurredAt: minutesAgo(120), explanation: "Ground stops are active at several airports." },
+  ];
+
+  afterEach(() => {
+    window.history.pushState({}, "", "/");
+  });
+
+  it("has no violations in the Events section with events", async () => {
+    window.history.replaceState(null, "", "/#events");
+    const { container } = render(<StatusView status={NORMAL} events={events} loading={false} />);
+    await screen.findByRole("heading", { name: "Events in the last 24 hours" });
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it("has no violations in the Events section with no events", async () => {
+    window.history.replaceState(null, "", "/#events");
+    const { container } = render(<StatusView status={NORMAL} events={[]} loading={false} />);
+    await screen.findByRole("heading", { name: "Events in the last 24 hours" });
+    expect(screen.getAllByText("No events in the last 24 hours.").length).toBeGreaterThan(0);
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it("has no violations in the Events section when a filter matches nothing", async () => {
+    window.history.replaceState(null, "", "/#events");
+    const { container } = render(<StatusView status={NORMAL} events={events} loading={false} />);
+    await screen.findByRole("heading", { name: "Events in the last 24 hours" });
+    fireEvent.change(screen.getByLabelText("Airport"), { target: { value: "ORD" } });
+    await screen.findByText("No events match these filters.");
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it("has no violations in the Airports section", async () => {
+    window.history.replaceState(null, "", "/#airports");
+    const { container } = render(<StatusView status={NORMAL} events={events} loading={false} />);
+    await screen.findByRole("heading", { name: "Airports" });
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it("has no violations in the Airports section when the search matches nothing", async () => {
+    window.history.replaceState(null, "", "/#airports");
+    const { container } = render(<StatusView status={NORMAL} events={events} loading={false} />);
+    await screen.findByRole("heading", { name: "Airports" });
+    fireEvent.change(screen.getByLabelText("Search airports"), { target: { value: "zzzz" } });
+    await screen.findByText("No airports match your search.");
     expect(await runAxe(container)).toHaveNoViolations();
   });
 });

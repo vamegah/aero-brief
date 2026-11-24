@@ -325,3 +325,77 @@ main > section > [role="status"] p {
     margin-inline-start: auto;
   }
 }
+
+/* ---- Status dashboard (ui-refresh task 13.1): panes are Cards, tokens only ---- */
+.status-pane {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-4);
+  border: 1px solid var(--color-table-rule);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  overflow-wrap: break-word;
+}
+
+.status-pane > h3 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.status-pane > h4 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.status-pane .summary-card {
+  margin-block: 0 var(--space-3);
+}
+
+.data-as-of,
+.event-count {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: break-word;
+}
+
+/* Filters: side by side on wide screens, stacked and full width on phones. */
+.event-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  margin: 0 0 var(--space-3);
+}
+
+.event-filters__field {
+  display: flex;
+  flex: 1 1 14rem;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.event-filters__field select {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .status-pane {
+    padding: var(--space-3);
+  }
+
+  .event-filters {
+    flex-direction: column;
+  }
+
+  .event-filters__field {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}

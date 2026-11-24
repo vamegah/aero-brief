@@ -81,7 +81,13 @@ describe("AirportPage ground stop durations", () => {
           events: stopEvents(),
         }),
     });
-    await screen.findByText("The ground stop at Atlanta ended.");
+    // The event shows in the Overview latest events and in the Events pane.
+    const occurrences = await screen.findAllByText("The ground stop at Atlanta ended.");
+    expect(occurrences).toHaveLength(2);
+    for (const el of occurrences) {
+      const pane = el.closest(".status-pane") as HTMLElement;
+      expect(within(pane).queryByText(/^Lasted /)).toBeNull();
+    }
     expect(screen.queryByText(/^Lasted /)).toBeNull();
   });
 });

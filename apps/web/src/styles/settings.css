@@ -3,19 +3,21 @@
  * Pairs: text-primary and accent on page and on accent-surface; text-primary on surface-raised.
  * The current item is marked by bold text and a border, so color only repeats it.
  */
-.settings {
+.settings,
+.status-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
   align-items: start;
 }
 .settings__panes,
-.settings-menu {
+.status-layout__panes,
+.section-menu {
   min-width: 0;
 }
 
 /* Narrow: horizontal tab bar. The list scrolls inside itself, the page never does. */
-.settings-menu__list {
+.section-menu__list {
   display: flex;
   flex-wrap: nowrap;
   gap: var(--space-1);
@@ -25,10 +27,10 @@
   overflow-x: auto;
   border-bottom: 1px solid var(--color-table-rule);
 }
-.settings-menu__list li {
+.section-menu__list li {
   flex: 0 0 auto;
 }
-.settings-menu a {
+.section-menu a {
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
@@ -40,14 +42,14 @@
   text-decoration: none;
   transition: background-color var(--motion-fast), border-color var(--motion-fast);
 }
-.settings-menu a:hover {
+.section-menu a:hover {
   background: var(--color-accent-surface);
 }
-.settings-menu a:focus-visible {
+.section-menu a:focus-visible {
   outline: var(--focus-outline);
   outline-offset: calc(-1 * var(--focus-outline-width));
 }
-.settings-menu a[aria-current="true"] {
+.section-menu a[aria-current="true"] {
   background: var(--color-accent-surface);
   border-bottom-color: var(--color-accent);
   color: var(--color-accent);
@@ -63,7 +65,8 @@
   color: var(--color-text-primary);
   overflow-wrap: break-word;
 }
-.settings__pane[hidden] {
+.settings__pane[hidden],
+.status-pane[hidden] {
   display: none;
 }
 
@@ -88,21 +91,22 @@
 
 /* Wide: side menu. */
 @media (min-width: 641px) {
-  .settings {
+  .settings,
+  .status-layout {
     grid-template-columns: 14rem minmax(0, 1fr);
     gap: var(--space-5);
   }
-  .settings-menu__list {
+  .section-menu__list {
     flex-direction: column;
     overflow-x: visible;
     border-bottom: 0;
   }
-  .settings-menu a {
+  .section-menu a {
     display: flex;
     border-bottom: 0;
     border-left: 3px solid transparent;
   }
-  .settings-menu a[aria-current="true"] {
+  .section-menu a[aria-current="true"] {
     border-left-color: var(--color-accent);
   }
   .settings__pane .digest-settings__form {
@@ -111,7 +115,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .settings-menu a {
+  .section-menu a {
     transition: none;
   }
 }

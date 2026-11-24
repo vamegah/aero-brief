@@ -13,6 +13,7 @@ import settingsCss from "../src/styles/settings.css?raw";
 import shellCss from "../src/styles/shell.css?raw";
 import surfacesCss from "../src/styles/surfaces.css?raw";
 import tablesCss from "../src/styles/tables.css?raw";
+import themesCss from "../src/styles/themes.css?raw";
 import { declared, findRules, parseCss, stripComments, type CssRule } from "./helpers/css";
 
 const NARROW = "(max-width: 640px)";
@@ -129,7 +130,7 @@ describe("layout css: 44px touch targets", () => {
     [".text-input"],
     [".display-settings__option"],
     [".digest-settings__option"],
-    [".settings-menu a"],
+    [".section-menu a"],
     [".nav-bar a"],
     [".nav-bar button"],
   ])("%s has min-height: 44px", (selector) => {
@@ -140,7 +141,7 @@ describe("layout css: 44px touch targets", () => {
     expect(declared(settings, ".settings__pane .display-settings__option", "min-height")).toBe("44px");
     expect(declared(settings, ".settings__pane .digest-settings__option", "min-height")).toBe("44px");
     expect(declared(settings, ".settings__pane .digest-settings__select", "min-height")).toBe("44px");
-    expect(declared(settings, ".settings-menu a", "min-height")).toBe("44px");
+    expect(declared(settings, ".section-menu a", "min-height")).toBe("44px");
   });
 
   it("standalone links get 44px on narrow or coarse pointers", () => {
@@ -157,25 +158,25 @@ describe("layout css: 44px touch targets", () => {
 
 describe("layout css: Settings tab bar scrolls inside itself", () => {
   it("narrow list is a non-wrapping flex row with overflow-x: auto", () => {
-    expect(declared(settings, ".settings-menu__list", "display", null)).toBe("flex");
-    expect(declared(settings, ".settings-menu__list", "flex-wrap", null)).toBe("nowrap");
-    expect(declared(settings, ".settings-menu__list", "overflow-x", null)).toBe("auto");
+    expect(declared(settings, ".section-menu__list", "display", null)).toBe("flex");
+    expect(declared(settings, ".section-menu__list", "flex-wrap", null)).toBe("nowrap");
+    expect(declared(settings, ".section-menu__list", "overflow-x", null)).toBe("auto");
   });
 
   it("tabs keep their width and their text on one line", () => {
-    expect(declared(settings, ".settings-menu__list li", "flex", null)).toBe("0 0 auto");
-    expect(declared(settings, ".settings-menu a", "white-space", null)).toBe("nowrap");
+    expect(declared(settings, ".section-menu__list li", "flex", null)).toBe("0 0 auto");
+    expect(declared(settings, ".section-menu a", "white-space", null)).toBe("nowrap");
   });
 
   it("the grid column and panes can shrink, so the page does not grow", () => {
     expect(declared(settings, ".settings", "grid-template-columns", null)).toBe("minmax(0, 1fr)");
     expect(declared(settings, ".settings__panes", "min-width", null)).toBe("0");
-    expect(declared(settings, ".settings-menu", "min-width", null)).toBe("0");
+    expect(declared(settings, ".section-menu", "min-width", null)).toBe("0");
   });
 
   it("wide layout switches to a column menu with no inner scroll", () => {
-    expect(declared(settings, ".settings-menu__list", "flex-direction", WIDE)).toBe("column");
-    expect(declared(settings, ".settings-menu__list", "overflow-x", WIDE)).toBe("visible");
+    expect(declared(settings, ".section-menu__list", "flex-direction", WIDE)).toBe("column");
+    expect(declared(settings, ".section-menu__list", "overflow-x", WIDE)).toBe("visible");
   });
 
   it("hidden panes are display: none", () => {
@@ -193,6 +194,56 @@ describe("layout css: Settings tab bar scrolls inside itself", () => {
         expect(bad, `${name}: ${rule.selectors.join(", ")}`).toEqual([]);
       }
     }
+  });
+});
+
+describe("layout css: Status dashboard", () => {
+  const surfaces = rulesOf(surfacesCss);
+  const themes = rulesOf(themesCss);
+
+  it("shares the Settings grid rules with the Status layout", () => {
+    expect(declared(settings, ".status-layout", "display", null)).toBe("grid");
+    expect(declared(settings, ".status-layout", "grid-template-columns", null)).toBe("minmax(0, 1fr)");
+    expect(declared(settings, ".status-layout__panes", "min-width", null)).toBe("0");
+    expect(declared(settings, ".status-layout", "grid-template-columns", WIDE)).toBe("14rem minmax(0, 1fr)");
+  });
+
+  it("hides inactive panes", () => {
+    expect(declared(settings, ".status-pane[hidden]", "display")).toBe("none");
+  });
+
+  it("panes are Cards with the raised surface and a rule", () => {
+    expect(declared(surfaces, ".status-pane", "background", null)).toBe("var(--color-surface-raised)");
+    expect(declared(surfaces, ".status-pane", "border", null)).toContain("var(--color-table-rule)");
+    expect(declared(surfaces, ".status-pane", "min-width", null)).toBe("0");
+  });
+
+  it("filters sit side by side on wide screens and stack on phones", () => {
+    expect(declared(surfaces, ".event-filters", "display", null)).toBe("flex");
+    expect(declared(surfaces, ".event-filters", "flex-wrap", null)).toBe("wrap");
+    expect(declared(surfaces, ".event-filters", "flex-direction", NARROW)).toBe("column");
+    expect(declared(surfaces, ".event-filters__field", "width", NARROW)).toBe("100%");
+    expect(declared(surfaces, ".event-filters__field", "min-width", null)).toBe("0");
+  });
+
+  it("selects keep 44px and fill the width at Narrow", () => {
+    expect(declared(controls, "select", "min-height", null)).toBe("44px");
+    expect(declared(controls, "select", "width", NARROW)).toBe("100%");
+  });
+
+  it("the data-as-of and event-count lines use muted text", () => {
+    expect(declared(surfaces, ".data-as-of", "color", null)).toBe("var(--color-text-muted)");
+    expect(declared(surfaces, ".event-count", "color", null)).toBe("var(--color-text-muted)");
+  });
+
+  it("high-contrast themes give the pane a 2px border", () => {
+    expect(declared(themes, 'html[data-theme^="hc-"] .status-pane', "border-width", null)).toBe("2px");
+  });
+
+  it("the new dashboard rules use no raw color", () => {
+    const code = stripComments(surfacesCss);
+    const dashboard = code.slice(code.indexOf(".status-pane {"));
+    expect(dashboard).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/);
   });
 });
 

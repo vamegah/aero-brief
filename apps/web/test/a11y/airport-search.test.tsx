@@ -1,8 +1,15 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { StatusView } from "../../src/components/StatusView";
 import { runAxe } from "./axe";
 import { NORMAL } from "./fixtures";
+
+beforeEach(() => {
+  window.history.replaceState(null, "", "/#airports");
+});
+afterEach(() => {
+  window.history.replaceState(null, "", "/");
+});
 
 describe("a11y: status view airport search", () => {
   it("has no violations with the search field empty", async () => {
