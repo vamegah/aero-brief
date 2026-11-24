@@ -13,6 +13,7 @@ function makeEvents(count: number): EventSummary[] {
   return Array.from({ length: count }, (_, i) => {
     const type = types[i % 3] as string;
     return {
+      incidentKey: `evt-${i}`,
       type,
       airportId: type === "NATIONWIDE_EVENT" ? null : i % 2 === 0 ? "ATL" : "LAX",
       occurredAt: new Date(Date.UTC(2026, 0, 2, 11, 59 - i)).toISOString(),

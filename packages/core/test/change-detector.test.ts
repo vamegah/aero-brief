@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MONITORED_IDS, type MonitoredId } from "../src/airports";
 import { affectedArtccs, detectChanges, nationwideStatus } from "../src/change-detector";
+import { eventKey } from "../src/event-keys";
 import type { Snapshot } from "../src/schemas";
 
 function snap(active: Partial<Record<MonitoredId, { id: string; reason: string | null }>>, at = "2025-01-01T00:00:00Z"): Snapshot {
@@ -110,5 +111,24 @@ describe("detectChanges", () => {
     const before = JSON.stringify(cur);
     detectChanges(cur, null);
     expect(JSON.stringify(cur)).toBe(before);
+  });
+});
+
+describe("incident keys across a ground stop lifecycle", () => {
+  const keyOf = (cur: Snapshot, prev: Snapshot | null) =>
+    detectChanges(cur, prev).map((e) => ({ type: e.type, key: eventKey(e, prev?.id ?? null) }));
+  it("the STARTED and ENDED events of one stop share an event key", () => {
+    const empty = snap({}, "2025-01-01T01:00:00Z");
+    const active = snap({ JFK: { id: "stop-1", reason: null } });
+    const started = keyOf(active, empty);
+    const ended = keyOf(empty, active);
+    expect(started).toEqual([{ type: "GROUND_STOP_STARTED", key: "stop-1" }]);
+    expect(ended).toEqual([{ type: "GROUND_STOP_ENDED", key: "stop-1" }]);
+  });
+  it("two different stops at the same airport get different event keys", () => {
+    const empty = snap({});
+    const first = keyOf(snap({ JFK: { id: "stop-1", reason: null } }), empty);
+    const second = keyOf(snap({ JFK: { id: "stop-2", reason: null } }), empty);
+    expect(first[0]?.key).not.toBe(second[0]?.key);
   });
 });

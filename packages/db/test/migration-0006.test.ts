@@ -16,7 +16,7 @@ const journalFiles = import.meta.glob<string>("../migrations/meta/_journal.json"
 const read = (rel: string): string => {
   const text = sqlFiles[`../migrations/${rel}`];
   if (text === undefined) throw new Error(`file not found: ${rel}`);
-  return text;
+  return text.replace(/\r\n/g, "\n");
 };
 
 const up = read("0006_watchlist_cap_30.sql");

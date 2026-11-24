@@ -116,6 +116,7 @@ Response before the first poll has stored anything:
 
 | Field | Type | Nullable | Meaning |
 | --- | --- | --- | --- |
+| `incidentKey` | string | no | Identifies one incident. A ground stop's `GROUND_STOP_STARTED` and `GROUND_STOP_ENDED` events share it, and two different stops at the same airport do not. Nationwide events use `NATIONWIDE:<id>`. Treat it as opaque. |
 | `type` | string | no | `GROUND_STOP_STARTED`, `GROUND_STOP_ENDED` or `NATIONWIDE_EVENT`. |
 | `airportId` | string | yes | `null` for nationwide events. |
 | `occurredAt` | string (ISO 8601 UTC) | no | When the change was detected. |

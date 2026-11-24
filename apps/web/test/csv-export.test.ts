@@ -4,6 +4,7 @@ import { csvFileName } from "../src/lib/download-file";
 import { eventsToCsv } from "../src/lib/events-to-csv";
 
 const ev = (explanation: string, over: Partial<EventSummary> = {}): EventSummary => ({
+  incidentKey: "evt-1",
   type: "GROUND_STOP_STARTED",
   airportId: "ATL",
   occurredAt: "2026-01-02T10:00:00.000Z",

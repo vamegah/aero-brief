@@ -1,5 +1,7 @@
 import { airportById, artccName } from "./airports";
 import type { DetectedEvent, GroundStopEvent, NationwideEvent } from "./change-detector";
+import type { Incident } from "./incidents";
+import { normalizationEstimate } from "./status-derivation";
 
 /** Thrown when `explain` receives an event whose type has no registered template. */
 export class UnsupportedEventTypeError extends Error {
@@ -78,4 +80,124 @@ export function explain(e: DetectedEvent): string {
   if (!Object.hasOwn(EXPLAINERS, type)) throw new UnsupportedEventTypeError(type);
   const fn = EXPLAINERS[e.type] as (event: DetectedEvent) => string;
   return fn(e);
+}
+
+// ---- Structured explanation (Requirement 3) ----
+
+export const REASON_NOT_PUBLISHED = "Reason not published by the FAA";
+export const NOT_YET_ANNOUNCED = "Not yet announced";
+export const NOT_AVAILABLE = "Not available";
+const REASON_NOT_EXPLAINABLE = "The FAA gave a reason that AeroBrief cannot explain yet";
+export const STRUCTURED_SOURCE = "FAA National Airspace System Status";
+
+/** The five labeled fields, in display order. */
+export const STRUCTURED_FIELD_LABELS = {
+  whatsHappening: "What's happening",
+  why: "Why",
+  likelyImpact: "Likely impact",
+  nextUpdate: "Next update",
+  source: "Source",
+} as const;
+
+export interface StructuredExplanation {
+  whatsHappening: string;
+  why: string;
+  likelyImpact: string;
+  nextUpdate: string;
+  source: string;
+}
+
+function validMs(iso: string | null): number | null {
+  if (iso === null) return null;
+  const t = Date.parse(iso);
+  return Number.isNaN(t) ? null : t;
+}
+
+/** "2024-06-01 12:00 UTC", minute precision, no locale dependence. */
+function utcMinute(ms: number): string {
+  return `${new Date(ms).toISOString().slice(0, 16).replace("T", " ")} UTC`;
+}
+
+function structuredWhy(reason: string | null): string {
+  if (reason === null || reason.trim() === "") return REASON_NOT_PUBLISHED;
+  const translation = REASON_DICTIONARY.get(reason.trim().toLowerCase());
+  if (translation === undefined) return REASON_NOT_EXPLAINABLE;
+  return `The FAA says the cause is ${translation}`;
+}
+
+function estimateText(durationMs: number, basis: string): string {
+  const [low, high] = normalizationEstimate(durationMs);
+  return `AeroBrief estimate: delays may last about ${low} to ${high} minutes after the ground stop ends, based on ${basis}.`;
+}
+
+/**
+ * Plain-language explanation of an Incident as five labeled fields, none empty.
+ * `reason` is the FAA reason text (null when none was published). `expectedEnd` is an
+ * ISO time when the FAA announced an expected end or next update, otherwise null.
+ * `now` is a parameter because Core never reads the clock. Throws
+ * UnsupportedEventTypeError for an incident type with no template.
+ */
+export function explainStructured(
+  incident: Incident,
+  reason: string | null,
+  expectedEnd: string | null,
+  now: Date,
+): StructuredExplanation {
+  const type: string = incident.type;
+  if (type !== "GROUND_STOP_STARTED" && type !== "NATIONWIDE_EVENT") {
+    throw new UnsupportedEventTypeError(type);
+  }
+  const source = STRUCTURED_SOURCE;
+
+  if (incident.type === "NATIONWIDE_EVENT") {
+    const endMs = validMs(expectedEnd);
+    return {
+      whatsHappening:
+        "Ground stops are active at airports in several regions at once, which points to widespread disruption.",
+      why: structuredWhy(reason),
+      likelyImpact:
+        "Flights across many parts of the country may be held or delayed. AeroBrief has no estimate for how long this will last.",
+      nextUpdate: endMs === null ? NOT_YET_ANNOUNCED : `Expected around ${utcMinute(endMs)}`,
+      source,
+    };
+  }
+
+  const airport = incident.airportId === null ? "an airport" : (() => {
+    const a = airportById(incident.airportId);
+    return `${a.name} (${a.id})`;
+  })();
+  const why = structuredWhy(reason);
+
+  if (incident.endedAt !== null) {
+    const endedMs = validMs(incident.endedAt);
+    const duration = incident.durationMs ?? 0;
+    const minutes = Math.round(Math.max(0, duration) / 60_000);
+    return {
+      whatsHappening: `The ground stop at ${airport} has ended. Flights can depart for this airport again.`,
+      why,
+      likelyImpact: estimateText(duration, `a ground stop that lasted about ${minutes} minutes`),
+      nextUpdate:
+        endedMs === null
+          ? "No further update expected. The ground stop has ended."
+          : `No further update expected. The ground stop ended at ${utcMinute(endedMs)}.`,
+      source,
+    };
+  }
+
+  const startMs = validMs(incident.startedAt);
+  const elapsed = startMs === null ? null : Math.max(0, now.getTime() - startMs);
+  const endMs = validMs(expectedEnd);
+  return {
+    whatsHappening: `A ground stop is in effect at ${airport}. Flights bound for this airport are being held at their departure airports.`,
+    why,
+    likelyImpact:
+      elapsed === null
+        ? NOT_AVAILABLE
+        : estimateText(
+            elapsed,
+            `how long the ground stop has lasted so far (about ${Math.round(elapsed / 60_000)} minutes)`,
+          ),
+    nextUpdate: endMs === null ? NOT_YET_ANNOUNCED : `Expected to end around ${utcMinute(endMs)}`,
+    source,
+  };
 }

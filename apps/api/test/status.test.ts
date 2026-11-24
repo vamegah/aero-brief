@@ -40,8 +40,8 @@ function ctx(params: Record<string, string> = {}, query = ""): RouteContext {
   };
 }
 
-function event(type: string, airportId: string | null, occurredAt: string): StatusEventRow {
-  return { type, airportId, occurredAt: new Date(occurredAt), explanation: `text for ${type}` };
+function event(type: string, airportId: string | null, occurredAt: string, eventKey = "evt-1"): StatusEventRow {
+  return { eventKey, type, airportId, occurredAt: new Date(occurredAt), explanation: `text for ${type}` };
 }
 
 function setup(snap: Snapshot | null, events: readonly StatusEventRow[] = []) {
@@ -96,7 +96,7 @@ describe("national status", () => {
     expect(jfk?.groundStop?.reasonText).toContain("strong winds");
     expect(airports.filter((a) => a.groundStop !== null)).toHaveLength(1);
     expect(r.json["events"]).toEqual([
-      { type: "GROUND_STOP_STARTED", airportId: "JFK", occurredAt: secondsAgo(60), explanation: "text for GROUND_STOP_STARTED" },
+      { incidentKey: "evt-1", type: "GROUND_STOP_STARTED", airportId: "JFK", occurredAt: secondsAgo(60), explanation: "text for GROUND_STOP_STARTED" },
     ]);
     expect(latestSnapshot.mock.calls[0]?.[0]).toEqual(NOW);
   });
@@ -243,6 +243,26 @@ describe("history", () => {
   });
 });
 
+describe("incidentKey", () => {
+  const history = async (events: StatusEventRow[]) => {
+    const r = await call(setup(null, events).handlers.history, ctx({ code: "JFK" }));
+    return r.json["events"] as { type: string; incidentKey: string }[];
+  };
+  it("is shared by a ground stop's started and ended events", async () => {
+    const list = await history([
+      event("GROUND_STOP_ENDED", "JFK", secondsAgo(60), "stop-1"),
+      event("GROUND_STOP_STARTED", "JFK", secondsAgo(3600), "stop-1"),
+    ]);
+    expect(list.map((e) => e.incidentKey)).toEqual(["stop-1", "stop-1"]);
+  });
+  it("differs between two stops at the same airport", async () => {
+    const list = await history([
+      event("GROUND_STOP_STARTED", "JFK", secondsAgo(60), "stop-2"),
+      event("GROUND_STOP_STARTED", "JFK", secondsAgo(7200), "stop-1"),
+    ]);
+    expect(new Set(list.map((e) => e.incidentKey)).size).toBe(2);
+  });
+});
 describe("ground stop expectedEnd and advisoryUrl (Requirements 17.1, 17.4, 17.5)", () => {
   type Stop = { reasonText: string; expectedEnd: string | null; advisoryUrl: string | null };
 

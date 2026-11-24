@@ -20,6 +20,7 @@ function body(opts: { stale?: boolean; stop?: object | null } = {}) {
 }
 
 const recent = {
+  incidentKey: "evt-1",
   type: "GROUND_STOP_STARTED",
   airportId: "ATL",
   occurredAt: new Date().toISOString(),

@@ -1,0 +1,437 @@
+{
+  "pbtResults": {
+    "1.2 Write property tests for status derivation": {
+      "status": "passed",
+      "lastRunTimestamp": 1795559775100
+    },
+    "2.2 Write property tests for incidents": {
+      "status": "passed",
+      "lastRunTimestamp": 1795559790545
+    },
+    "2.4 Write property test for structured explanations": {
+      "status": "passed",
+      "lastRunTimestamp": 1795560572887
+    }
+  },
+  "executionHistory": {
+    "1.1 Implement `packages/core/src/status-derivation.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559663146
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559680579
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795560056504
+      }
+    ],
+    "2.1 Implement `packages/core/src/incidents.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559663553
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559681013
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795560057670
+      }
+    ],
+    "2.3 Add `explainStructured` to `packages/core/src/explain.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559664251
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795560064440
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795560596266
+      }
+    ],
+    "3.1 Add `incidentKey` to `StatusEventRow`, `EventSummary` and `toEventSummary` in `apps/api/src/handlers/status.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559664749
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795560603917
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795562165314
+      }
+    ],
+    "4. Checkpoint - Core and API pure logic": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559665216
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795562172096
+      }
+    ],
+    "5.1 Wire `summarizeNetwork` into the Overview pane of `StatusView.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559665362
+      }
+    ],
+    "5.2 Add the six-kind `StatusPill`/icon mapping": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559665582
+      }
+    ],
+    "6.1 Create `apps/web/src/components/StructuredExplanation.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559665780
+      }
+    ],
+    "6.2 Create `apps/web/src/components/IncidentCard.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559665842
+      }
+    ],
+    "6.3 Wire `IncidentCard` into the Events pane and the Overview \"Latest events\" list in `StatusView.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559665969
+      }
+    ],
+    "7. Checkpoint - Overview and Events panes": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559666118
+      }
+    ],
+    "8.1 Implement `apps/web/src/lib/time-text.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559666485
+      }
+    ],
+    "8.3 Implement `packages/core/src/airport-time-zones.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559666665
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559682185
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795560058281
+      }
+    ],
+    "8.5 Create `apps/web/src/components/TimeText.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559666751
+      }
+    ],
+    "8.7 Add the Display_Setting control to the Settings Display section and replace `formatUtc` call sites": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559666870
+      }
+    ],
+    "9. Checkpoint - time display": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559667216
+      }
+    ],
+    "10.1 Implement `apps/web/src/lib/freshness.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559667434
+      }
+    ],
+    "10.3 Create `apps/web/src/components/FreshnessChip.tsx` and wire it into `StatusPage.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559667545
+      }
+    ],
+    "10.4 Keep last known data and show Unavailable only when nothing ever loaded": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559667635
+      }
+    ],
+    "11. Checkpoint - freshness": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559667747
+      }
+    ],
+    "12.1 Add the ARTCC definition and rename labels": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559667861
+      }
+    ],
+    "13.1 Implement `apps/web/src/lib/dashboard-query.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559668204
+      }
+    ],
+    "13.3 Add city to the airport registry and extend the search predicate": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559668305
+      }
+    ],
+    "13.5 Update the Airports pane filter and search UI in `StatusView.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559668378
+      }
+    ],
+    "13.6 Extend the Events pane filters to use `dashboard-query.ts` and add the \"state\" filter": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559668466
+      }
+    ],
+    "14. Checkpoint - filters and search": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559668588
+      }
+    ],
+    "15.1 Implement `apps/web/src/lib/local-watchlist.ts`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559668812
+      }
+    ],
+    "15.3 Add the signed-out branch to `WatchlistPage.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559669054
+      }
+    ],
+    "15.4 Add the sign-in merge offer": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559669212
+      }
+    ],
+    "16. Checkpoint - signed-out watchlist": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559669303
+      }
+    ],
+    "17.1 Reorder `SECTION_IDS` and add the Save/Saved/Retry and lock-indicator UI": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559669372
+      }
+    ],
+    "17.2 Convert the theme control to a segmented control with live preview": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559669497
+      }
+    ],
+    "18. Checkpoint - Settings": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559669780
+      }
+    ],
+    "19.1 Split the Sign-in control and add the account menu in `NavBar.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559669915
+      }
+    ],
+    "19.2 Add the narrow-viewport collapse to `NavBar.tsx` and a horizontal tab bar to `SectionMenu.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559670045
+      }
+    ],
+    "19.3 Verify 320px usability": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559670221
+      }
+    ],
+    "20. Checkpoint - navigation": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559670333
+      }
+    ],
+    "21.1 Update `Footer.tsx`": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559670461
+      }
+    ],
+    "21.2 Add footer spacing, underline/focus and sticky-bottom CSS": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559670574
+      }
+    ],
+    "21.3 Verify shared container width and left-edge alignment": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559670681
+      }
+    ],
+    "22. Checkpoint - footer and layout": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559670883
+      }
+    ],
+    "23.1 Add every new color pair to `palettePairs` and recompute the Flags_Guard hash": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559670998
+      }
+    ],
+    "23.2 Audit color-only signaling across new UI": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559671288
+      }
+    ],
+    "23.3 Audit keyboard operability and focus indicators": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559671372
+      }
+    ],
+    "23.4 Audit live regions": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559671437
+      }
+    ],
+    "23.5 Extend the axe all-variants matrix": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559671504
+      }
+    ],
+    "24. Checkpoint - accessibility pass, full suite green": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559671647
+      }
+    ],
+    "25. Owner review on a Vercel Preview of `phase-2` (**needs user action**)": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559671786
+      }
+    ],
+    "26. Ship (**needs user action**)": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795559671917
+      }
+    ],
+    "1. Status derivation and network summary (Core)": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795560056797
+      }
+    ],
+    "2. Incident merging and structured explanations (Core)": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795560596597
+      }
+    ],
+    "3. API: add `incidentKey` to event responses": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795562165425
+      }
+    ]
+  }
+}

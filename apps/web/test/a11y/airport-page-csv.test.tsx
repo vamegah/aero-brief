@@ -21,7 +21,7 @@ describe("a11y: airport page CSV button", () => {
         json({
           airportId: "ATL",
           events: [
-            { type: "GROUND_STOP_STARTED", airportId: "ATL", occurredAt: new Date().toISOString(), explanation: "A ground stop started." },
+            { incidentKey: "evt-1", type: "GROUND_STOP_STARTED", airportId: "ATL", occurredAt: new Date().toISOString(), explanation: "A ground stop started." },
           ],
         }),
     });

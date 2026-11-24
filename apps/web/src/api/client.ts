@@ -18,6 +18,7 @@ export type AirportSummary = {
 };
 
 export type EventSummary = {
+  incidentKey: string;
   type: string;
   airportId: string | null;
   occurredAt: string;
@@ -97,6 +98,7 @@ export function normalizeNationalStatus(body: NationalStatusResponse): NationalS
 function isEventSummary(value: unknown): value is EventSummary {
   return (
     isRecord(value) &&
+    typeof value["incidentKey"] === "string" &&
     typeof value["type"] === "string" &&
     (value["airportId"] === null || typeof value["airportId"] === "string") &&
     typeof value["occurredAt"] === "string" &&

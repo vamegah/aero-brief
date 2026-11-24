@@ -59,6 +59,7 @@ describe("history handler since clamping", () => {
         sinceOffsetArb,
         async (eventOffsets, sinceOffset) => {
           const rows: StatusEventRow[] = eventOffsets.map((o, i) => ({
+            eventKey: `evt-${i}`,
             type: "GROUND_STOP_STARTED",
             airportId: "JFK",
             occurredAt: new Date(NOW.getTime() + o),

@@ -1,6 +1,7 @@
 // Public API of @aerobrief/core. Re-exports only; no side effects.
 
 export * from "./airports";
+export * from "./airport-time-zones";
 export * from "./schemas";
 export * from "./dedupe";
 export * from "./event-keys";
@@ -14,6 +15,7 @@ export * from "./account";
 export * from "./watchlist";
 export * from "./theme";
 export * from "./upstream-warning";
+export * from "./status-derivation";
 export * from "./faa-relay";
 export { parseFlags } from "./flags";
 export { FLAG_NAMES, flagValueSchema, flagsSchema } from "./schemas/flags";
@@ -31,3 +33,4 @@ export * from "./safe-send";
 export * from "./schemas/webhook-payload";
 export * from "./digest";
 export { completeSnapshotAirports } from "./snapshot-compat";
+export * from "./incidents";

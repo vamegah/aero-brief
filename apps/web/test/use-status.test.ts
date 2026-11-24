@@ -16,6 +16,7 @@ function okBody(events: { occurredAt: string }[] = []): NationalStatusResponse {
     airports: [{ airportId: "JFK", name: "New York JFK", groundStop: null }],
     nationwide: { active: false, count: 0, artccs: [], explanation: null },
     events: events.map((e) => ({
+      incidentKey: "evt-1",
       type: "GROUND_STOP_STARTED",
       airportId: "JFK",
       occurredAt: e.occurredAt,

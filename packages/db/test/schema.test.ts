@@ -14,7 +14,7 @@ const migrationFiles = import.meta.glob<string>("../migrations/*.sql", {
 const migration = (name: string): string => {
   const sql = migrationFiles[`../migrations/${name}`];
   if (sql === undefined) throw new Error(`migration not found: ${name}`);
-  return sql;
+  return sql.replace(/\r\n/g, "\n");
 };
 
 const isPgTable = (v: unknown): v is PgTable => typeof v === "object" && v !== null && "getSQL" in v;

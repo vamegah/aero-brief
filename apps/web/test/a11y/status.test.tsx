@@ -42,6 +42,7 @@ describe("a11y: status view", () => {
     const both = okStatus({ stale: true, nationwide: true });
     const events = [
       {
+        incidentKey: "evt-1",
         type: "GROUND_STOP_STARTED",
         airportId: "JFK",
         occurredAt: CAPTURED_AT,
@@ -56,9 +57,9 @@ describe("a11y: status view", () => {
 describe("a11y: status sections", () => {
   const minutesAgo = (n: number) => new Date(Date.now() - n * 60_000).toISOString();
   const events = [
-    { type: "GROUND_STOP_STARTED", airportId: "JFK", occurredAt: minutesAgo(10), explanation: "A ground stop started at JFK." },
-    { type: "GROUND_STOP_ENDED", airportId: "ATL", occurredAt: minutesAgo(60), explanation: "The ground stop at ATL ended." },
-    { type: "NATIONWIDE_EVENT", airportId: null, occurredAt: minutesAgo(120), explanation: "Ground stops are active at several airports." },
+    { incidentKey: "evt-1", type: "GROUND_STOP_STARTED", airportId: "JFK", occurredAt: minutesAgo(10), explanation: "A ground stop started at JFK." },
+    { incidentKey: "evt-2", type: "GROUND_STOP_ENDED", airportId: "ATL", occurredAt: minutesAgo(60), explanation: "The ground stop at ATL ended." },
+    { incidentKey: "NATIONWIDE:snap-1", type: "NATIONWIDE_EVENT", airportId: null, occurredAt: minutesAgo(120), explanation: "Ground stops are active at several airports." },
   ];
 
   afterEach(() => {

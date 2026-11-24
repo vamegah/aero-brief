@@ -40,6 +40,7 @@ const text = fc.oneof(
 );
 
 const event = fc.record({
+  incidentKey: text,
   type: text,
   airportId: fc.option(text, { nil: null }),
   occurredAt: fc.date({ min: new Date("2020-01-01"), max: new Date("2030-01-01"), noInvalidDate: true }).map((d) => d.toISOString()),

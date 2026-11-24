@@ -34,6 +34,7 @@ function open(path: string, routes: Routes) {
 }
 
 const event = (hoursAgo: number, explanation: string) => ({
+  incidentKey: `evt-${hoursAgo}`,
   type: "GROUND_STOP_STARTED",
   airportId: "ATL",
   occurredAt: iso(hoursAgo),
@@ -53,8 +54,8 @@ describe("airportIdFromPath", () => {
 
 describe("AirportPage ground stop durations", () => {
   const stopEvents = () => [
-    { type: "GROUND_STOP_ENDED", airportId: "ATL", occurredAt: iso(1), explanation: "The ground stop at Atlanta ended." },
-    { type: "GROUND_STOP_STARTED", airportId: "ATL", occurredAt: iso(2 + 20 / 60), explanation: "A ground stop started at Atlanta." },
+    { incidentKey: "evt-1", type: "GROUND_STOP_ENDED", airportId: "ATL", occurredAt: iso(1), explanation: "The ground stop at Atlanta ended." },
+    { incidentKey: "evt-1", type: "GROUND_STOP_STARTED", airportId: "ATL", occurredAt: iso(2 + 20 / 60), explanation: "A ground stop started at Atlanta." },
   ];
 
   it("shows the duration on the ended event and leaves the explanation unchanged", async () => {

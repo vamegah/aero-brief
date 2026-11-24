@@ -6,6 +6,7 @@ import { EventList } from "../../src/components/EventList";
 import { formatUtc } from "../../src/lib/format-time";
 
 const base = {
+  incidentKey: "evt-1",
   type: "GROUND_STOP_STARTED",
   airportId: "JFK",
   occurredAt: "2024-06-01T12:00:00.000Z",

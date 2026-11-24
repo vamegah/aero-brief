@@ -14,6 +14,11 @@ import type { Handler } from "../router";
 
 /** Structural shape of a stored Event row (matches `StoredEvent` from `@aerobrief/db`). */
 export interface StatusEventRow {
+  /**
+   * Stored `events.event_key`: the FAA event id for ground stops. The poller derives the ENDED key
+   * from the same id as the STARTED key, so both rows share it. `NATIONWIDE:{snapshotId}` otherwise.
+   */
+  eventKey: string;
   type: string;
   airportId: string | null;
   occurredAt: Date;
@@ -35,7 +40,14 @@ export type AirportSummary = {
   name: string;
   groundStop: { reasonText: string; expectedEnd: string | null; advisoryUrl: string | null } | null;
 };
-export type EventSummary = { type: string; airportId: string | null; occurredAt: string; explanation: string };
+export type EventSummary = {
+  /** Shared by a ground stop's STARTED and ENDED events, so clients can pair them into one incident. */
+  incidentKey: string;
+  type: string;
+  airportId: string | null;
+  occurredAt: string;
+  explanation: string;
+};
 
 export type NationalStatusResponse =
   | { state: "no_data"; message: string }
@@ -64,6 +76,7 @@ const NO_DATA_MESSAGE = "No airport status data is available yet. Check back in 
 
 function toEventSummary(e: StatusEventRow): EventSummary {
   return {
+    incidentKey: e.eventKey,
     type: e.type,
     airportId: e.airportId,
     occurredAt: e.occurredAt.toISOString(),

@@ -11,7 +11,7 @@ const status = {
   events: [],
 };
 const events = [
-  { type: "GROUND_STOP_STARTED", airportId: "ATL", occurredAt: new Date().toISOString(), explanation: '=Storms, "heavy"' },
+  { incidentKey: "evt-1", type: "GROUND_STOP_STARTED", airportId: "ATL", occurredAt: new Date().toISOString(), explanation: '=Storms, "heavy"' },
 ];
 
 function routes(list: unknown[]) {
