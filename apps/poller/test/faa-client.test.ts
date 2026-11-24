@@ -1,5 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
+import { describeError } from "../src/poll";
 import { FAA_API_URL, FAA_TIMEOUT_MS, fetchFaa } from "../src/faa-client";
 
 function mockFetch(impl: () => Promise<Response>) {
@@ -84,6 +85,42 @@ describe("fetchFaa", () => {
     });
     const result = await fetchFaa(fn);
     expect(result).toMatchObject({ ok: false, kind: "network", detail: "TypeError: Network connection lost" });
+  });
+
+  it("does not throw when the thrown object has a non-callable toString", async () => {
+    const fn = mockFetch(async () => {
+      throw { toString: "" };
+    });
+    const result = await fetchFaa(fn);
+    expect(result).toMatchObject({ ok: false, kind: "network", detail: "UnknownError: unknown error" });
+  });
+
+  it("does not throw when the thrown object has a throwing message getter", async () => {
+    const thrown = {
+      get message(): string {
+        throw new Error("boom");
+      },
+      toString: "",
+    };
+    const fn = mockFetch(async () => {
+      throw thrown;
+    });
+    const result = await fetchFaa(fn);
+    expect(result).toMatchObject({ ok: false, kind: "network", detail: "UnknownError: unknown error" });
+  });
+});
+
+describe("describeError", () => {
+  it("does not throw for a non-callable toString or a throwing message getter", () => {
+    expect(describeError({ toString: "" })).toBe("Error: unknown error");
+    const err = new Error("x");
+    Object.defineProperty(err, "message", {
+      get() {
+        throw new Error("boom");
+      },
+    });
+    expect(describeError(err)).toBe("Error: unknown error");
+    expect(describeError(new TypeError("bad"))).toBe("TypeError: bad");
   });
 });
 

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WatchlistTable } from "../../src/components/WatchlistTable";
 import { SignInPage } from "../../src/pages/SignInPage";
 import { WatchlistPage } from "../../src/pages/WatchlistPage";
-import { jsonResponse, makeAirports, okStatus, type FetchFn } from "./fixtures";
+import { AIRPORT_COUNT, jsonResponse, makeAirports, okStatus, type FetchFn } from "./fixtures";
 
 let fetchMock: ReturnType<typeof vi.fn<FetchFn>>;
 
@@ -37,7 +37,7 @@ describe("WatchlistTable", () => {
 
 describe("WatchlistPage", () => {
   it("shows the API error in role=alert and leaves the list unchanged on a rejected add", async () => {
-    const message = "Your watchlist is full (10 airports maximum).";
+    const message = "Your watchlist is full (30 airports maximum).";
     fetchMock.mockImplementation((input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
       const url = String(input);
       if (url === "/api/status/national") return Promise.resolve(jsonResponse(okStatus()));
@@ -55,7 +55,7 @@ describe("WatchlistPage", () => {
       expect((container.querySelector("[role='alert']") as HTMLElement).textContent).toBe(message);
     });
     const labels = Array.from(container.querySelectorAll("tbody tr")).filter((r) => r.textContent?.includes("Not watching"));
-    expect(labels).toHaveLength(19);
+    expect(labels).toHaveLength(AIRPORT_COUNT - 1);
     expect(container.querySelectorAll("tbody tr")[0]?.textContent).toContain("Watching");
   });
 });

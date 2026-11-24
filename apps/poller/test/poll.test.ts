@@ -1,4 +1,4 @@
-import { createLogger, type Logger, type PreviousPollRun } from "@aerobrief/core";
+import { AIRPORTS, completeSnapshotAirports, createLogger, type Logger, type PreviousPollRun } from "@aerobrief/core";
 import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import type { Env } from "../src/env";
@@ -61,10 +61,55 @@ describe("runPoll", () => {
       events: unknown[];
       startedAt: Date;
     };
-    expect(arg.snapshot.airports).toHaveLength(20);
+    expect(arg.snapshot.airports).toHaveLength(AIRPORTS.length);
     expect(arg.events).toEqual([]);
     expect(arg.startedAt).toEqual(now);
     expect(repos.jobRuns.recordFailure).not.toHaveBeenCalled();
+  });
+
+  describe("with a completed Legacy_Snapshot as the previous Snapshot", () => {
+    const NEW_AIRPORT_IDS = ["BWI", "CLT", "FLL", "HNL", "IAD", "LGA", "MDW", "PHL", "SAN", "TPA"];
+    const legacyEntries = AIRPORTS.filter((a) => !NEW_AIRPORT_IDS.includes(a.id)).map((a) => ({
+      airportId: a.id,
+      groundStop: null,
+    }));
+    // The repository returns a legacy row after completion: 30 entries, the 10 new ones with no ground stop.
+    const completed = {
+      id: "11111111-1111-4111-8111-111111111111",
+      capturedAt: "2025-01-02T11:55:00.000Z",
+      airports: completeSnapshotAirports(legacyEntries) as { airportId: string; groundStop: unknown }[],
+    };
+    type Stored = { snapshot: { airports: { airportId: string }[] }; events: { type: string; airportId: string }[] };
+    const storedArg = (repos: ReturnType<typeof setup>["repos"]) =>
+      (repos.storePollResult.mock.calls[0] as unknown as [Stored])[0];
+
+    it("starts from 20 legacy entries completed to 30", () => {
+      expect(legacyEntries).toHaveLength(20);
+      expect(completed.airports).toHaveLength(AIRPORTS.length);
+    });
+
+    it("stores a 30-airport Snapshot and no events for New_Airports without a ground stop", async () => {
+      const { repos, run } = setup();
+      repos.snapshots.latestSnapshot.mockResolvedValueOnce(completed as never);
+      await run();
+      const arg = storedArg(repos);
+      expect(arg.snapshot.airports).toHaveLength(AIRPORTS.length);
+      for (const id of NEW_AIRPORT_IDS) expect(arg.snapshot.airports.map((a) => a.airportId)).toContain(id);
+      expect(arg.events).toEqual([]);
+      expect(repos.jobRuns.recordFailure).not.toHaveBeenCalled();
+    });
+
+    it("stores one started event for a ground stop at a New_Airport", async () => {
+      const lgaStop = JSON.stringify([
+        { airportId: "LGA", airportLongName: "LaGuardia", groundStop: { id: "g9", reason: "weather" } },
+      ]);
+      const { repos, run } = setup({ fetchFn: async () => new Response(lgaStop, { status: 200 }) });
+      repos.snapshots.latestSnapshot.mockResolvedValueOnce(completed as never);
+      await run();
+      const arg = storedArg(repos);
+      expect(arg.events).toHaveLength(1);
+      expect(arg.events[0]).toMatchObject({ type: "GROUND_STOP_STARTED", airportId: "LGA" });
+    });
   });
 
   const failures: [string, FetchFn][] = [

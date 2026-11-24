@@ -45,10 +45,15 @@ export type PollDeps = {
   dispatchWebhooksFn?: typeof dispatchWebhooks;
 };
 
-function describeError(err: unknown): string {
-  const name = err instanceof Error ? err.name : "Error";
-  const message = err instanceof Error ? err.message : String(err);
-  return `${name}: ${message}`;
+/** Never throws, even for values with a throwing getter or a non-callable toString. */
+export function describeError(err: unknown): string {
+  try {
+    const name = err instanceof Error ? err.name : "Error";
+    const message = err instanceof Error ? err.message : String(err);
+    return `${name}: ${message}`;
+  } catch {
+    return "Error: unknown error";
+  }
 }
 
 function truncate(text: string): string {

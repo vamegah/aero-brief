@@ -1,4 +1,4 @@
-﻿# AeroBrief production runbook (Tasks 13.2 to 13.5)
+# AeroBrief production runbook (Tasks 13.2 to 13.5)
 
 You run every step in this document. Nothing here is automated. Never paste secret values into chat, commits, issues or screenshots. When a command asks for a value, take it from the provider console or your password manager.
 
@@ -42,9 +42,9 @@ Prerequisites: `npm install` has run at the repo root, `npx wrangler login` is d
 
 ### Step 1. Apply Drizzle migrations to the production Neon database
 
-Use the direct (unpooled) owner connection for DDL. The four migrations are `0000_init_schema.sql`, `0001_enforce_subscription_cap.sql`, `0002_seed_airports.sql` and `0003_poller_lease_holder.sql`.
+Use the direct (unpooled) owner connection for DDL. The four migrations of the first deploy are `0000_init_schema.sql`, `0001_enforce_subscription_cap.sql`, `0002_seed_airports.sql` (it seeds the 20 airports of the MVP) and `0003_poller_lease_holder.sql`. The folder now holds three more: `0004_webhooks.sql`, `0005_digest.sql` and `0006_watchlist_cap_30.sql`.
 
-Note: the `packages/db/migrations/` folder on the Phase 2 line also holds `0004_webhooks.sql` and `0005_digest.sql`. The command below applies every migration in the folder, so do not run it against production until the Phase 2 rollout plan says to.
+Note: the command below applies every migration in the folder, including 0004 to 0006. Do not run it against the existing production database. Production got 0000 to 0003 from this step on its first deploy. Apply 0004 and 0005 by hand when the Phase 2 rollout plan says to (`docs/phase2-rollout.md`), and 0006 as described in "Migration 0006" below. On a new, empty database the command applies all seven, and `airports` ends with 30 rows.
 
 In PowerShell, from the repo root:
 
@@ -61,8 +61,8 @@ Type the value only in your own terminal and do not echo it. The last line clear
 Verify in the Neon SQL editor:
 
 ```sql
-select count(*) from drizzle.__drizzle_migrations;   -- expect 4
-select count(*) from airports;                       -- expect 20
+select count(*) from drizzle.__drizzle_migrations;   -- expect 4 after 0000 to 0003 (7 on a new database that ran the whole folder)
+select count(*) from airports;                       -- expect 20 after 0002, and 30 after 0006
 select count(*) from poller_lease;                   -- expect 1
 ```
 
@@ -175,7 +175,7 @@ Expect HTTP 200 and `{"status":"ok"}`. If you changed `FRONTEND_URL` after learn
 
 ### 13.2 verification checklist
 
-- [ ] Migrations applied: `drizzle.__drizzle_migrations` has 4 rows, `airports` has 20 rows, `poller_lease` has 1 row.
+- [ ] Migrations applied: `drizzle.__drizzle_migrations` has 4 rows (0000 to 0003), `airports` has 20 rows (30 once 0006 is applied), `poller_lease` has 1 row.
 - [ ] `aerobrief_runtime` role exists with the grants above and has no write access to `airports`.
 - [ ] `apps/api/wrangler.jsonc` and `apps/poller/wrangler.jsonc` have the real `FRONTEND_URL` (equal to `<WEB_URL>`) and a real `MAIL_FROM`, committed.
 - [ ] `wrangler secret list` shows `DATABASE_URL`, `RESEND_API_KEY`, `UNSUBSCRIBE_SECRET` on both Workers.
@@ -220,7 +220,7 @@ The cron string must match `*/5 * * * *` exactly, or the dispatcher logs `unknow
 Run in the Neon SQL editor:
 
 ```sql
--- One new snapshot with 20 airports, captured within the last 5 minutes
+-- One new snapshot with 30 airports (20 if the Poller still runs the old code), captured within the last 5 minutes
 select id, captured_at, jsonb_array_length(airports) as airport_count
 from snapshots order by captured_at desc limit 3;
 
@@ -229,7 +229,7 @@ select job, outcome, failure_kind, detail, started_at, finished_at, snapshot_id
 from job_runs where job = 'poll' order by started_at desc limit 3;
 ```
 
-Expect: `airport_count = 20`, newest `outcome = 'success'` with `failure_kind` and `detail` null, and `snapshot_id` equal to the newest snapshot `id`. After one cycle on an empty database, exactly one snapshot and one poll success row exist. If you waited through several ticks, expect one pair per tick.
+Expect: `airport_count = 30` (20 before the Core 30 code is deployed), newest `outcome = 'success'` with `failure_kind` and `detail` null, and `snapshot_id` equal to the newest snapshot `id`. After one cycle on an empty database, exactly one snapshot and one poll success row exist. If you waited through several ticks, expect one pair per tick.
 
 If the newest row is `outcome = 'failed'`, read `failure_kind` (`timeout`, `http_status`, `unparseable`, `validation`, `storage`) and `detail`, then fix before continuing. On an empty database the first poll treats every active ground stop as started, which is expected.
 
@@ -237,10 +237,10 @@ If the newest row is `outcome = 'failed'`, read `failure_kind` (`timeout`, `http
 
 Open `<WEB_URL>`.
 
-- The airport table has 20 rows (count them, or run the browser console snippet `document.querySelectorAll("tbody tr").length`).
+- The airport table has 30 rows (20 before the Core 30 code is deployed; count them, or run the browser console snippet `document.querySelectorAll("tbody tr").length`).
 - The page shows the capture time and it matches `captured_at` from the SQL above, as `YYYY-MM-DD HH:mm UTC`.
 - No stale-data banner appears while the latest snapshot is at most 10 minutes old.
-- Cross-check the API: `curl.exe <WEB_URL>/api/status/national` returns `"state":"ok"`, `"stale":false` and 20 entries in `airports`.
+- Cross-check the API: `curl.exe <WEB_URL>/api/status/national` returns `"state":"ok"`, `"stale":false` and 30 entries in `airports` (20 before the Core 30 code is deployed).
 
 ### Step 4. Sign in with a magic link and add a watched airport
 
@@ -315,9 +315,9 @@ Cleanup after Path B: the fake event and its `alert_log` row age out through the
 ### 13.3 verification checklist
 
 - [ ] One poll cycle ran (via `wrangler tail` or `--test-scheduled`) with no error logged.
-- [ ] `snapshots` has a new row with `airport_count = 20` and `captured_at` within the last 5 minutes.
+- [ ] `snapshots` has a new row with `airport_count = 30` (20 before the Core 30 code is deployed) and `captured_at` within the last 5 minutes.
 - [ ] `job_runs` has a `poll` row with `outcome = 'success'` whose `snapshot_id` matches that snapshot.
-- [ ] `<WEB_URL>` shows 20 airport rows and a capture time equal to the database `captured_at`.
+- [ ] `<WEB_URL>` shows 30 airport rows (20 before the Core 30 code is deployed) and a capture time equal to the database `captured_at`.
 - [ ] `<WEB_URL>/api/status/national` returns `state: ok`, `stale: false`.
 - [ ] Magic-link email arrived from the production `MAIL_FROM` address, the link signed you in, and a watchlist add persisted in `subscriptions`.
 - [ ] One alert email arrived in the inbox, `alert_log.status = 'handed_off'`, and Resend shows it as Delivered.
@@ -432,6 +432,55 @@ Add a third monitor, Keyword, on `https://www.aerobriefs.com/api/status/national
 - [ ] (Optional) `"stale":true` monitor on `/api/status/national`.
 
 ---
+
+## Migration 0006: Core 30 airports and watchlist of 30
+
+The owner decided on 2026-11-24 to monitor the 30 FAA Core 30 airports and to allow 30 airports per watchlist (`docs/decisions.md`, "Core 30 airports and watchlist of 30"). Migration `packages/db/migrations/0006_watchlist_cap_30.sql` does two things:
+
+- It replaces the function `enforce_subscription_cap()` so the trigger from `0001` stops a watchlist at 30 instead of 10. The error text becomes `subscription limit of 30 reached` (SQLSTATE `23514`). The API accepts both the old and the new text.
+- It inserts the 10 new `airports` rows: BWI, CLT, FLL, HNL, IAD, LGA, MDW, PHL, SAN, TPA. It uses `ON CONFLICT DO NOTHING`, so it is safe to run twice.
+
+The file is a custom migration. Like `0004` and `0005`, apply it in one transaction by hand. Do not rely on `drizzle-kit migrate` for production, because that command applies every file in the folder.
+
+### Order (fixed)
+
+1. Apply `0006` to the `phase-2` Neon branch and run the checks below there.
+2. Create a restore point of the production branch (a Neon snapshot or a child branch) and confirm it exists. Check Neon's current retention on your plan.
+3. The owner applies `0006` to production, then runs the checks.
+4. Only then push `main`. The push deploys the API Worker, then the Poller Worker, then the web app.
+
+Reason: with the migration first, the old code keeps working (10 unused airport rows and a trigger that allows 30, while the old API still limits a watchlist to 10 in code). With the push first, the new web app would say "of 30" while the old trigger still refuses the 11th airport.
+
+### Apply
+
+Confirm the host name is the intended branch (compare with `docs/decisions.md`). Use the owner's direct (unpooled) connection, kept in the owner's shell:
+
+```text
+psql "$ADMIN_URL" -1 -v ON_ERROR_STOP=1 -f packages/db/migrations/0006_watchlist_cap_30.sql
+```
+
+`-1` runs the file as one transaction and `ON_ERROR_STOP` stops at the first error. The `--> statement-breakpoint` lines are SQL comments. Nothing in the repo runs this against production.
+
+### Check (read-only)
+
+```sql
+select count(*) from airports;                                     -- expect 30
+select id, artcc from airports where id in
+  ('BWI','CLT','FLL','HNL','IAD','LGA','MDW','PHL','SAN','TPA') order by id;   -- expect 10 rows, HNL is ZHN
+select position('>= 30' in pg_get_functiondef('enforce_subscription_cap'::regproc)) > 0 as cap_is_30;   -- expect true
+```
+
+The runtime role `aerobrief_runtime` has no write access to `airports` and needs none for this change (the Poller and API only read it). If the role cannot read the new rows, re-run the grants in step 2 above.
+
+After the push, the new Poller stores snapshots with 30 airports. Old snapshots with 20 airports stay for up to 24 hours and are completed on read (each missing airport counts as "no ground stop"), so no false event appears at the switch. Check as in 13.3 step 2 and 3: the newest snapshot has `airport_count = 30`, the table on `<WEB_URL>` has 30 rows and `/api/status/national` lists 30 airports.
+
+### Roll back
+
+Revert the code first, then the database. The old code must be running before the 30-airport snapshots are deleted.
+
+1. `git revert` the Core 30 commit range on `main` and push. Wait until the Actions run and the Vercel deploy have finished.
+2. With the owner's approval, run `packages/db/migrations/down/0006_watchlist_cap_30.down.sql` in one transaction (`psql "$ADMIN_URL" -1 -v ON_ERROR_STOP=1 -f ...`). It restores the cap of 10, deletes snapshots that do not hold exactly 20 airports and the events of the 10 new airports (the dashboard shows "no data" until the next poll, at most 5 minutes), and deletes the 10 new `airports` rows that no user watches. It never deletes users, subscriptions or `alert_log` rows. A user who already watches a new airport keeps that row, and a user with more than 10 airports keeps them, because the trigger only blocks new inserts.
+3. Confirm with `select count(*) from airports;` (20, or more if a user still watches a new airport) and the next poll.
 
 ## FAA relay
 

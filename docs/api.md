@@ -8,7 +8,7 @@ AeroBrief serves four read-only JSON endpoints. They need no sign-up and no key.
 - No rate tiers. There is one tier for everyone. Please follow the refresh guidance below.
 - No SLA beyond the 99.9% availability target.
 - The API is unversioned. Endpoints and fields may change.
-- Data covers 20 monitored U.S. airports and the last 24 hours only.
+- Data covers the 30 FAA Core 30 airports and the last 24 hours only.
 
 ## Base URLs
 
@@ -24,11 +24,11 @@ Every path below starts with `/api`.
 | Method | Path | Returns |
 | --- | --- | --- |
 | GET | `/api/health` | Liveness check |
-| GET | `/api/status/national` | All 20 airports, nationwide summary, recent events |
+| GET | `/api/status/national` | All 30 airports, nationwide summary, recent events |
 | GET | `/api/status/airport/:code` | One airport and its recent events |
 | GET | `/api/history/:code` | Events for one airport, optional `since` filter |
 
-`:code` is a three-letter airport code, case-insensitive (`jfk` and `JFK` are the same). The monitored codes are: ATL, BOS, DCA, DEN, DFW, DTW, EWR, IAH, JFK, LAS, LAX, MCO, MEM, MIA, MSP, ORD, PHX, SEA, SFO, SLC. Any other code returns 404 `airport_not_found`.
+`:code` is a three-letter airport code, case-insensitive (`jfk` and `JFK` are the same). The monitored codes are the FAA Core 30 airports: ATL, BOS, BWI, CLT, DCA, DEN, DFW, DTW, EWR, FLL, HNL, IAD, IAH, JFK, LAS, LAX, LGA, MCO, MDW, MEM, MIA, MSP, ORD, PHL, PHX, SAN, SEA, SFO, SLC, TPA. Any other code returns 404 `airport_not_found`.
 
 All responses are `application/json; charset=utf-8`.
 
@@ -56,7 +56,7 @@ const data = await res.json();
 if (data.state === "ok" && data.stale) console.warn("Data is older than 10 minutes");
 ```
 
-Response when data exists (trimmed to 2 of the 20 airports; the live response lists all 20 in a fixed order):
+Response when data exists (trimmed to 2 of the 30 airports; the live response lists all 30 in a fixed order):
 
 ```json
 {
@@ -94,7 +94,7 @@ Response before the first poll has stored anything:
 | `message` | string | no | Only with `no_data`. |
 | `capturedAt` | string (ISO 8601 UTC) | no | When the FAA data was captured. |
 | `stale` | boolean | no | `true` when `capturedAt` is more than 10 minutes old. |
-| `airports` | array of Airport | no | Always 20 items. |
+| `airports` | array of Airport | no | Always 30 items. |
 | `nationwide.active` | boolean | no | A nationwide event is in progress. |
 | `nationwide.count` | number | no | Number of ground stops counted for the nationwide event. |
 | `nationwide.artccs` | string[] | no | Affected FAA control centers. May be empty. |
@@ -195,7 +195,7 @@ Errors use one envelope:
 | Status | `code` | When |
 | --- | --- | --- |
 | 400 | `invalid_since` | `since` is not an ISO 8601 date-time. |
-| 404 | `airport_not_found` | `:code` is not one of the 20 monitored airports. |
+| 404 | `airport_not_found` | `:code` is not one of the 30 monitored airports. |
 | 404 | `not_found` | Unknown path. |
 | 405 | `method_not_allowed` | Wrong method on a known path. An `Allow` header lists the valid methods. |
 | 503 | `service_unavailable` | The database failed or the request took longer than 5 seconds. |
@@ -231,6 +231,8 @@ The API code sets no CORS headers. Call it from a server, a script or the same o
 ## Not a public API
 
 These endpoints exist for the AeroBrief web app. They need a signed-in session or a signed link, and they are not supported for outside use: authentication (`/api/auth/*`), watchlist (`/api/watchlist`), account (`/api/account`) and unsubscribe (`/api/unsubscribe`).
+
+A watchlist holds at most 30 airports. Adding a 31st returns 409 `watchlist_full` with the message "Your Watchlist already has 30 airports. Remove one to add another." Adding an airport that is already on the list succeeds and changes nothing.
 
 ## Phase 2 routes (built, off by default)
 

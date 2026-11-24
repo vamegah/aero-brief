@@ -27,7 +27,7 @@ On November 13, 2026, a nationwide ground stop halted U.S. flights. The FAA's pu
 At least one documented case where AeroBrief provided information during an FAA outage that official channels did not.
 
 ## Scope Boundaries
-See `scope.md` for the enforced MVP boundaries. Product-level summary: 20 hardcoded U.S. airports, email-only alerts, 24-hour history, no accounts with passwords, no monetization.
+See `scope.md` for the enforced MVP boundaries. Product-level summary: the 30 FAA Core 30 airports, email-only alerts, 24-hour history, no accounts with passwords, no monetization.
 
 ## Tone and Content Rules
 - User-facing copy must be plain language, never raw FAA codes (e.g. show "storms at your airport, expect ~40 min delays," not "GDP due to VOL")

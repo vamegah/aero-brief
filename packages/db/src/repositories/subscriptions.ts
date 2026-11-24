@@ -2,16 +2,16 @@ import { and, eq } from "drizzle-orm";
 import { subscriptions, users } from "../schema";
 import type { Db } from "./client";
 
-/** Thrown when the `enforce_subscription_cap` trigger rejects an 11th airport (Requirement 8.8). */
+/** Thrown when the `enforce_subscription_cap` trigger rejects a 31st airport (Requirement 8.8). */
 export class SubscriptionLimitError extends Error {
   constructor(options?: { cause?: unknown }) {
-    super("subscription limit of 10 reached", options);
+    super("subscription limit of 30 reached", options);
     this.name = "SubscriptionLimitError";
   }
 }
 
 /**
- * Matches the trigger's error: SQLSTATE 23514 with message "subscription limit of 10 reached".
+ * Matches the trigger's error: SQLSTATE 23514 with message "subscription limit of 30 reached".
  * Drizzle may wrap the driver error, so the `cause` chain is searched too.
  */
 export function isSubscriptionLimitError(err: unknown): boolean {
@@ -76,9 +76,9 @@ export function subscriptionRepository(db: Db) {
     },
     /**
      * Adds an airport. Returns false when it was already on the Watchlist (idempotent, Requirement 8.6).
-     * Throws SubscriptionLimitError when the trigger rejects an 11th airport.
+     * Throws SubscriptionLimitError when the trigger rejects a 31st airport.
      * The existence check comes first because the BEFORE INSERT trigger also fires for rows that
-     * would conflict, which would wrongly report the cap for an already-present airport at 10.
+     * would conflict, which would wrongly report the cap for an already-present airport at 30.
      */
     async add(userId: string, airportId: string, now: Date): Promise<boolean> {
       const existing = await db

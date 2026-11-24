@@ -1,3 +1,4 @@
+import { AIRPORTS } from "@aerobrief/core/airports";
 import type { AirportSummary, NationalStatusResponse } from "../../src/api/client";
 
 export type FetchFn = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
@@ -7,10 +8,19 @@ export const NOW = new Date("2026-01-02T12:00:00.000Z");
 export const CAPTURED_AT = "2026-01-02T11:00:00.000Z";
 export const CAPTURED_TEXT = "2026-01-02 11:00 UTC";
 
-export const AIRPORT_IDS: readonly string[] = [
+const LEADING_IDS: readonly string[] = [
   "ATL", "LAX", "ORD", "DFW", "DEN", "JFK", "SFO", "SEA", "LAS", "MCO",
   "EWR", "CLT", "PHX", "IAH", "MIA", "BOS", "MSP", "FLL", "DTW", "PHL",
 ];
+
+/** Every monitored airport. The first 20 keep their old order so index-based tests stay stable. */
+export const AIRPORT_IDS: readonly string[] = [
+  ...LEADING_IDS,
+  ...AIRPORTS.map((a) => a.id as string).filter((id) => !LEADING_IDS.includes(id)),
+];
+
+/** Number of monitored airports (30 for the Core 30). */
+export const AIRPORT_COUNT: number = AIRPORTS.length;
 
 export function makeAirports(): AirportSummary[] {
   return AIRPORT_IDS.map((id, i) => ({

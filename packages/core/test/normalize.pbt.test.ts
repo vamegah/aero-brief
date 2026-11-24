@@ -1,14 +1,14 @@
 import { describe, expect, test } from "vitest";
 import fc from "fast-check";
-import { MONITORED_IDS } from "../src/airports";
+import { AIRPORTS, MONITORED_IDS } from "../src/airports";
 import { normalizeResponse } from "../src/normalize";
-import { faaResponseArb, isoTimestampArb, snapshotArb } from "./arbitraries";
+import { faaResponseArb, foreignAirportIdArb, isoTimestampArb, snapshotArb } from "./arbitraries";
 
 const SORTED_IDS = [...MONITORED_IDS].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 
 describe("normalizeResponse properties", () => {
-  // Feature: aerobrief, Property 2: Normalization yields exactly the 20 monitored airports
-  test("Property 2: Normalization yields exactly the 20 monitored airports", () => {
+  // Feature: aerobrief, Property 2: Normalization yields the monitored airports
+  test("Property 2: Normalization yields the monitored airports", () => {
     /** **Validates: Requirements 2.2, 2.4, 2.5** */
     fc.assert(
       fc.property(
@@ -19,8 +19,8 @@ describe("normalizeResponse properties", () => {
         (faa, capturedAt, id, previous) => {
           const snap = normalizeResponse(faa, capturedAt, id, previous);
 
-          // Exactly 20 entries, one per monitored id, sorted by id.
-          expect(snap.airports).toHaveLength(20);
+          // Exactly one entry per registry airport, one per monitored id, sorted by id.
+          expect(snap.airports).toHaveLength(AIRPORTS.length);
           expect(snap.airports.map((a) => a.airportId)).toEqual(SORTED_IDS);
 
           // Non-monitored ids never appear.
@@ -37,6 +37,32 @@ describe("normalizeResponse properties", () => {
 
           expect(snap.id).toBe(id);
           expect(snap.capturedAt).toBe(capturedAt);
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  // Feature: core30-limits, Property 5: Normalization covers the registry and keeps stops
+  test("Property 5: Normalization covers the registry and keeps stops", () => {
+    /** **Validates: Requirements 5.1, 5.3, 8.8, 8.10** */
+    const ids = AIRPORTS.map((a) => a.id);
+    fc.assert(
+      fc.property(
+        fc.subarray(ids),
+        fc.array(foreignAirportIdArb, { maxLength: 5 }),
+        isoTimestampArb,
+        fc.uuid(),
+        (stopIds, foreignIds, capturedAt, id) => {
+          const faa = [
+            ...stopIds.map((airportId, i) => ({ airportId, groundStop: { id: i + 1, impactingCondition: "wind" } })),
+            ...foreignIds.map((airportId) => ({ airportId, groundStop: { id: 99, impactingCondition: "wind" } })),
+          ];
+          const snap = normalizeResponse(faa, capturedAt, id, null);
+
+          expect(snap.airports.map((a) => a.airportId)).toEqual(SORTED_IDS);
+          const withStop = snap.airports.filter((a) => a.groundStop !== null).map((a) => a.airportId);
+          expect([...withStop].sort()).toEqual([...stopIds].sort());
         },
       ),
       { numRuns: 100 },

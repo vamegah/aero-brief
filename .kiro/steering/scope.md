@@ -8,9 +8,11 @@ These boundaries are fixed for the MVP.
 
 ## Limits
 
-- The MVP monitors exactly 20 hardcoded US airports.
-- A user watchlist is capped at 10 airports.
+- AeroBrief monitors the FAA Core 30 airports (the 30 airports the FAA ASPM help pages mark "Core 30"). Source: https://www.aspm.faa.gov/aspmhelp/index/ASPM_77.html. The codes are in `packages/core/src/airports.ts`.
+- A user watchlist is capped at 30 airports.
 - History retention is 24 hours only.
+
+The owner raised the airport count from 20 to 30 and the watchlist cap from 10 to 30 on 2026-11-24 ("Core 30, watchlist 30, keep the rest."). See `docs/decisions.md`.
 
 ## Prohibited
 
@@ -28,7 +30,7 @@ If any request would violate these boundaries, refuse and explain which boundary
 
 ## Phase 2 (branch `phase-2` only)
 
-The limits and prohibitions above stay in force on `main`, which is the Kiroween 2026 submission. Tag `mvp-contest-2026` marks the submitted build. On the `phase-2` branch only, these items are in scope, specified in `.kiro/specs/aerobrief-phase2/`:
+The Kiroween 2026 submission is `main` as of the deadline, December 4, 2026, 2:00 PM PT. Tag `mvp-contest-2026` stays as the MVP restore point. The limits and prohibitions above stay in force. On the `phase-2` branch, these items are in scope, specified in `.kiro/specs/aerobrief-phase2/`:
 
 - More US airports, international hubs, and flight, tail number and route tracking.
 - Additional data sources (FlightAware, OAG, Cirium, ADS-B Exchange), through licensed APIs only.
@@ -48,10 +50,9 @@ These still apply in Phase 2:
 - Every technology outside `tech.md` is flagged and approved before use, as `tech.md` requires.
 - Billing and any commercial use wait for a review of the FAA data terms and of each data provider's license.
 - Every Phase 2 feature sits behind its own feature flag, off by default. With every flag off, the app behaves exactly as `main`.
-- Every Phase 2 schema change is a separate, reversible migration, run only against a Neon branch, never the production database, until it is merged.
+- Every Phase 2 schema change is a separate, reversible migration, tested on a Neon branch first. The owner applies it to the production database.
 - Phase 2 Workers deploy under separate names and never to the production Workers.
-- The contest set (dark mode, the high-contrast AAA theme, the daily digest and signed webhooks) may merge into `main` before the Kiroween 2026 deadline (December 4, 2026, 2:00 PM PT), one feature at a time, only after its tests pass with its flag off and on. After the deadline, `main` is frozen until judging has finished.
-- Every other Phase 2 item, including anything that needs a paid data provider or a legal review, stays on `phase-2` until judging has finished.
+- After the deadline (December 4, 2026, 2:00 PM PT), `main` is frozen until judging has finished.
 
 ## Rule: roll back
 

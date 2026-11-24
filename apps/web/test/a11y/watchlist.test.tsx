@@ -44,12 +44,12 @@ describe("a11y: watchlist management", () => {
   it("has no violations when adding an airport is rejected", async () => {
     stubFetch(
       routes({
-        "POST /api/watchlist": () => apiError(409, "watchlist_full", "Your watchlist is full (10 airports)."),
+        "POST /api/watchlist": () => apiError(409, "watchlist_full", "Your Watchlist already has 30 airports. Remove one to add another."),
       }),
     );
     const { container } = await renderLoaded();
     fireEvent.click(screen.getByRole("button", { name: "Add Atlanta Hartsfield-Jackson to watchlist" }));
-    await screen.findByText("Your watchlist is full (10 airports).");
+    await screen.findByText("Your Watchlist already has 30 airports. Remove one to add another.");
     expect(await runAxe(container)).toHaveNoViolations();
   });
 

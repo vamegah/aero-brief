@@ -1,4 +1,4 @@
-import { createLogger, digestClaimKey, STALE_NOTICE, verifyDigestUnsubscribe } from "@aerobrief/core";
+import { createLogger, digestClaimKey, explain, STALE_NOTICE, verifyDigestUnsubscribe } from "@aerobrief/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   candidateDigestDates,
@@ -194,6 +194,35 @@ describe("runDigest", () => {
 
     expect(s.completed).toEqual([{ userId: "u1", digestDate: DATE, status: "handed_off", attempts: 1, skipReason: null }]);
     expect(summary).toMatchObject({ due: 1, claimed: 1, handedOff: 1 });
+  });
+
+  it("lists a watched New_Airport (LGA) by its registry name in the event and the status line", async () => {
+    const s = setup();
+    const occurredAt = new Date("2026-11-14T05:00:00.000Z");
+    const explanation = explain({
+      type: "GROUND_STOP_STARTED",
+      airportId: "LGA",
+      occurredAt: occurredAt.toISOString(),
+      faaEventId: "faa:lga",
+      reason: "wind",
+    });
+    s.repos.subscriptions.list.mockResolvedValue([{ airportId: "LGA" }]);
+    s.repos.events.recentEvents.mockResolvedValue([
+      { type: "GROUND_STOP_STARTED", airportId: "LGA", occurredAt, explanation },
+    ]);
+    s.repos.snapshots.latestSnapshot.mockResolvedValue({
+      id: "s",
+      capturedAt: NOW.toISOString(),
+      airports: [{ airportId: "LGA" as never, groundStop: { faaEventId: "faa:lga", startedAt: occurredAt.toISOString(), reason: "wind" } as never }],
+    });
+    await runDigest(baseEnv, NOW, s.deps);
+
+    const body = sentBody(s.fetchFn);
+    expect(body.subject).toBe("AeroBrief daily digest: 1 disruption");
+    expect(body.text).toContain("New York LaGuardia: Ground stop started");
+    expect(body.text).toContain(explanation);
+    expect(body.text).toContain("New York LaGuardia: Ground stop in effect");
+    expect(body.text).toContain("strong winds");
   });
 
   it("sends nothing for a digest that is already claimed", async () => {

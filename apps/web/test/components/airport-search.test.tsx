@@ -1,7 +1,7 @@
 import { fireEvent, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { StatusView } from "../../src/components/StatusView";
-import { okStatus } from "./fixtures";
+import { AIRPORT_COUNT, okStatus } from "./fixtures";
 
 beforeEach(() => {
   window.history.replaceState(null, "", "/#airports");
@@ -18,11 +18,11 @@ function setup() {
 }
 
 describe("Status airport search", () => {
-  it("shows a labelled search field, all 20 rows and the count by default", () => {
+  it("shows a labelled search field, all rows and the count by default", () => {
     const { container, input } = setup();
     expect(input.type).toBe("search");
-    expect(container.querySelectorAll("tbody tr")).toHaveLength(20);
-    expect(container.textContent).toContain("Showing 20 of 20 airports");
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(AIRPORT_COUNT);
+    expect(container.textContent).toContain(`Showing ${AIRPORT_COUNT} of ${AIRPORT_COUNT} airports`);
     expect(container.querySelector("[aria-live]")?.contains(input)).toBe(false);
     expect(container.querySelector("[aria-live]")?.textContent).not.toContain("Showing");
   });
@@ -32,7 +32,7 @@ describe("Status airport search", () => {
     type("  lax ");
     expect(container.querySelectorAll("tbody tr")).toHaveLength(1);
     expect(container.querySelector("tbody tr th")?.textContent).toBe("LAX");
-    expect(container.textContent).toContain("Showing 1 of 20 airports");
+    expect(container.textContent).toContain(`Showing 1 of ${AIRPORT_COUNT} airports`);
   });
 
   it("filters by name", () => {
@@ -57,7 +57,7 @@ describe("Status airport search", () => {
     expect(container.querySelectorAll("tbody tr")).toHaveLength(0);
     expect(container.textContent).toContain("No airports match your search.");
     expect(container.textContent).not.toContain("No airports have an active ground stop.");
-    expect(container.textContent).toContain("Showing 0 of 20 airports");
+    expect(container.textContent).toContain(`Showing 0 of ${AIRPORT_COUNT} airports`);
   });
 
   it("makes no API request", () => {

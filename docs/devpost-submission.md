@@ -18,9 +18,9 @@ AeroBrief is that place. It is an independent monitor of the FAA NAS Status API.
 
 ## What it does
 
-Live today at https://www.aerobriefs.com:
+The submission is `main` as of the deadline, December 4, 2026, 2:00 PM PT. The app is at https://www.aerobriefs.com. The list below describes what the code on `main` does. Which Phase 2 flags are switched on in production is the owner's decision (see "Additions behind feature flags").
 
-- **National status dashboard.** A summary card, and a table of the 20 airports we monitor, sorted with ground stops first. An "All (20) / Affected only" filter narrows the table. The overall status reads Normal (green), Ground stops active (amber) or System-wide disruption (red); the text carries the meaning and the color only repeats it.
+- **Status dashboard.** The "National status" page has three sections in a menu: Overview (a summary card and the latest events), Events (the last 24 hours, with filters) and Airports (a table of the 30 airports we monitor, sorted with ground stops first). An "All (30) / Affected only" filter and a search box narrow the table. The overall status reads Normal (green), Ground stops active (amber) or System-wide disruption (red); the text carries the meaning and the color only repeats it.
 - **Ground stop details.** A stopped airport's row shows the reason in plain language, "Expected to end around <time> UTC" or "Until further notice", and a link to the FAA advisory. Only `https://` links on `faa.gov` are shown; otherwise the link goes to the FAA status page.
 - **Airport page.** Each airport code links to `/airport/<code>`, which shows that airport's current status, its details, the last-updated time and its events from the last 24 hours.
 - **Plain-language events.** The last 24 hours of ground stop starts and ends appear as event cards. Each has a written explanation of the cause, not a raw FAA code.
@@ -28,32 +28,37 @@ Live today at https://www.aerobriefs.com:
 - **Stale-data banner.** If the latest stored data is more than 10 minutes old, the dashboard says so and shows the last update time. Every status carries a last-updated time.
 - **Cached fallback.** The dashboard is served from our database, not from the FAA at request time. If a refresh fails, the page keeps the last data and shows an error message instead of going blank.
 - **Passwordless sign-in.** Enter an email, get a one-time magic link that expires in 15 minutes and works once. There are no passwords.
-- **Watchlist.** Follow up to 10 of the 20 airports.
+- **Watchlist.** Follow up to 30 of the 30 airports. A 31st add is refused with a message that says the Watchlist already has 30 airports.
+- **Settings page.** One page at `/settings` with a section menu: Display, Daily digest, Webhooks and Account. A section appears only when its feature flag is on, except Account, which is always there. Signed-out visitors are asked to sign in for the sections that need a session.
 - **Email alerts.** Sent when a ground stop starts or ends at a watched airport, and for nationwide events. Alerts pause while data is stale.
 - **One-click unsubscribe.** Each ground stop alert carries a signed unsubscribe link.
 
-## After the MVP: additions behind feature flags
+## Additions behind feature flags
 
-The core submission is the MVP described above (git tag `mvp-contest-2026`). Under the contest rules, four additions were built afterwards on a separate branch and merged into `main`, one feature at a time, each behind its own feature flag that is off by default:
+Git tag `mvp-contest-2026` marks the MVP restore point. Four additions were built after it on the `phase-2` branch. Each sits behind its own feature flag that is off by default, and `main` as of the deadline includes them:
 
 - **Dark mode** (`FEATURE_DARK_MODE`).
 - **High-contrast AAA theme** (`FEATURE_HIGH_CONTRAST`).
 - **Signed webhooks** (`FEATURE_WEBHOOKS`): outbound, signed, retried deliveries of ground stop events.
 - **Daily digest email** (`FEATURE_DIGESTS`).
 
-These are not live. All four flags are off at https://www.aerobriefs.com, and the production database does not yet have the two migrations that webhooks and the digest need. With every flag off, the app behaves as the MVP does. The flags-on behavior is covered by tests and by a local run of the digest cron against a separate Neon branch, not by production use. The MVP limits (20 airports, 10-airport watchlist, 24-hour history) are unchanged. Nothing else from the Phase 2 plan is built.
+Webhooks and the digest need migrations 0004 and 0005 in the database, and the owner applies them to production (`docs/phase2-rollout.md`). A flag does nothing until its Worker secret is set to `true`. With every flag off, the app behaves as the MVP does, apart from the limits below. The flags-on behavior is covered by tests and by a local run of the digest cron against a separate Neon branch. Nothing in this file claims production use of a flagged feature. Nothing else from the Phase 2 plan is built.
+
+The owner raised the limits on 2026-11-24 (`docs/decisions.md`): the app monitors the 30 FAA Core 30 airports (up from 20), a watchlist holds 30 airports (up from 10), and history stays at 24 hours. That change needs migration 0006 in the production database (`docs/production-runbook.md`, "Migration 0006"). The Poller reads old 20-airport snapshots and completes them, so a deploy does not break on stored data.
+
+The FAA blocks requests from Cloudflare Workers with HTTP 403. The Poller therefore asks one small Vercel Function (`apps/web/api/internal/faa-relay.ts`) to fetch the fixed FAA URL for it. The function does nothing else. The approval is in `docs/decisions.md` (2026-11-22) and the steps are in `docs/production-runbook.md` ("FAA relay").
 
 ## How we built it
 
 The stack is fixed and serverless:
 
-- A **Cloudflare Worker** runs on a 5-minute cron. It fetches the FAA airport events feed, validates it with Zod, normalizes it to exactly 20 airports, and stores a snapshot in **Neon Postgres** through **Drizzle ORM**. A second 30-minute cron deletes data older than 24 hours.
-- A **pure TypeScript core** (`packages/core`) holds the change detector, explanation mapper, event keys, watchlist rules and unsubscribe signing. It has no I/O. **fast-check** property tests (44 `*.pbt.test.ts` files) check it against the correctness properties in the design.
+- A **Cloudflare Worker** runs on a 5-minute cron. It fetches the FAA airport events feed, validates it with Zod, normalizes it to exactly 30 airports (the FAA Core 30), and stores a snapshot in **Neon Postgres** through **Drizzle ORM**. A second 30-minute cron deletes data older than 24 hours.
+- A **pure TypeScript core** (`packages/core`) holds the change detector, explanation mapper, event keys, watchlist rules and unsubscribe signing. It has no I/O. **fast-check** property tests (76 `*.pbt.test.ts` files across the repo) check it against the correctness properties in the design.
 - A second **Worker** serves a hand-written JSON API for status, history, sign-in and watchlists.
 - **Resend** sends magic links and alerts. A small shared client retries and sets an `Idempotency-Key` so a retried poll cannot email a user twice about the same event.
 - **React 18 + Vite** on **Vercel** renders the dashboard. Colors are tokens, and a test checks every color pair against WCAG 2.1 AA contrast. A vitest-axe suite checks every page.
 
-How Kiro was used: the Kiro IDE only, with built-in sub-agents (no custom agents) and no Kiro powers. One spec (18 requirements, 38 design properties, 20 task sections) drove the build, with tasks that cite requirements and property tests that cite design properties. Five steering files fix the stack, structure, MVP scope, visual design and product tone, and `tests/repo-guard.test.ts` turns some of those rules into a failing test. The Neon MCP tools were used for read-only checks of production during the live smoke test (recorded in `docs/decisions.md`). Hooks are defined in `.kiro/hooks/`, but `docs/kiro-usage.md` lists known gaps in them. The flagged additions came from a second spec (`.kiro/specs/aerobrief-phase2/`, 21 design properties) and the Phase 2 section of the scope steering file, which requires a flag per feature and a rollback rule. One of its property tests caught a real bug: the digest unsubscribe signature check accepted more than one string for the same signature. The full account is in [`docs/kiro-usage.md`](kiro-usage.md).
+How Kiro was used: the Kiro IDE only, with built-in sub-agents (no custom agents) and no Kiro powers. One spec (18 requirements, 38 design properties, 20 task sections) drove the build, with tasks that cite requirements and property tests that cite design properties. Five steering files fix the stack, structure, MVP scope, visual design and product tone, and `tests/repo-guard.test.ts` turns some of those rules into a failing test. The Neon MCP tools were used for read-only checks of production during the live smoke test (recorded in `docs/decisions.md`). Hooks are defined in `.kiro/hooks/`, but `docs/kiro-usage.md` lists known gaps in them. The flagged additions came from a second spec (`.kiro/specs/aerobrief-phase2/`, 21 design properties) and the Phase 2 section of the scope steering file, which requires a flag per feature and a rollback rule. One of its property tests caught a real bug: the digest unsubscribe signature check accepted more than one string for the same signature. Three later specs cover the FAA relay fix (`.kiro/specs/faa-403-poller/`), the Status and Settings redesign (`.kiro/specs/ui-refresh/`) and the move to 30 airports and a 30-airport watchlist (`.kiro/specs/core30-limits/`). The full account is in [`docs/kiro-usage.md`](kiro-usage.md).
 
 ## Challenges
 
@@ -65,7 +70,7 @@ How Kiro was used: the Kiro IDE only, with built-in sub-agents (no custom agents
 ## Accomplishments
 
 - A deployed, working pipeline: cron poll, stored snapshots, live dashboard, and real email through our own verified domain.
-- 44 property-based test files over the core logic, plus unit, component and accessibility tests.
+- 76 property-based test files over the core logic, plus unit, component and accessibility tests.
 - Sign-in, alerts and unsubscribe with no passwords stored anywhere.
 
 ## What we learned
@@ -77,7 +82,7 @@ How Kiro was used: the Kiro IDE only, with built-in sub-agents (no custom agents
 ## What's next
 
 - Support ground delay programs, which the current version does not report.
-- Everything stays within the MVP limits: 20 airports, a 10-airport watchlist, 24-hour history, email only.
+- Everything stays within the current limits: the 30 Core 30 airports, a 30-airport watchlist, 24-hour history, email as the main alert channel (plus signed webhooks behind their flag).
 
 ## Built with
 
@@ -93,7 +98,7 @@ TypeScript (strict), Cloudflare Workers, Neon Postgres, Drizzle ORM, Zod, React 
 
 - Open https://www.aerobriefs.com/sign-in and enter any email address you own. Use the `www` address, because the API only accepts sign-in requests from that origin.
 - Open the emailed magic link within 15 minutes. It works once. The email comes from `alerts@aerobriefs.com`.
-- Go to https://www.aerobriefs.com/watchlist and add airports (up to 10).
+- Go to https://www.aerobriefs.com/watchlist and add airports (up to 30).
 - No password and no test account is needed.
 - Alert emails are sent only when the real FAA feed shows a ground stop starting or ending at a watched airport. An alert may not arrive during judging. The demo video shows one.
 - The stale-data banner appears only when the poller has fallen 10 minutes behind, so it will normally not be visible. The way we showed it is in `docs/demo-script.md` ("Stale banner"): override the `/api/status/national` response in browser DevTools so it returns `"stale": true`. This changes only your own browser.

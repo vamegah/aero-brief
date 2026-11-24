@@ -7,6 +7,7 @@
     { "idx": 2, "version": "7", "when": 1760000002000, "tag": "0002_seed_airports", "breakpoints": true },
     { "idx": 3, "version": "7", "when": 1760000003000, "tag": "0003_poller_lease_holder", "breakpoints": true },
     { "idx": 4, "version": "7", "when": 1760000004000, "tag": "0004_webhooks", "breakpoints": true },
-    { "idx": 5, "version": "7", "when": 1760000005000, "tag": "0005_digest", "breakpoints": true }
+    { "idx": 5, "version": "7", "when": 1760000005000, "tag": "0005_digest", "breakpoints": true },
+    { "idx": 6, "version": "7", "when": 1760000006000, "tag": "0006_watchlist_cap_30", "breakpoints": true }
   ]
 }

@@ -1,4 +1,4 @@
-import { createLogger } from "@aerobrief/core";
+import { createLogger, explain } from "@aerobrief/core";
 import { idempotencyKey, sendEmail as realSendEmail } from "@aerobrief/mail";
 import type { SendEmailOptions, SendEmailResult } from "@aerobrief/mail";
 import type { Repositories } from "@aerobrief/db";
@@ -103,6 +103,35 @@ describe("notify", () => {
     );
     const latency = t.repos.alertLog.recordLatency.mock.calls[0]![1];
     expect(latency).toBeGreaterThan(0);
+  });
+
+  it("sends a ground stop alert for a New_Airport (LGA) with the registry name and no raw FAA code", async () => {
+    const explanation = explain({
+      type: "GROUND_STOP_STARTED",
+      airportId: "LGA",
+      occurredAt: storedAt.toISOString(),
+      faaEventId: "faa:lga",
+      reason: "VOL",
+    });
+    const lgaEvent: NotifierEvent = {
+      id: "e-lga",
+      eventKey: "faa:lga",
+      type: "GROUND_STOP_STARTED",
+      airportId: "LGA",
+      occurredAt: storedAt,
+      explanation,
+    };
+    const t = setup({ watchers: [{ userId: "u1", email: "a@x.com" }] });
+    const summary = await t.run([lgaEvent]);
+    expect(summary).toMatchObject({ claimed: 1, handedOff: 1, failed: 0 });
+    expect(t.repos.subscriptions.watchersOfAirport).toHaveBeenCalledWith("LGA");
+    const { message } = t.sendEmail.mock.calls[0]![0];
+    expect(message.to).toBe("a@x.com");
+    for (const part of [message.subject, message.text]) expect(part).toContain("New York LaGuardia");
+    expect(message.text).toContain(explanation);
+    expect(explanation).toContain("A ground stop is in effect at New York LaGuardia (LGA).");
+    expect(explanation).not.toContain("VOL");
+    expect(message.text).not.toContain("VOL");
   });
 
   it("sends nationwide events only to users with a watchlist and no unsubscribe link", async () => {

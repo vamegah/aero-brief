@@ -47,14 +47,34 @@ export function scrubSecret(text: string, secret: string | undefined): string {
   return out;
 }
 
+/** String(value) that cannot throw (e.g. `toString: ""` or a Symbol.toPrimitive that throws). */
+function safeString(value: unknown): string {
+  try {
+    return String(value);
+  } catch {
+    return "unknown error";
+  }
+}
+
+/** Read a string property without ever throwing (a getter may throw). */
+function readStringProp(err: unknown, key: "name" | "message"): string | undefined {
+  try {
+    if (typeof err === "object" && err !== null && key in err) {
+      const v = (err as Record<string, unknown>)[key];
+      if (typeof v === "string") return v;
+    }
+  } catch {
+    // fall through
+  }
+  return undefined;
+}
+
 function errorName(err: unknown): string {
-  if (typeof err === "object" && err !== null && "name" in err) return String((err as { name: unknown }).name);
-  return "UnknownError";
+  return readStringProp(err, "name") ?? "UnknownError";
 }
 
 function errorMessage(err: unknown): string {
-  if (typeof err === "object" && err !== null && "message" in err) return String((err as { message: unknown }).message);
-  return String(err);
+  return readStringProp(err, "message") ?? safeString(err);
 }
 
 /**

@@ -1,0 +1,645 @@
+{
+  "pbtResults": {
+    "2.7 Write property tests for snapshot completion and the schema": {
+      "status": "passed",
+      "lastRunTimestamp": 1795548472543
+    },
+    "2.10 Write property test for explanations": {
+      "status": "passed",
+      "lastRunTimestamp": 1795548473800
+    },
+    "2.9 Write property test for change detection with the new airports": {
+      "status": "passed",
+      "lastRunTimestamp": 1795548688998
+    }
+  },
+  "executionHistory": {
+    "0.1 Edit `.kiro/steering/scope.md`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547363212
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547381361
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547440575
+      }
+    ],
+    "0.2 Update the matching wording in the other steering files": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547363388
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547382377
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547441605
+      }
+    ],
+    "0.3 Record the decision in `docs/decisions.md`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547363994
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547382947
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547442489
+      }
+    ],
+    "1.1 Re-check the Core 30 list against the FAA pages": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547364138
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547383629
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547443078
+      }
+    ],
+    "1.2 Check the ARTCC codes and the feed codes of the 10 new airports": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547364206
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547450794
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547557346
+      }
+    ],
+    "2.1 Add the 10 airports to `packages/core/src/airports.ts`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547364313
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547565388
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548197559
+      }
+    ],
+    "2.2 Remove the literal 20 from `packages/core/src/schemas.ts`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547364632
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547566212
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548198538
+      }
+    ],
+    "2.3 Add `packages/core/src/snapshot-compat.ts` and export it from `index.ts`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547364770
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548212092
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548278080
+      }
+    ],
+    "2.4 Set `WATCHLIST_CAP = 30` in `packages/core/src/watchlist.ts`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547364842
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547566639
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548199246
+      }
+    ],
+    "2.5 Update and extend `packages/core/test/airports.test.ts`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547364918
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548286945
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548580979
+      }
+    ],
+    "2.6 Write property test for the watchlist cap": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365043
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548287239
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548581631
+      }
+    ],
+    "2.7 Write property tests for snapshot completion and the schema": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365173
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548288005
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548582238
+      }
+    ],
+    "2.8 Update normalization tests and write the normalization property test": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365266
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548288505
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548582769
+      }
+    ],
+    "2.9 Write property test for change detection with the new airports": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365429
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548584485
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548722747
+      }
+    ],
+    "2.10 Write property test for explanations": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365554
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548288767
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548583781
+      }
+    ],
+    "3. Checkpoint - core package": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365635
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548723578
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548735322
+      }
+    ],
+    "4.1 Create `0006_watchlist_cap_30.sql`, its down file and the journal entry": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365694
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548741685
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549193384
+      }
+    ],
+    "4.2 Complete Legacy_Snapshots in `packages/db/src/repositories/snapshots.ts`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365805
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548742995
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549193812
+      }
+    ],
+    "4.3 Update the cap error text and comments": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365897
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548743646
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549194514
+      }
+    ],
+    "4.4 Write database unit tests": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547365970
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549203764
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550328297
+      }
+    ],
+    "4.5 Update the opt-in integration test": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366037
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549207040
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550328736
+      }
+    ],
+    "5.1 Build the `watchlist_full` message from `WATCHLIST_CAP`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366137
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548744978
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549195062
+      }
+    ],
+    "5.2 Update and add API tests": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366234
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549204709
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550329227
+      }
+    ],
+    "6.1 Update `apps/poller/test/poll.test.ts` and add the legacy case": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366326
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549205283
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550329986
+      }
+    ],
+    "6.2 Add New_Airport examples to the notifier, webhook and digest tests": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366534
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550335065
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550601086
+      }
+    ],
+    "7.1 Change the text and counts in `apps/web`": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366734
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548745430
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549196456
+      }
+    ],
+    "7.2 Update and add web tests": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366804
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795549206733
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550330301
+      }
+    ],
+    "8.1 Update the README files": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366876
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550612967
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795551119426
+      }
+    ],
+    "8.2 Update the docs": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547366944
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550613838
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795551120437
+      }
+    ],
+    "8.3 Sweep for leftover old limits": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547367039
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795551120773
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795551766449
+      }
+    ],
+    "9. Checkpoint - full local check": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547367131
+      },
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795551767196
+      }
+    ],
+    "10.1 Apply `0006_watchlist_cap_30.sql` to the `phase-2` branch": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547367232
+      }
+    ],
+    "10.2 Run the integration test against the phase-2 branch": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547367430
+      }
+    ],
+    "11.1 Take a restore point": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547367698
+      }
+    ],
+    "11.2 Apply the migration": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547367817
+      }
+    ],
+    "11.3 Check the result with read-only queries": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547367888
+      }
+    ],
+    "12.1 Fast-forward `main` and push before December 4, 2026, 2:00 PM PT": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547367954
+      }
+    ],
+    "13.1 Check https://www.aerobriefs.com": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547368050
+      }
+    ],
+    "0. Record the owner's decision in the steering files and the decision log (docs only)": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547442672
+      }
+    ],
+    "1. Verify the list before editing code (read-only)": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795547557801
+      }
+    ],
+    "2. Core package: airport list, snapshot size, completion step and watchlist cap": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795548722833
+      }
+    ],
+    "4. Database package: migration 0006, snapshot completion and the cap error": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550328979
+      }
+    ],
+    "5. API: the cap message and its tests": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550329735
+      }
+    ],
+    "7. Web app: counter, subtitle and tests": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550330439
+      }
+    ],
+    "6. Poller: tests only": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795550601877
+      }
+    ],
+    "8. Copy and docs sweep": [
+      {
+        "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795551766775
+      }
+    ]
+  }
+}

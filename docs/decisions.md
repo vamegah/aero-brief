@@ -177,3 +177,47 @@ The owner approved every recommendation on 2026-11-24. Spec: `.kiro/specs/ui-ref
 Supersession (D8): for this refresh only, it supersedes Phase 2 Requirements 3, 8.1, 9.7, 9.12 and 10.1 and the Phase 2 guardrail against editing `tokens.css`, `palette.ts` and existing tests. The Phase 2 spec is not otherwise changed.
 
 Scope (D9): the refresh is MVP polish approved by the owner on 2026-11-24. It is not a Phase 2 item, so the "contest set only" merge rule in `scope.md` does not cover it. It ships unflagged to `main` before December 4, 2026, 2:00 PM PT. Rollback is `git revert` of the refresh commit range.
+
+## 2026-11-24: Core 30 airports and watchlist of 30
+
+The owner decided on 2026-11-24: "Core 30, watchlist 30, keep the rest." Spec: `.kiro/specs/core30-limits/` (`requirements.md`, `design.md`, `tasks.md`).
+
+**What changes**
+
+| Limit | Before | After |
+| --- | --- | --- |
+| Monitored airports | 20 hardcoded | The 30 FAA Core 30 airports (10 added: BWI, CLT, FLL, HNL, IAD, LGA, MDW, PHL, SAN, TPA) |
+| Watchlist cap | 10 | 30 |
+| History retention | 24 hours | 24 hours (unchanged) |
+
+**Why:** the MVP caps of 20 airports and 10 per watchlist were set for schedule reasons only, not for a product or technical reason. The owner removed them.
+
+**FAA sources for the Core 30 list** (checked 2026-11-24):
+- https://www.aspm.faa.gov/aspmhelp/index/ASPM_77.html (airports marked "Core 30")
+- https://aspm.faa.gov/aspmhelp/index/OEP_35.html (Core 30 is OEP 35 without Cincinnati, Cleveland, Pittsburgh, Portland and St. Louis)
+- https://www.faa.gov/air_traffic/flight_info/aeronav/procedures/reports/media/OEP_Airports.pdf
+
+**Scope rules changed**
+- The rule that only the contest set (dark mode, high-contrast theme, daily digest, signed webhooks) may merge into `main` before the deadline is removed.
+- The rule that every other Phase 2 item stays on `phase-2` until judging has finished is removed.
+- The Kiroween 2026 submission is `main` as of December 4, 2026, 2:00 PM PT.
+- Tag `mvp-contest-2026` stays as the MVP restore point.
+
+**Rules that stay in force**
+- No scraping of any site. Third-party data comes only from a provider's licensed API, after its terms are reviewed and a key or contract exists.
+- Billing and any commercial use wait for a review of the FAA data terms and of each data provider's license.
+- No user passwords. Single sign-on and magic links are the only ways to sign in.
+- Push notifications to devices, map view, native mobile apps and FAA SWIM stay prohibited.
+- Every Phase 2 feature sits behind its own feature flag, off by default.
+- Every Phase 2 schema change is a separate, reversible migration, run only against a Neon branch, never the production database, until it is merged.
+- Rollback rule: if a feature fails, turn its flag off and revert its commits. If the branch as a whole fails, delete it. `main` and tag `mvp-contest-2026` are the contest MVP.
+- `main` is frozen after the deadline until judging has finished.
+
+**No feature flag.** The new limits are core product limits, not a flagged Phase 2 feature. Rollback is `git revert` of the commit range, then the down file of migration `0006` (`packages/db/migrations/down/0006_watchlist_cap_30.down.sql`), run in one transaction with the owner's approval. The down file deletes the stored 30-airport Snapshots and the last 24 hours of events for the 10 new airports, so the dashboard shows "no data" for up to 5 minutes. Users who already watch a new airport keep that row.
+
+**Release order (fixed)**
+1. Apply migration `0006_watchlist_cap_30.sql` to the `phase-2` Neon branch and verify it there.
+2. Take a restore point of production, then the owner applies `0006` to the production database in one transaction.
+3. Only then the owner fast-forwards `main` from `phase-2` and pushes, before the deadline. The push deploys the API Worker, the Poller Worker and the web app.
+
+The reverse order would show the new counter of 30 against the old trigger of 10.

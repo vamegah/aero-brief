@@ -1,7 +1,7 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { StatusView } from "../../src/components/StatusView";
-import { CAPTURED_TEXT, makeAirports, okStatus } from "./fixtures";
+import { AIRPORT_COUNT, CAPTURED_TEXT, makeAirports, okStatus } from "./fixtures";
 
 function follows(a: Element, b: Element): boolean {
   return (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
@@ -24,13 +24,13 @@ describe("StatusView", () => {
     expect(queryByTestId("stale-data-banner")).toBeNull();
   });
 
-  it("renders 20 airport rows and no map", () => {
+  it("renders a row for every airport and no map", () => {
     const airports = makeAirports().map((airport) => ({
       ...airport,
       groundStop: airport.airportId === "SEA" || airport.airportId === "LAX" ? { reasonText: "x" } : null,
     }));
     const { container } = render(<StatusView status={okStatus({ airports })} events={[]} loading={false} />);
-    expect(container.querySelectorAll("tbody tr")).toHaveLength(20);
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(AIRPORT_COUNT);
     const ids = Array.from(container.querySelectorAll("tbody tr th")).map((th) => th.textContent);
     expect(ids.slice(0, 2)).toEqual(["LAX", "SEA"]);
     expect(ids.slice(2)).toEqual([...ids.slice(2)].sort());

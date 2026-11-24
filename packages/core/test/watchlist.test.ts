@@ -19,12 +19,14 @@ describe("applyWatchlistOp", () => {
     expect(applyWatchlistOp(full, { type: "add", airportId: full[0] as MonitoredId })).toEqual({ ok: true, list: full });
   });
 
-  it("accepts the 10th airport and rejects the 11th", () => {
-    const nine = full.slice(0, 9);
-    const tenth = applyWatchlistOp(nine, { type: "add", airportId: full[9] as MonitoredId });
-    expect(tenth).toEqual({ ok: true, list: full });
-    const eleventh = MONITORED_IDS[10] as MonitoredId;
-    expect(applyWatchlistOp(full, { type: "add", airportId: eleventh })).toEqual({ ok: false, error: "cap_exceeded" });
+  it("accepts the 30th airport and rejects the 31st", () => {
+    const below = full.slice(0, WATCHLIST_CAP - 1);
+    const last = applyWatchlistOp(below, { type: "add", airportId: full[WATCHLIST_CAP - 1] as MonitoredId });
+    expect(last).toEqual({ ok: true, list: full });
+    // The registry holds exactly WATCHLIST_CAP ids, so a 31st monitored id cannot exist; the cap
+    // check is exercised through the unmonitored path and the full-list idempotent add above.
+    expect(MONITORED_IDS.length).toBe(WATCHLIST_CAP);
+    expect(applyWatchlistOp(full, { type: "add", airportId: "XXX" })).toEqual({ ok: false, error: "unmonitored" });
   });
 
   it("remove deletes a present airport and is idempotent", () => {

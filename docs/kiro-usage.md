@@ -2,7 +2,7 @@
 
 This document answers the Kiroween 2026 write-up questions. It describes what is in the repository today. Each section names the files that back its claims. Where the repo has no evidence of a feature, the section says so.
 
-AeroBrief is live at https://www.aerobriefs.com. Tasks 14.4 (demo video) and 14.5 (repo public, submission) are still open.
+AeroBrief is live at https://www.aerobriefs.com. The Kiroween 2026 submission is `main` as of December 4, 2026, 2:00 PM PT. It includes the four flagged Phase 2 features (all flag-gated, off by default), the 30 FAA Core 30 airports with a watchlist of 30 (decided 2026-11-24, see [`docs/decisions.md`](decisions.md)), the redesigned Status dashboard and Settings page, and the Vercel relay for the FAA feed. Tasks 14.4 (demo video) and 14.5 (repo public, submission) are still open. Numbers below that describe the MVP (20 airports, a cap of 10) are history and were true at the `mvp-contest-2026` tag.
 
 ## Summary
 
@@ -11,10 +11,10 @@ AeroBrief is live at https://www.aerobriefs.com. Tasks 14.4 (demo video) and 14.
 | Kiro IDE, CLI, Web or Crew | Kiro IDE only | No CLI, Web or Crew artifacts in the repo |
 | Custom agents | None created | No `.kiro/agents/` directory |
 | Agent hooks | 2 defined, both with known gaps, no record of firing | `.kiro/hooks/` |
-| Spec-driven development | Central. MVP spec: 18 requirements, 38 properties, 20 task sections. Phase 2 spec: 21 properties, features behind flags | `.kiro/specs/aerobrief/`, `.kiro/specs/aerobrief-phase2/` |
+| Spec-driven development | Central. MVP spec: 18 requirements, 38 properties, 20 task sections. Phase 2 spec: 21 properties, features behind flags. Three later specs: FAA relay, UI refresh, Core 30 limits | `.kiro/specs/aerobrief/`, `.kiro/specs/aerobrief-phase2/`, `.kiro/specs/faa-403-poller/`, `.kiro/specs/ui-refresh/`, `.kiro/specs/core30-limits/` |
 | Steering | 5 files, all `inclusion: always` | `.kiro/steering/` |
 | MCP | Neon MCP used for read-only production checks. context7 available, no recorded use | `docs/decisions.md` |
-| Property-based testing | 63 `*.pbt.test.ts` files on `main` (44 at the MVP tag), fast-check. One bug caught by a Phase 2 property | `packages/*/test`, `apps/*/test` |
+| Property-based testing | 76 `*.pbt.test.ts` files in the workspace now (44 at the MVP tag), fast-check. One bug caught by a Phase 2 property | `packages/*/test`, `apps/*/test` |
 | Kiro powers | None used | See Powers |
 
 ## Kiro IDE, CLI, Web, Crew
@@ -63,7 +63,7 @@ How the spec shaped the work:
 How the requirements changed during the project (from `tasks.md`, `design.md` and git history):
 
 - Requirements 1 to 14 and the first 12 task sections were written before any code (commit `769f024`). Deployment and production verification (section 13) followed.
-- Requirement 15 (visual design and product experience) was added after the first deployment. Commit `f62873e` ("Add visual design system (Requirement 15, tasks 16.1-16.21)") added the requirement, the design system section in `design.md`, Property 36 and the `design.md` steering file in one change. The repo does not record why it was added, so none is claimed here. Criterion 15.8 now describes the "N of 10 airports watched" counter and remove-only controls on the Watchlist page, and 15.13 describes the dismissible "Successfully signed in as <email>." message (task 18.4).
+- Requirement 15 (visual design and product experience) was added after the first deployment. Commit `f62873e` ("Add visual design system (Requirement 15, tasks 16.1-16.21)") added the requirement, the design system section in `design.md`, Property 36 and the `design.md` steering file in one change. The repo does not record why it was added, so none is claimed here. Criterion 15.8 describes the "N of 10 airports watched" counter (the cap is now 30, so the counter reads "N of 30 airports watched"; the change is recorded in `docs/decisions.md` and the original spec text is kept as history) and remove-only controls on the Watchlist page, and 15.13 describes the dismissible "Successfully signed in as <email>." message (task 18.4).
 - Requirement 16 (rotate secrets safely) added Property 37 and tasks 19.1 to 19.3 (commit `8ba9f87`).
 - Requirements 17 (cause, expected end and official source of each ground stop), 18 (24-hour timeline for one airport), 7.11 (privacy notice) and 15.14 (three-level overall status) came from reviewing an outside requirements document. Task section 20 built them: the Snapshot stores the expected end and a checked FAA advisory URL, the API returns them, the status table shows them, and `/airport/<code>` is a new page. `design.md` contains a section, "Not adopted from the outside requirements document", that lists items from an outside requirements document reviewed against `scope.md` and `tech.md`, and why each was left out.
 
@@ -79,7 +79,7 @@ Five files in `.kiro/steering/`, all with `inclusion: always`:
 | --- | --- |
 | `tech.md` | Fixed stack. Includes a rule to flag any technology outside it and wait for approval. |
 | `structure.md` | Directory layout, naming, import rules, test layout. Pure logic only in `packages/core`. |
-| `scope.md` | MVP limits: 20 airports, watchlist cap of 10, 24 hour history. Prohibited: scraping third-party sites, FAA SWIM, push, maps, native apps, passwords, monetization. Includes a rule to refuse and explain rather than build a workaround. |
+| `scope.md` | Limits: the FAA Core 30 airports (30), watchlist cap of 30, 24 hour history. The MVP had 20 airports and a cap of 10. The limits changed on 2026-11-24 (see [`docs/decisions.md`](decisions.md), "Core 30 airports and watchlist of 30"). Prohibited: scraping third-party sites, FAA SWIM, push, maps, native apps, passwords, monetization. Includes a rule to refuse and explain rather than build a workaround. |
 | `design.md` | Visual design rules for `apps/web`: tokens, WCAG 2.1 AA, no new runtime dependencies, do not change tested DOM structure. Added with Requirement 15. |
 | `product.md` | Product background, users, tone rules. It was `manual` in the first commit and was changed to `always` in commit `8ba9f87`. |
 
@@ -102,7 +102,7 @@ What MCP enabled: verifying production state (poller cadence, stored rows, token
 
 ## Property-based testing
 
-Property tests use fast-check under Vitest, as `tech.md` requires. The design defines 38 properties. The repo has 44 `*.pbt.test.ts` files:
+Property tests use fast-check under Vitest, as `tech.md` requires. The design defines 38 properties. The repo had 44 `*.pbt.test.ts` files at the MVP tag; the table shows that count by location, and the workspace has 76 now:
 
 | Location | Files |
 | --- | --- |
@@ -116,7 +116,7 @@ Some properties are split across several files (the change detector has eight). 
 
 Requirements using PBT, with property numbers from `design.md`:
 
-- Properties 1 to 3, FAA body classification, normalization to exactly 20 airports, Snapshot JSON round trip (Requirements 1 and 2).
+- Properties 1 to 3, FAA body classification, normalization to exactly 20 airports (30 since 2026-11-24), Snapshot JSON round trip (Requirements 1 and 2).
 - Properties 4 to 12, the change detector and nationwide status (Requirements 3 and 4).
 - Properties 13 to 15 and 35, plain-language explanations (Requirement 5).
 - Property 16, staleness threshold and send gate (Requirement 6). Properties 17 and 24 to 27, alert content, recipients, retry bound, unsubscribe signature and one email per user per event (Requirements 5 and 9).
@@ -127,13 +127,13 @@ Requirements using PBT, with property numbers from `design.md`:
 - Property 37, unsubscribe secret acceptance (Requirements 16.7, 16.8, 9.8): the current secret always verifies, the previous secret only before its expiry, and any other secret is rejected. Test: `packages/core/test/unsubscribe-secrets.pbt.test.ts`.
 - Property 38, advisory URL acceptance (Requirements 17.4, 17.5): only `https:` URLs on `faa.gov` or a subdomain pass, and look-alike hosts return `null`. Test: `packages/core/test/advisory-url.pbt.test.ts` (task 20.1).
 
-Did PBT catch issues unit tests would miss? In the MVP build the repo records no bug that a property test caught. Searches of `docs/decisions.md`, `tasks.md` and `git log` found none. Phase 2 has one (see "Phase 2: features merged behind flags"). What the properties guard against: duplicate alert emails (Properties 24 to 27, 33, 34), misclassifying a missing airport or a changed Snapshot as an event (Properties 5 to 8), wrong staleness at the 10 minute edge (Property 16), and accepting a forged unsubscribe link or a look-alike advisory host (Properties 26, 37, 38). The one production bug recorded (415 on DELETE, task 18.5) was in the HTTP layer, where no property test existed, and the fix added example-based regression tests.
+Did PBT catch issues unit tests would miss? In the MVP build the repo records no bug that a property test caught. Searches of `docs/decisions.md`, `tasks.md` and `git log` found none. Phase 2 has one (see "Phase 2: features behind flags"). What the properties guard against: duplicate alert emails (Properties 24 to 27, 33, 34), misclassifying a missing airport or a changed Snapshot as an event (Properties 5 to 8), wrong staleness at the 10 minute edge (Property 16), and accepting a forged unsubscribe link or a look-alike advisory host (Properties 26, 37, 38). The one production bug recorded (415 on DELETE, task 18.5) was in the HTTP layer, where no property test existed, and the fix added example-based regression tests.
 
 Unit tests sit next to the property tests (for example `change-detector.test.ts`, `explain.test.ts`). Database integration tests skip when no test database URL is set (Task 3.5). Run everything with `npm test`. CI runs the same, plus the accessibility suite and per-workspace typechecks, in `.github/workflows/ci.yml`.
 
-## Phase 2: features merged behind flags
+## Phase 2: features behind flags
 
-After the MVP was submitted (tag `mvp-contest-2026`), four additions were built on the `phase-2` branch and merged into local `main`: dark mode (`FEATURE_DARK_MODE`), a high-contrast AAA theme (`FEATURE_HIGH_CONTRAST`), signed webhooks (`FEATURE_WEBHOOKS`) and a daily digest email (`FEATURE_DIGESTS`). Each flag is off by default and none is enabled in production. Production does not have migrations 0004 (webhooks) and 0005 (digest), so turning on `FEATURE_WEBHOOKS` or `FEATURE_DIGESTS` there would fail until they are applied. The other Phase 2 scope items (more airports, paid data providers, SMS, Slack, PagerDuty, billing, single sign-on and the rest) are not built and not merged. This section covers only the four merged features.
+After the MVP (tag `mvp-contest-2026`), four additions were built on the `phase-2` branch. The Kiroween 2026 submission is `main` as of the deadline and includes them: dark mode (`FEATURE_DARK_MODE`), a high-contrast AAA theme (`FEATURE_HIGH_CONTRAST`), signed webhooks (`FEATURE_WEBHOOKS`) and a daily digest email (`FEATURE_DIGESTS`). Each flag is off by default. This document does not claim that any flag is on in production. Turning on `FEATURE_WEBHOOKS` or `FEATURE_DIGESTS` needs migrations 0004 (webhooks) and 0005 (digest) in the production database, and the owner applies them (`docs/phase2-rollout.md`). The other Phase 2 scope items (paid data providers, SMS, Slack, PagerDuty, billing, single sign-on and the rest) are not built. The airport list grew only to the FAA Core 30 airports, by the owner's decision of 2026-11-24. This section covers the four flagged features.
 
 What Kiro artifacts back this:
 
@@ -152,6 +152,14 @@ Issues caught during the build, from the repo:
 - **A task was dropped, not faked.** Task 4.37 (a delivery check against a real Slack workspace) was dropped by the project owner. The webhook payload follows Slack's documented `text` format, but delivery to a real Slack workspace is unverified.
 
 What this does not show: no production run of any Phase 2 feature, and no comparison with building without the spec.
+
+## Later specs
+
+Three specs were added after the Phase 2 spec. Each has its own `requirements.md` or `bugfix.md`, `design.md` and `tasks.md` under `.kiro/specs/`, and each decision is in `docs/decisions.md`.
+
+- **`faa-403-poller`.** The FAA answers Cloudflare Workers with HTTP 403. The fix is one Vercel Function, `apps/web/api/internal/faa-relay.ts`, that fetches only the fixed FAA URL for the Poller. `tech.md` lists it as the single approved exception (approved 2026-11-22). See `docs/production-runbook.md`, "FAA relay".
+- **`ui-refresh`.** The Status dashboard (Overview, Events and Airports sections) and the Settings page (Display, Daily digest, Webhooks and Account sections, with deep links such as `/settings#webhooks`). Decisions D1 to D11 are in `docs/decisions.md` (2026-11-24).
+- **`core30-limits`.** Moves the monitored list from 20 airports to the FAA Core 30 and the watchlist cap from 10 to 30 (owner decision, 2026-11-24). It adds migration `0006_watchlist_cap_30.sql` with a down file, and a pure step in `packages/core` that completes old 20-airport snapshots so the Poller keeps working during the switch. No feature flag: the limits are core product limits. Rollback is `git revert` and then the down file.
 
 ## Powers
 

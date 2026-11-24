@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { deriveFaaEventId, normalizeResponse } from "../src/normalize";
+import { AIRPORTS } from "../src/airports";
 import { SnapshotSchema, type FaaResponse } from "../src/schemas";
 
 const T1 = "2025-01-01T12:00:00.000Z";
@@ -32,9 +33,9 @@ describe("normalizeResponse", () => {
     expect(normalizeResponse([...faa].reverse(), T1, ID1, null)).toEqual(s);
   });
 
-  it("fills missing airports with null, yields 20 sorted entries, and parses", () => {
+  it("fills missing airports with null, yields one sorted entries, and parses", () => {
     const s = normalizeResponse([{ airportId: "SFO", groundStop: { id: 9, impactingCondition: "wind" } }], T1, ID1, null);
-    expect(s.airports).toHaveLength(20);
+    expect(s.airports).toHaveLength(AIRPORTS.length);
     const ids = s.airports.map((a) => a.airportId);
     expect(ids).toEqual([...ids].sort());
     expect(entry(s, "JFK")?.groundStop).toBeNull();

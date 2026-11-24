@@ -1,4 +1,9 @@
-import { RETENTION_MS, SnapshotSchema, type Snapshot } from "@aerobrief/core";
+import {
+  RETENTION_MS,
+  SnapshotSchema,
+  completeSnapshotAirports,
+  type Snapshot,
+} from "@aerobrief/core";
 import { desc, gte } from "drizzle-orm";
 import { snapshots } from "../schema";
 import type { Db } from "./client";
@@ -25,14 +30,18 @@ export function insertSnapshotQuery(db: Db, snapshot: Snapshot) {
 
 export function snapshotRepository(db: Db) {
   return {
-    /** Returns null when there is no Snapshot in the last 24 h. Throws if a stored row is malformed. */
+    /**
+     * Returns null when there is no Snapshot in the last 24 h. A Legacy_Snapshot written before the
+     * monitored list grew is completed with `groundStop: null` for each missing airport before parsing.
+     * Throws if a stored row is malformed.
+     */
     async latestSnapshot(now: Date): Promise<Snapshot | null> {
       const [row] = await latestSnapshotQuery(db, now);
       if (row === undefined) return null;
       return SnapshotSchema.parse({
         id: row.id,
         capturedAt: row.capturedAt.toISOString(),
-        airports: row.airports,
+        airports: completeSnapshotAirports(row.airports),
       });
     },
     async insert(snapshot: Snapshot): Promise<void> {

@@ -58,6 +58,9 @@ async function call(h: Handler, c: RouteContext): Promise<{ status: number; json
   return { status: res.status, json: (await res.json()) as Record<string, unknown> };
 }
 
+/** The 10 airports added when the registry grew from 20 to the Core 30. */
+const NEW_AIRPORTS = ["BWI", "CLT", "FLL", "HNL", "IAD", "LGA", "MDW", "PHL", "SAN", "TPA"] as const;
+
 // ZTL, ZBW, ZNY, ZDC: ATL, BOS, JFK/EWR, DCA
 const secondsAgo = (s: number): string => new Date(NOW.getTime() - s * 1000).toISOString();
 
@@ -82,13 +85,13 @@ describe("national status", () => {
     expect("airports" in r.json).toBe(false);
   });
 
-  it("lists all 20 airports with translated ground stop text", async () => {
+  it("lists every monitored airport with translated ground stop text", async () => {
     const { handlers, latestSnapshot } = setup(snapshot(secondsAgo(30), ["JFK"]), [
       event("GROUND_STOP_STARTED", "JFK", secondsAgo(60)),
     ]);
     const r = await call(handlers.national, ctx());
     const airports = r.json["airports"] as { airportId: string; groundStop: { reasonText: string } | null }[];
-    expect(airports).toHaveLength(20);
+    expect(airports).toHaveLength(AIRPORTS.length);
     const jfk = airports.find((a) => a.airportId === "JFK");
     expect(jfk?.groundStop?.reasonText).toContain("strong winds");
     expect(airports.filter((a) => a.groundStop !== null)).toHaveLength(1);
@@ -153,6 +156,28 @@ describe("airport status", () => {
     expect(recentEvents.mock.calls[0]?.[1]).toBe("JFK");
   });
 
+  it.each(NEW_AIRPORTS)("returns status for the new airport %s", async (code) => {
+    const { handlers, recentEvents } = setup(snapshot(secondsAgo(30), [code]), [
+      event("GROUND_STOP_STARTED", code, secondsAgo(60)),
+    ]);
+    const r = await call(handlers.airport, ctx({ code }));
+    const airport = r.json["airport"] as { airportId: string; groundStop: unknown };
+    expect(r.status).toBe(200);
+    expect(airport.airportId).toBe(code);
+    expect(airport.groundStop).not.toBeNull();
+    expect(r.json["events"]).toHaveLength(1);
+    expect(recentEvents.mock.calls[0]?.[1]).toBe(code);
+  });
+
+  it("returns 404 airport_not_found for CLE, which is outside the Core 30", async () => {
+    const { handlers, latestSnapshot } = setup(snapshot(secondsAgo(10)));
+    await expect(call(handlers.airport, ctx({ code: "CLE" }))).rejects.toMatchObject({
+      status: 404,
+      code: "airport_not_found",
+    });
+    expect(latestSnapshot.mock.calls).toHaveLength(0);
+  });
+
   it("propagates repository failures so the router can answer 503", async () => {
     const deps: StatusDeps = {
       latestSnapshot: vi.fn(async (_now: Date): Promise<Snapshot | null> => {
@@ -193,6 +218,22 @@ describe("history", () => {
     const q = `?since=${encodeURIComponent("2020-01-01T00:00:00Z")}`;
     const r = await call(setup(null, [...events, stale]).handlers.history, ctx({ code: "JFK" }, q));
     expect(r.json["events"]).toHaveLength(3);
+  });
+
+  it.each(NEW_AIRPORTS)("returns history for the new airport %s", async (code) => {
+    const { handlers, recentEvents } = setup(null, [event("GROUND_STOP_STARTED", code, secondsAgo(100))]);
+    const r = await call(handlers.history, ctx({ code }));
+    expect(r.status).toBe(200);
+    expect(r.json["airportId"]).toBe(code);
+    expect(r.json["events"]).toHaveLength(1);
+    expect(recentEvents.mock.calls[0]?.[1]).toBe(code);
+  });
+
+  it("returns 404 airport_not_found for CLE", async () => {
+    await expect(call(setup(null, events).handlers.history, ctx({ code: "CLE" }))).rejects.toMatchObject({
+      status: 404,
+      code: "airport_not_found",
+    });
   });
 
   it("rejects an unparseable since with 400", async () => {

@@ -1,4 +1,4 @@
-import { acceptedUnsubscribeSecrets, airportById, applyWatchlistOp, isMonitoredId, verifyUnsubscribe, type MonitoredId } from "@aerobrief/core";
+import { acceptedUnsubscribeSecrets, airportById, applyWatchlistOp, isMonitoredId, verifyUnsubscribe, WATCHLIST_CAP, type MonitoredId } from "@aerobrief/core";
 import { SubscriptionLimitError, createDb, createRepositories } from "@aerobrief/db";
 import { z } from "zod";
 import type { Env } from "../env";
@@ -70,7 +70,7 @@ function monitoredOnly(rows: readonly { airportId: string }[]): MonitoredId[] {
 }
 
 function capError(): ApiError {
-  return new ApiError(409, "watchlist_full", "Your Watchlist already has 10 airports. Remove one to add another.");
+  return new ApiError(409, "watchlist_full", `Your Watchlist already has ${WATCHLIST_CAP} airports. Remove one to add another.`);
 }
 
 function clearSessionCookie(): string {

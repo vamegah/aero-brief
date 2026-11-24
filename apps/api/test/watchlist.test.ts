@@ -1,4 +1,4 @@
-import { MONITORED_IDS, signUnsubscribe } from "@aerobrief/core";
+import { MONITORED_IDS, signUnsubscribe, WATCHLIST_CAP } from "@aerobrief/core";
 import { SubscriptionLimitError } from "@aerobrief/db";
 import { describe, expect, it, vi } from "vitest";
 import type { Env } from "../src/env";
@@ -112,19 +112,42 @@ describe("POST /api/watchlist", () => {
   });
 
   it("returns 200 when re-adding a present airport on a full list", async () => {
-    const full = MONITORED_IDS.slice(0, 10);
-    const { handlers } = setup(full);
+    const full = MONITORED_IDS.slice(0, WATCHLIST_CAP);
+    expect(full).toHaveLength(WATCHLIST_CAP);
+    const { handlers, mocks } = setup(full);
     const res = await call(handlers.addToWatchlist, { body: { airportId: full[0] } });
     expect(res.status).toBe(200);
+    expect(mocks.add).not.toHaveBeenCalled();
   });
 
-  it("throws 409 for an 11th airport", async () => {
-    const full = MONITORED_IDS.slice(0, 10);
-    const eleventh = MONITORED_IDS[10];
-    const { handlers, mocks } = setup(full);
-    const err = await apiErrorOf(call(handlers.addToWatchlist, { body: { airportId: eleventh } }));
+  it("accepts a new Core 30 airport (BWI) and returns it in the list", async () => {
+    const { handlers, mocks } = setup(["ATL"]);
+    const res = await call(handlers.addToWatchlist, { body: { airportId: "BWI" } });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ watchlist: ["ATL", "BWI"] });
+    expect(mocks.add.mock.calls[0]).toEqual(["u1", "BWI", NOW]);
+  });
+
+  it("accepts the 30th airport when 29 are watched", async () => {
+    const { handlers } = setup(MONITORED_IDS.slice(0, WATCHLIST_CAP - 1));
+    const last = MONITORED_IDS[WATCHLIST_CAP - 1];
+    const res = await call(handlers.addToWatchlist, { body: { airportId: last } });
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { watchlist: string[] }).watchlist).toHaveLength(WATCHLIST_CAP);
+  });
+
+  // The registry has exactly 30 airports, so a 31st distinct monitored id does not exist.
+  // The cap is reached through the database trigger, which the repository reports as SubscriptionLimitError.
+  it("returns 409 watchlist_full with the cap message when the repository reports the limit", async () => {
+    const { handlers, mocks } = setup(MONITORED_IDS.slice(0, WATCHLIST_CAP - 1));
+    mocks.add.mockRejectedValueOnce(new SubscriptionLimitError());
+    const err = await apiErrorOf(
+      call(handlers.addToWatchlist, { body: { airportId: MONITORED_IDS[WATCHLIST_CAP - 1] } }),
+    );
     expect(err.status).toBe(409);
-    expect(mocks.add).not.toHaveBeenCalled();
+    expect(err.code).toBe("watchlist_full");
+    expect(err.message).toBe(`Your Watchlist already has ${WATCHLIST_CAP} airports. Remove one to add another.`);
+    expect(err.message).toBe("Your Watchlist already has 30 airports. Remove one to add another.");
   });
 
   it("maps the database cap error to 409", async () => {

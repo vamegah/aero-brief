@@ -14,11 +14,11 @@ Live URLs:
 
 | # | Time | Screen | Narration |
 |---|------|--------|-----------|
-| 1 | 0:00-0:12 | Dashboard at https://www.aerobriefs.com, signed out, page top. | "This is AeroBrief. It tells you in plain language when the FAA stops flights to a major US airport, and emails you the moment it happens." |
-| 2 | 0:12-0:35 | Same page. Slowly scroll the airport table (20 rows), then the "Events in the last 24 hours" list. Point at the "Data captured ... UTC" line. | "The dashboard watches twenty major US airports. A Cloudflare Worker polls the FAA feed every five minutes and stores a snapshot. Each row shows whether an airport has a ground stop and why. Below that, events from the last twenty-four hours, with a plain-English explanation." |
+| 1 | 0:00-0:12 | Status page at https://www.aerobriefs.com, signed out, page top. | "This is AeroBrief. It tells you in plain language when the FAA stops flights to a major US airport, and emails you the moment it happens." |
+| 2 | 0:12-0:35 | Same page. Open the Airports section and slowly scroll the table (30 rows), then open the Events section ("Events in the last 24 hours"). Point at the "Data as of ... UTC" line. | "The dashboard watches the thirty FAA Core 30 airports. A Cloudflare Worker polls the FAA feed every five minutes and stores a snapshot. Each row shows whether an airport has a ground stop and why. Below that, events from the last twenty-four hours, with a plain-English explanation." |
 | 3 | 0:35-0:58 | Click or go to /sign-in. Type your demo email. Click "Email me a sign-in link". Show the confirmation text ("a sign-in link is on its way... expires in 15 minutes and works once"). | "There are no passwords. You enter your email and get a one-time magic link. It expires in fifteen minutes and works once." |
 | 4 | 0:58-1:20 | Switch to the inbox. Show the new email: From "AeroBrief <alerts@aerobriefs.com>", subject "Your AeroBrief sign-in link". Open it, click the link (keep the token part of the URL off screen). | "The email comes from our own verified domain, alerts at aerobriefs dot com, sent through Resend. One click and I'm signed in." |
-| 5 | 1:20-1:42 | Lands signed in. Go to /watchlist. Add two airports (for example ATL and JFK). Show "Watching 2 airports." | "On my watchlist I pick the airports I care about. The limit is ten. When a ground stop starts or ends at one of them, I get an email." |
+| 5 | 1:20-1:42 | Lands signed in. Go to /watchlist (the Settings page at /settings is optional here). Add two airports (for example ATL and JFK). Show the counter "2 of 30 airports watched." | "On my watchlist I pick the airports I care about. The limit is thirty. When a ground stop starts or ends at one of them, I get an email." |
 | 6 | 1:42-2:08 | Inbox: an alert email, for example subject "Ground stop ended: ATL". Show the explanation text and the Unsubscribe link. See "Alert email" below for how to get one. | "This is what an alert looks like: the airport, what changed, a plain-language explanation, the time in UTC, and a one-click unsubscribe." |
 | 7 | 2:08-2:35 | Back to https://www.aerobriefs.com (reload). The yellow "Data may be out of date" banner is visible. Point at it and at the "Last updated" time. See "Stale banner" below. | "If the poller ever falls behind by more than ten minutes, we don't pretend the data is fresh. The dashboard shows this warning with the last update time, and the alert emails pause until fresh data returns." |
 | 8 | 2:35-2:45 | Return to the dashboard top. | "AeroBrief: FAA ground stops in plain language, built on Cloudflare Workers, Neon, Resend and Vercel, and built with Kiro specs. Thanks for watching." |
@@ -70,7 +70,7 @@ An alert email is only sent when a ground stop starts or ends at an airport on s
 - [ ] Browser: a clean profile or a window with no personal bookmarks or extensions visible. Zoom at 125 percent so text is readable on a phone. Window maximised.
 - [ ] Signed out of AeroBrief. Open DevTools, Application, Cookies, delete any session cookie for www.aerobriefs.com, or use a private window (private windows do not keep DevTools overrides across sessions, so use a normal window for shot 7).
 - [ ] Use an email address you control with an empty-looking inbox. Open the webmail in a second tab. Delete clutter. Make sure the sign-in email arrives within a few seconds by sending one test sign-in first (the link is single-use, so request a new one while recording).
-- [ ] The test account has no leftover watchlist airports (so shot 5 starts from "Watching 0 airports"), or accept starting from existing ones.
+- [ ] The test account has no leftover watchlist airports (so shot 5 starts from "0 of 30 airports watched"), or accept starting from existing ones.
 - [ ] Stale override prepared and disabled (see above).
 - [ ] Close or hide: `.env` files, terminals showing keys, Resend/Neon/Cloudflare dashboards, password manager.
 - [ ] Dry run the whole script once with a stopwatch. Aim for 2:30 to 2:50.
@@ -84,14 +84,14 @@ An alert email is only sent when a ground stop starts or ends at an airport on s
 - Description (adapt):
 
 ```
-AeroBrief monitors FAA ground stops at 20 major US airports and emails you in plain language when one starts or ends at an airport on your watchlist.
+AeroBrief monitors FAA ground stops at the 30 FAA Core 30 airports and emails you in plain language when one starts or ends at an airport on your watchlist.
 
 Live app: https://www.aerobriefs.com
 Source: <your GitHub repo URL>
 
 Built with Cloudflare Workers, Neon Postgres + Drizzle, React + Vite on Vercel, and Resend, using Kiro specs.
 
-In this demo: the live dashboard, passwordless magic-link sign-in, the watchlist, an alert email, and the stale-data banner (shown with a simulated stale response).
+In this demo: the live Status dashboard, passwordless magic-link sign-in, the watchlist, an alert email, and the stale-data banner (shown with a simulated stale response).
 
 Chapters
 0:00 Dashboard

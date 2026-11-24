@@ -71,7 +71,7 @@ function toEventSummary(e: StatusEventRow): EventSummary {
   };
 }
 
-/** Summaries for all 20 airports, in the static list order. */
+/** Summaries for all 30 airports, in the static list order. */
 function summarizeAirports(snapshot: Snapshot): AirportSummary[] {
   const byId = new Map(snapshot.airports.map((a) => [a.airportId, a]));
   return AIRPORTS.map((airport): AirportSummary => {

@@ -1,9 +1,9 @@
 /**
- * Pure Watchlist operations. Cap 10, monitored airports only, idempotent add and remove.
+ * Pure Watchlist operations. Cap 30, monitored airports only, idempotent add and remove.
  */
 import { isMonitoredId, type MonitoredId } from "./airports";
 
-export const WATCHLIST_CAP = 10;
+export const WATCHLIST_CAP = 30;
 
 export type WatchlistOp = { type: "add" | "remove"; airportId: string };
 

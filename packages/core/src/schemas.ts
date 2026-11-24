@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { type MonitoredId, isMonitoredId } from "./airports";
+import { AIRPORTS, type MonitoredId, isMonitoredId } from "./airports";
+
+/** Number of airports a Snapshot must hold: the size of the airport registry. */
+const AIRPORT_COUNT = AIRPORTS.length;
 
 /**
  * FAA payload schemas. They validate only what AeroBrief consumes. Unknown keys
@@ -58,8 +61,8 @@ export const SnapshotSchema = z.object({
   capturedAt: z.string().datetime({ offset: false }),
   airports: z
     .array(AirportStatusSchema)
-    .length(20)
-    .refine((a) => new Set(a.map((x) => x.airportId)).size === 20, {
+    .length(AIRPORT_COUNT)
+    .refine((a) => new Set(a.map((x) => x.airportId)).size === AIRPORT_COUNT, {
       message: "Airport ids must be unique",
     })
     .readonly(),

@@ -1,4 +1,5 @@
-import { AIRPORTS, MONITORED_IDS, type Snapshot } from "@aerobrief/core";
+import { AIRPORTS, MONITORED_IDS, WATCHLIST_CAP, type Snapshot } from "@aerobrief/core";
+import { SubscriptionLimitError } from "@aerobrief/db";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createStatusHandlers, type StatusDeps, type StatusEventRow } from "../src/handlers/status";
 import { createWatchlistHandlers, type WatchlistRepos } from "../src/handlers/watchlist";
@@ -182,10 +183,34 @@ describe("session routes through the router", () => {
     expect(add).toHaveBeenCalledTimes(1);
   });
 
-  it("POST /api/watchlist returns 409 for an 11th airport", async () => {
-    const { handler, add } = setup(MONITORED_IDS.slice(0, 10));
-    const res = await handler(postAirport(MONITORED_IDS[10] ?? "XXX"), rawEnv);
+  // The registry has exactly WATCHLIST_CAP airports, so the cap is reached through the DB trigger path.
+  it("POST /api/watchlist returns 409 when the repository reports the limit", async () => {
+    const { handler, add } = setup(MONITORED_IDS.slice(0, WATCHLIST_CAP - 1));
+    add.mockRejectedValueOnce(new SubscriptionLimitError());
+    const res = await handler(postAirport(MONITORED_IDS[WATCHLIST_CAP - 1] ?? "XXX"), rawEnv);
     expect(res.status).toBe(409);
-    expect(add).not.toHaveBeenCalled();
+    const body = (await res.json()) as { error: { code: string; message: string } };
+    expect(body.error.code).toBe("watchlist_full");
+    expect(body.error.message).toBe(`Your Watchlist already has ${WATCHLIST_CAP} airports. Remove one to add another.`);
+  });
+
+  it("POST /api/watchlist adds a new Core 30 airport (BWI)", async () => {
+    const { handler, add } = setup(["ATL"]);
+    const res = await handler(postAirport("BWI"), rawEnv);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ watchlist: ["ATL", "BWI"] });
+    expect(add).toHaveBeenCalledTimes(1);
+  });
+
+  it("GET /api/status/airport and /api/history answer for BWI and 404 for CLE", async () => {
+    const handler = createFetchHandler(statusRoutes(okDeps(snapshot(secondsAgo(10)))), { now: () => NOW });
+    for (const path of ["/api/status/airport/BWI", "/api/history/BWI"]) {
+      expect((await handler(get(path), rawEnv)).status).toBe(200);
+    }
+    for (const path of ["/api/status/airport/CLE", "/api/history/CLE"]) {
+      const res = await handler(get(path), rawEnv);
+      expect(res.status).toBe(404);
+      expect(((await res.json()) as { error: { code: string } }).error.code).toBe("airport_not_found");
+    }
   });
 });

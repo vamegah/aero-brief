@@ -30,7 +30,7 @@ Pages: Status `/`, Watchlist `/watchlist`, Sign in `/sign-in`, Auth callback `/a
 
 - [ ] No horizontal page scrollbar. Scroll right with the trackpad: nothing moves.
 - [ ] Nav bar wraps under the brand at 375 px. All links are visible and `aria-current` is underlined.
-- [ ] Tables (Status, Watchlist) are readable. Long airport names wrap. 20 rows are present. The sticky header stays at the top.
+- [ ] Tables (Status, Watchlist) are readable. Long airport names wrap. 30 rows are present. The sticky header stays at the top.
 - [ ] Buttons and links are tappable, with a target of at least 24 px (buttons are 44 px).
 - [ ] Focus outline is visible on every control when tabbing.
 - [ ] Banners (stale data, nationwide, error) span the full content width. Their text wraps.
@@ -54,7 +54,7 @@ Pages: Status `/`, Watchlist `/watchlist`, Sign in `/sign-in`, Auth callback `/a
 |---|---|
 | CSS inspection of all three stylesheets | No `nowrap`, fixed widths or `min-width` on tables, cells, chips or banners. Fixed the risks listed above. |
 | Real browser (headless Edge, production build via `vite preview`) | Status page rendered in a true 375 px viewport (iframe): nav, heading, loading state and footer fit with no horizontal overflow. |
-| Not verified in a browser | There was no API behind the preview. The Status table with 20 rows, the Watchlist table and watched list with data, banners with real data, and the ConfirmDialog were checked by CSS inspection only. Sign in, Auth callback, Unsubscribe and Not found were not viewed. Widths 768, 1024 and 1440 were not inspected visually. |
+| Not verified in a browser | There was no API behind the preview. The Status table with 30 rows, the Watchlist table and watched list with data, banners with real data, and the ConfirmDialog were checked by CSS inspection only. Sign in, Auth callback, Unsubscribe and Not found were not viewed. Widths 768, 1024 and 1440 were not inspected visually. |
 | Headless Edge `--window-size=375` | Unreliable. Edge enforces a minimum window width, so output looked clipped. Do not use it for 375 px. |
 
 In the resume run no further browser screenshots were taken. Widths 768, 1024 and 1440 and every page other than Status were verified by CSS inspection only.

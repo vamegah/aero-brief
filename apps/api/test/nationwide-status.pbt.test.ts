@@ -21,7 +21,7 @@ const env = parseEnv({
 
 const NATIONWIDE_MIN_ARTCCS = 3;
 
-/** Local arbitrary: each of the 20 airports independently has a ground stop or not. */
+/** Local arbitrary: each of the 30 airports independently has a ground stop or not. */
 const stopFlagsArb: fc.Arbitrary<boolean[]> = fc.array(fc.boolean(), {
   minLength: AIRPORTS.length,
   maxLength: AIRPORTS.length,

@@ -10,7 +10,7 @@ import { useStatus } from "../hooks/use-status";
 import { useWatchlist } from "../hooks/use-watchlist";
 import { consumeSigninFlash, type SigninFlash } from "../lib/signin-flash";
 
-const MAX_WATCHLIST = 10;
+const MAX_WATCHLIST = 30;
 
 export function WatchlistPage() {
   const { status } = useStatus();

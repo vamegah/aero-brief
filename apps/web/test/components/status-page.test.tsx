@@ -1,7 +1,7 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { REFRESH_FAILED_TEXT, StatusPage } from "../../src/pages/StatusPage";
-import { NOW, jsonResponse, okStatus, type FetchFn } from "./fixtures";
+import { AIRPORT_COUNT, NOW, jsonResponse, okStatus, type FetchFn } from "./fixtures";
 
 let fetchMock: ReturnType<typeof vi.fn<FetchFn>>;
 
@@ -52,11 +52,11 @@ describe("StatusPage", () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(okStatus()));
     const { container } = render(<StatusPage />);
     await advance(0);
-    expect(container.querySelectorAll("tbody tr")).toHaveLength(20);
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(AIRPORT_COUNT);
 
     fetchMock.mockRejectedValueOnce(new Error("network"));
     await advance(60_000);
-    expect(container.querySelectorAll("tbody tr")).toHaveLength(20);
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(AIRPORT_COUNT);
     const alert = container.querySelector("[role='alert']") as HTMLElement;
     expect(alert.textContent).toBe(REFRESH_FAILED_TEXT);
 

@@ -1,4 +1,4 @@
-import { applyOutcome, createLogger, type WebhookCounterState } from "@aerobrief/core";
+import { applyOutcome, createLogger, explain, type WebhookCounterState } from "@aerobrief/core";
 import type { SenderFetch } from "@aerobrief/webhook-sender";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Env } from "../src/env";
@@ -192,6 +192,41 @@ describe("dispatchWebhooks delivery", () => {
     await s.run([event]);
     const [userIds] = s.repos.webhooks.activeForSender.mock.calls[0] as [string[]];
     expect([...userIds].sort()).toEqual([...emailClaims].sort());
+  });
+
+  it("sends a signed webhook for a New_Airport (BWI) with the registry name and explanation", async () => {
+    const detected = {
+      type: "GROUND_STOP_STARTED" as const,
+      airportId: "BWI" as const,
+      occurredAt: NOW.toISOString(),
+      faaEventId: "faa:bwi",
+      reason: "VOL",
+    };
+    const event: WebhookEvent = {
+      id: "e-bwi",
+      eventKey: "faa:bwi",
+      type: "GROUND_STOP_STARTED",
+      airportId: "BWI",
+      occurredAt: NOW,
+      explanation: explain(detected),
+      payload: detected,
+    };
+    const s = setup();
+    const out = await s.run([event]);
+    expect(out.delivered).toBe(1);
+    expect(s.repos.subscriptions.watchersOfAirport).toHaveBeenCalledWith("BWI");
+    expect(s.calls[0]?.headers["X-AeroBrief-Signature"]).toBeTruthy();
+    const init = (s.fetchFn as ReturnType<typeof vi.fn>).mock.calls[0]?.[1] as { body: string };
+    const body = JSON.parse(init.body) as { type: string; data: Record<string, unknown>; text: string };
+    expect(body.type).toBe("ground_stop.started");
+    expect(body.data).toMatchObject({
+      airportId: "BWI",
+      airportName: "Baltimore/Washington International Thurgood Marshall",
+      eventKey: "faa:bwi",
+    });
+    expect(String(body.data.explanation)).toContain("Baltimore/Washington International Thurgood Marshall (BWI)");
+    expect(body.text).toContain("Ground stop started at Baltimore/Washington International Thurgood Marshall (BWI)");
+    expect(init.body).not.toContain("VOL");
   });
 
   it("retries with 2 s and 8 s waits and keeps one Delivery_ID", async () => {

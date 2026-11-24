@@ -8,14 +8,14 @@ Every explanation is written in plain English, so a traveler doesn't need to rea
 
 These limits are fixed for the MVP:
 
-- Exactly 20 hardcoded US airports are monitored (`packages/core/src/airports.ts`).
-- A watchlist holds at most 10 airports.
+- The 30 FAA Core 30 airports are monitored (`packages/core/src/airports.ts`). The list follows the [FAA ASPM help page](https://www.aspm.faa.gov/aspmhelp/index/ASPM_77.html).
+- A watchlist holds at most 30 airports.
 - History retention is 24 hours.
 - Not included: FAA SWIM, scraping third-party sites, push notifications, a map view, native apps, passwords (sign-in is by emailed magic link) and monetization.
 
 ## Phase 2 features (built, off by default)
 
-Four Phase 2 features are merged into `main`. Each sits behind its own flag, and every flag is **off by default**. They are built but not live: production has not had the Phase 2 migrations (`0004`, `0005`) applied, and no flag is on there. With every flag off, AeroBrief behaves exactly as the MVP does.
+Four Phase 2 features are merged into `main`. Each sits behind its own flag, and every flag is **off by default**. They are built but not live: production has not had the Phase 2 migrations (`0004`, `0005`, `0006`) applied, and no flag is on there. With every flag off, AeroBrief behaves exactly as the MVP does.
 
 | Feature | Flag | Default | What it does |
 | --- | --- | --- | --- |
@@ -119,7 +119,7 @@ npx drizzle-kit migrate --config drizzle.config.ts
 Pop-Location
 ```
 
-There are six migrations in `packages/db/migrations/`. `0000` to `0003` are the MVP schema. `0004_webhooks.sql` and `0005_digest.sql` create the Phase 2 tables and have not been applied to production. The command above applies all of them, so run it only against a database you mean to change. For Phase 2 work against a Neon branch, `npm run migrate-phase2` runs the same command with a guard that refuses the production database. The 20 airports are seeded by migration `0002_seed_airports.sql`, so there is no separate seed command. `docs/production-runbook.md` lists the SQL checks and the runtime-role grants.
+There are seven migrations in `packages/db/migrations/`. `0000` to `0003` are the MVP schema. `0004_webhooks.sql` and `0005_digest.sql` create the Phase 2 tables. `0006_watchlist_cap_30.sql` is on the `phase-2` branch: it raises the watchlist cap in the database trigger from 10 to 30 and adds the 10 Core 30 airports that `0002` did not seed. `0004` to `0006` have not been applied to production, and the owner applies them only after approving them. The command above applies all of them, so run it only against a database you mean to change. For Phase 2 work against a Neon branch, `npm run migrate-phase2` runs the same command with a guard that refuses the production database. `0006` has a reverse script, `packages/db/migrations/down/0006_watchlist_cap_30.down.sql`. The first 20 airports are seeded by migration `0002_seed_airports.sql` and the other 10 by `0006`, so there is no separate seed command. `docs/production-runbook.md` lists the SQL checks and the runtime-role grants.
 
 ## Run the tests
 

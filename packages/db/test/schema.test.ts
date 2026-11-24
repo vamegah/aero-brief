@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { AIRPORTS } from "@aerobrief/core";
+import { AIRPORTS, MONITORED_IDS } from "@aerobrief/core";
 import { getTableConfig, type PgTable } from "drizzle-orm/pg-core";
 import { describe, expect, it } from "vitest";
 import * as schema from "../src/schema";
@@ -21,17 +21,33 @@ const isPgTable = (v: unknown): v is PgTable => typeof v === "object" && v !== n
 
 const tables = Object.values(schema).filter(isPgTable);
 
+/** The 10 airports added by migration 0006. The other 20 are the Legacy_Airports seeded by 0002. */
+const NEW_IDS: readonly string[] = ["BWI", "CLT", "FLL", "HNL", "IAD", "LGA", "MDW", "PHL", "SAN", "TPA"];
+
 describe("schema: seed rows (Requirement 2.6)", () => {
   it("builds exactly the core airport list", () => {
     expect(buildAirportRows()).toEqual(AIRPORTS.map((a) => ({ id: a.id, name: a.name, artcc: a.artcc })));
-    expect(buildAirportRows()).toHaveLength(20);
+    expect(buildAirportRows()).toHaveLength(AIRPORTS.length);
+    expect(buildAirportRows()).toHaveLength(30);
   });
 
-  it("migration 0002 contains the rendered core-list INSERT verbatim", () => {
-    expect(migration("0002_seed_airports.sql")).toContain(renderAirportsInsertSql());
+  it("migration 0002 stays unchanged: it holds the Legacy 20 rows", () => {
+    const legacy = buildAirportRows().filter((r) => !NEW_IDS.includes(r.id));
+    expect(legacy).toHaveLength(20);
+    expect(migration("0002_seed_airports.sql")).toContain(renderAirportsInsertSql(legacy));
+  });
+
+  it("migrations 0002 and 0006 together hold all 30 rows", () => {
+    const rows = buildAirportRows();
+    const added = rows.filter((r) => NEW_IDS.includes(r.id));
+    expect(added).toHaveLength(10);
+    expect(migration("0006_watchlist_cap_30.sql")).toContain(renderAirportsInsertSql(added));
+    const seeded = [...migration("0002_seed_airports.sql").matchAll(/^\s+\('([A-Z]{3})'/gm), ...migration("0006_watchlist_cap_30.sql").matchAll(/^\s+\('([A-Z]{3})'/gm)]
+      .map((m) => m[1])
+      .sort();
+    expect(seeded).toEqual([...MONITORED_IDS].sort());
   });
 });
-
 describe("schema: no passwords (Requirement 7.7)", () => {
   it("no table has a password-like column", () => {
     expect(tables.length).toBeGreaterThan(0);

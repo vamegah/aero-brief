@@ -41,7 +41,7 @@ afterEach(() => {
 describe("WatchlistPage layout", () => {
   it("shows the counter and no watched-airports chip list", async () => {
     render(<WatchlistPage />);
-    expect(await screen.findByText("2 of 10 airports watched")).not.toBeNull();
+    expect(await screen.findByText("2 of 30 airports watched")).not.toBeNull();
     expect(screen.queryByRole("list", { name: "Watched airports" })).toBeNull();
     expect(screen.queryByText(/^ATL: /)).toBeNull();
     expect(screen.getAllByRole("button", { name: /^Remove / })).toHaveLength(2);
@@ -50,7 +50,7 @@ describe("WatchlistPage layout", () => {
 
   it("uses a secondary Add, a ghost Remove and no primary button", async () => {
     const { container } = render(<WatchlistPage />);
-    await screen.findByText("2 of 10 airports watched");
+    await screen.findByText("2 of 30 airports watched");
     const remove = screen.getByRole("button", { name: "Remove Airport ATL from watchlist" });
     const add = screen.getByRole("button", { name: "Add Airport EWR to watchlist" });
     expect(remove.classList.contains("btn--ghost")).toBe(true);
@@ -61,7 +61,7 @@ describe("WatchlistPage layout", () => {
   it("removes via the table row and updates the counter", async () => {
     render(<WatchlistPage />);
     fireEvent.click(await screen.findByRole("button", { name: "Remove Airport ATL from watchlist" }));
-    expect(await screen.findByText("1 of 10 airports watched")).not.toBeNull();
+    expect(await screen.findByText("1 of 30 airports watched")).not.toBeNull();
     expect(screen.queryByRole("list", { name: "Watched airports" })).toBeNull();
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Airport ATL to watchlist" })).not.toBeNull());
   });
@@ -69,7 +69,7 @@ describe("WatchlistPage layout", () => {
   it("shows the empty state at zero airports", async () => {
     watchlist = [];
     render(<WatchlistPage />);
-    expect(await screen.findByText("0 of 10 airports watched")).not.toBeNull();
+    expect(await screen.findByText("0 of 30 airports watched")).not.toBeNull();
     expect(screen.getByText("You are not watching any airports yet.")).not.toBeNull();
   });
 
@@ -78,10 +78,10 @@ describe("WatchlistPage layout", () => {
     expect(screen.getByText("Loading your watchlist…")).not.toBeNull();
   });
 
-  it("keeps add controls enabled at 10 airports", async () => {
+  it("keeps add controls enabled below the cap", async () => {
     watchlist = ["ATL", "LAX", "ORD", "DFW", "DEN", "JFK", "SFO", "SEA", "LAS", "MCO"];
     render(<WatchlistPage />);
-    await screen.findByText("10 of 10 airports watched");
+    await screen.findByText("10 of 30 airports watched");
     const add = screen.getByRole("button", { name: "Add Airport EWR to watchlist" }) as HTMLButtonElement;
     await waitFor(() => expect(add.disabled).toBe(false));
   });
@@ -92,7 +92,7 @@ describe("WatchlistPage layout", () => {
         <WatchlistPage />
       </FeaturesContext.Provider>,
     );
-    await screen.findByText("2 of 10 airports watched");
+    await screen.findByText("2 of 30 airports watched");
     for (const name of ["Display settings", "Daily digest", "Webhooks", "Account"]) {
       expect(screen.queryByRole("region", { name })).toBeNull();
     }

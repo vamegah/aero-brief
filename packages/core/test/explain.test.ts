@@ -81,15 +81,15 @@ describe("nationwide", () => {
     expect(explain(e)).not.toContain("more");
   });
 
-  test("all 18 centers list 6 and ', and 12 more.'", () => {
+  test("all centers list 6 and ', and N more.' derived from the registry", () => {
     const e: DetectedEvent = {
       type: "NATIONWIDE_EVENT",
       occurredAt: AT,
-      count: 18,
+      count: ALL_CENTERS.length,
       affectedArtccs: ALL_CENTERS,
     };
     const text = explain(e);
-    expect(text.endsWith(", and 12 more.")).toBe(true);
+    expect(text.endsWith(`, and ${ALL_CENTERS.length - 6} more.`)).toBe(true);
     expect(text.match(/\(Z[A-Z]{2}\)/g)).toHaveLength(6);
     expect(text.length).toBeLessThanOrEqual(500);
   });

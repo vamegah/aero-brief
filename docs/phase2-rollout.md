@@ -2,7 +2,7 @@
 
 This plan covers how to turn on the four Phase 2 features in production: dark mode, high contrast, signed webhooks and the daily digest. It is a checklist for the project owner. No agent runs any step in it.
 
-**The project owner decides when to enable anything and is the only one who pushes `main`.** Every step that touches production (a push, a Worker secret, a migration, a grant) needs the owner's approval first. Nothing here is urgent. With every flag off, the app behaves exactly like the MVP, so the order and the timing are the owner's choice.
+**The project owner decides when to enable anything and is the only one who pushes `main`.** Every step that touches production (a push, a Worker secret, a migration, a grant) needs the owner's approval first. Nothing here is urgent. With every flag off, the Phase 2 features do nothing, so the order and the timing of enabling them are the owner's choice. The Core 30 limits (migration `0006`, section 4a) are not a flag: they ship with the push of `main`, and `0006` must be applied to production first.
 
 ## 1. Facts this plan relies on
 
@@ -14,6 +14,7 @@ This plan covers how to turn on the four Phase 2 features in production: dark mo
 | Runtime database role | `aerobrief_runtime` | `docs/decisions.md` |
 | Contest MVP | tag `mvp-contest-2026`, commit `fff8374` | `git` |
 | Migrations applied only to the `phase-2` Neon branch | `0004_webhooks`, `0005_digest` | `docs/decisions.md` |
+| Migration for the Core 30 limits (no flag) | `0006_watchlist_cap_30`, applied to the `phase-2` Neon branch first, then to production before the push | `docs/decisions.md`, `docs/production-runbook.md` |
 
 Not recorded anywhere in this repo: any connection string, password or secret value. This plan has none either. Never paste one into this file, a commit message or a chat.
 
@@ -22,9 +23,9 @@ Not recorded anywhere in this repo: any connection string, password or secret va
 - `.github/workflows/deploy-workers.yml` runs on a push to `main` that changes `apps/api/**`, `apps/poller/**`, `packages/**` or the workflow file. It can also be started by hand (`workflow_dispatch`). The job has `if: github.ref == 'refs/heads/main'`, so no other branch deploys the production Workers. It deploys the API Worker, then the Poller Worker, with `cloudflare/wrangler-action@v3`.
 - Vercel deploys the frontend from `main` on every push.
 - At the time of writing, local `main` (at `bbd419e`) is ahead of `origin/main` (at `fff8374`). The local commits are the merged Phase 2 work with all flags off. Nothing has been pushed.
-- With every flag unset or `false`, the deployed code behaves like the MVP: `/api/features` answers the same 404 as any unknown path, the webhook and digest routes do the same, the Poller makes no webhook or digest query, and the pages look as before.
+- With every flag unset or `false`, the deployed Phase 2 code behaves like the MVP (the 30 airports and the watchlist of 30 apply either way): `/api/features` answers the same 404 as any unknown path, the webhook and digest routes do the same, the Poller makes no webhook or digest query, and the pages look as before.
 - **The push also registers a third cron trigger on the Poller (`0 * * * *`, the digest).** `apps/poller/wrangler.jsonc` now lists three crons (`*/5 * * * *` poll, `*/30 * * * *` cleanup, `0 * * * *` digest). Cloudflare limits cron triggers per account: 5 on the Free plan and 250 on the Paid plan (figures from the project brief; confirm on Cloudflare's current limits page). Before pushing, count the cron triggers already used by all Workers in the account. If the new one does not fit, the Poller deploy fails.
-- After the deadline (December 4, 2026, 2:00 PM PT) `main` is frozen until judging has finished (`.kiro/steering/scope.md`). Before it, the contest set (dark mode, high contrast, daily digest, signed webhooks) may go to `main` one feature at a time, after its tests pass with the flag off and on.
+- After the deadline (December 4, 2026, 2:00 PM PT) `main` is frozen until judging has finished (`.kiro/steering/scope.md`). The Kiroween 2026 submission is `main` as of that deadline. The four features in this plan (dark mode, high contrast, daily digest, signed webhooks) can go to `main` one feature at a time, after their tests pass with the flag off and on. The rule that only these four may merge was removed on 2026-11-24 (`docs/decisions.md`); the other limits in `scope.md` still apply.
 
 ## 3. Where each setting lives
 
@@ -223,6 +224,16 @@ SELECT to_regclass('public.digest_preferences'), to_regclass('public.digest_deli
 - To remove the tables (deletes digest data): `packages/db/migrations/down/0005_digest.down.sql` in one transaction, flag off, owner's approval.
 - The third cron stays registered while the code stays deployed. It does no work with the flag off. To remove it, `git revert` the digest range (section 6) and let the workflow redeploy.
 
+### Step 4a. Core 30 limits (migration 0006, before the push that carries them)
+
+This is not a Phase 2 feature and has no flag. The owner decided on 2026-11-24 to monitor the FAA Core 30 airports and to allow 30 airports per watchlist (`docs/decisions.md`). The full apply, check and rollback steps are in `docs/production-runbook.md`, "Migration 0006". The order matters:
+
+1. Apply `0006_watchlist_cap_30.sql` to the `phase-2` Neon branch and check it there.
+2. Take a restore point of production (as in 3a). The owner applies `0006` to production in one transaction. While the old code still runs, the effect is 10 unused `airports` rows and a trigger that allows 30. Nothing a user sees changes.
+3. Only then push `main`. The push deploys the API Worker, then the Poller Worker, then the web app. The new API reads old 20-airport snapshots through a completion step, so the first deploy does not fail on stored data.
+
+If the push came first, the new web app would show "of 30" while the old trigger still stops a watchlist at 10. That is why `0006` goes first.
+
 ## 5. Safe_Send_Mode: turning it off is a separate decision
 
 The first enabling of webhooks and the digest runs with `SAFE_SEND_MODE=true`. In that mode a digest goes only to allowlisted addresses and a webhook goes only to allowlisted hosts. Everyone else is skipped and recorded as `not_allowlisted`.
@@ -237,7 +248,7 @@ Use the lightest step that fixes the problem.
 
 1. **Flag off.** Delete the feature's flag secret on the Worker(s) in section 3.1 (`npx wrangler secret delete <NAME> --name <worker>`). Takes effect at once, with no deploy and no data loss. With all four off the app is back to MVP behavior. This is always the first step.
 2. **Down migration.** Only if the feature's tables must go, and only after the flag is off: `packages/db/migrations/down/0004_webhooks.down.sql` or `packages/db/migrations/down/0005_digest.down.sql`, each in one transaction, each with the owner's approval. These files drop the tables, so the data is gone unless you restore from the section 4 backup. They are not in the Drizzle journal, so drizzle-kit never runs them.
-3. **`git revert`.** Removes the code. Revert the newest feature first, with no commit until all reverts are staged, then review and commit. The ranges on `main` (checked against `git log`; they are consecutive in this order):
+3. **`git revert`.** Removes the code. (The Core 30 limits have no flag. To undo them, revert that commit range, wait for the Workers to redeploy, and only then run `packages/db/migrations/down/0006_watchlist_cap_30.down.sql` in one transaction with the owner's approval. See `docs/production-runbook.md`, "Migration 0006".) Revert the newest feature first, with no commit until all reverts are staged, then review and commit. The ranges on `main` (checked against `git log`; they are consecutive in this order):
 
    | Feature | Commits |
    | --- | --- |

@@ -30,3 +30,4 @@ export * from "./webhooks";
 export * from "./safe-send";
 export * from "./schemas/webhook-payload";
 export * from "./digest";
+export { completeSnapshotAirports } from "./snapshot-compat";

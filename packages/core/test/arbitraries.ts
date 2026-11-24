@@ -12,7 +12,7 @@ import type { AirportStatus, FaaGroundStop, FaaResponse, GroundStopInfo, IdSourc
 const FROM = new Date("2026-01-01T00:00:00.000Z");
 const TO = new Date("2027-01-01T00:00:00.000Z");
 
-/** One of the 20 monitored airport ids. */
+/** One of the monitored airport ids (the registry, currently the Core 30). */
 export const airportIdArb: fc.Arbitrary<MonitoredId> = fc.constantFrom(...MONITORED_IDS);
 
 /** A valid UTC ISO-8601 timestamp (`toISOString()` form). */
@@ -224,7 +224,7 @@ const n = SORTED_IDS.length;
 const slotsFullArb = fc.array(slotArb, { minLength: n, maxLength: n });
 const sourcesFullArb = fc.array(idSourceArb, { minLength: n, maxLength: n });
 
-/** Snapshot over all 20 monitored ids, sorted, each airport with or without a ground stop. */
+/** Snapshot over all monitored ids, sorted, each airport with or without a ground stop. */
 export const snapshotArb: fc.Arbitrary<Snapshot> = fc
   .tuple(slotsFullArb, sourcesFullArb, isoTimestampArb, fc.uuid())
   .map(([slots, sources, capturedAt, id]) => ({
@@ -234,8 +234,8 @@ export const snapshotArb: fc.Arbitrary<Snapshot> = fc
   }));
 
 /**
- * Snapshot variant listing only a subset (possibly empty) of the 20 airports.
- * Not schema-valid (SnapshotSchema requires 20); use to test tolerance of
+ * Snapshot variant listing only a subset (possibly empty) of the monitored airports.
+ * Not schema-valid (SnapshotSchema requires every monitored airport); use to test tolerance of
  * missing airports in detectors and lookups.
  */
 export const partialSnapshotArb: fc.Arbitrary<Snapshot> = fc

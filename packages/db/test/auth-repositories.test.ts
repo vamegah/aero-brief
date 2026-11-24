@@ -64,11 +64,15 @@ describe("alert_log", () => {
 });
 
 describe("subscription cap error mapping", () => {
-  const trigger = { code: "23514", message: "subscription limit of 10 reached" };
+  const trigger = { code: "23514", message: "subscription limit of 30 reached" };
 
   it("recognizes the trigger error, directly and wrapped", () => {
     expect(isSubscriptionLimitError(trigger)).toBe(true);
     expect(isSubscriptionLimitError(new Error("Failed query", { cause: trigger }))).toBe(true);
+  });
+
+  it("still recognizes the old message for 10", () => {
+    expect(isSubscriptionLimitError({ code: "23514", message: "subscription limit of 10 reached" })).toBe(true);
   });
 
   it("ignores other errors", () => {
@@ -79,5 +83,9 @@ describe("subscription cap error mapping", () => {
 
   it("typed error is an Error subclass", () => {
     expect(new SubscriptionLimitError()).toBeInstanceOf(Error);
+  });
+
+  it("typed error message names the cap of 30", () => {
+    expect(new SubscriptionLimitError().message).toBe("subscription limit of 30 reached");
   });
 });

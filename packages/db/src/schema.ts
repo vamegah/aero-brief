@@ -73,7 +73,7 @@ export const users = pgTable(
   (t) => [uniqueIndex("users_email_lower_unique").on(sql`lower(${t.email})`)],
 );
 
-/** The Watchlist. The cap of 10 is enforced by trigger `enforce_subscription_cap` (migration 0001). */
+/** The Watchlist. The cap of 30 is enforced by trigger `enforce_subscription_cap` (migration 0001, raised to 30 in migration 0006). */
 export const subscriptions = pgTable(
   "subscriptions",
   {

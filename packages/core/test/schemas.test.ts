@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseFaaBody, parseFaaResponse } from "../src/schemas";
-import { isMonitoredId } from "../src/airports";
+import { AIRPORTS, isMonitoredId } from "../src/airports";
 import { deriveFaaEventId, normalizeResponse } from "../src/normalize";
 import { SnapshotSchema } from "../src/schemas";
 import liveFixture from "./fixtures/airport-events-live.json";
@@ -18,15 +18,15 @@ describe("FAA fixtures", () => {
     expect(r.response.every((e) => e.groundStop == null)).toBe(true);
   });
 
-  it("normalizes the live fixture to 20 airports, none with a ground stop, foreign ids dropped", () => {
+  it("normalizes the live fixture to every monitored airport, none with a ground stop, foreign ids dropped", () => {
     const r = parseFaaResponse(liveFixture);
     if (r.kind !== "ok") throw new Error("fixture should parse");
     const snap = normalizeResponse(r.response, CAPTURED, SNAP_ID, null);
     expect(SnapshotSchema.safeParse(snap).success).toBe(true);
-    expect(snap.airports).toHaveLength(20);
+    expect(snap.airports).toHaveLength(AIRPORTS.length);
     expect(snap.airports.every((a) => a.groundStop === null)).toBe(true);
     expect(snap.airports.every((a) => isMonitoredId(a.airportId))).toBe(true);
-    expect(r.response.filter((e) => !isMonitoredId(e.airportId)).length).toBe(7);
+    expect(r.response.filter((e) => !isMonitoredId(e.airportId)).length).toBe(6);
   });
 
   it("derives the expected FAA_Event_ID for id, startTime-only, and neither", () => {

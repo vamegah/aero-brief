@@ -1,7 +1,7 @@
 import { AirportWatchRow } from "./AirportWatchRow";
 
 export interface WatchlistTableProps {
-  /** Airport ids and names to list (the 20 monitored airports from the status response). */
+  /** Airport ids and names to list (the 30 monitored airports from the status response). */
   airports: { airportId: string; name: string }[];
   watchlist: readonly string[];
   disabled: boolean;
