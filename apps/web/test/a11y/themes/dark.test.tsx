@@ -82,7 +82,7 @@ describe("a11y: dark theme", () => {
   });
 
   it("App with the Display settings section has no violations", async () => {
-    window.history.pushState({}, "", "/sign-in");
+    window.history.pushState({}, "", "/settings#display");
     vi.stubGlobal("fetch", () => Promise.resolve(apiError(401, "unauthorized", "Sign in required.")));
     renderDark(<App />);
     await screen.findByRole("region", { name: "Display settings" });

@@ -6,12 +6,15 @@ import { FeaturesContext } from "../../../src/features/use-features";
 import { AirportPage } from "../../../src/pages/AirportPage";
 import { SignInPage } from "../../../src/pages/SignInPage";
 import { StatusPage } from "../../../src/pages/StatusPage";
+import { SettingsPage } from "../../../src/pages/SettingsPage";
 import { UnsubscribePage } from "../../../src/pages/UnsubscribePage";
 import { WatchlistPage } from "../../../src/pages/WatchlistPage";
 import { runAxe } from "../axe";
-import { CAPTURED_AT, json, NORMAL, stubFetch } from "../fixtures";
+import { apiError, CAPTURED_AT, json, NORMAL, stubFetch } from "../fixtures";
 
-// Requirements 8.13 and 9.11. Matrix: 5 pages x 4 theme variants, every flag on, zero tolerated violations.
+// Requirements 8.13, 9.11 and 16.3. Matrix: 13 pages x 4 theme variants = 52 cases, every flag on, zero tolerated
+// violations. The pages are Status, Airport, Watchlist, Sign-in, Unsubscribe, Settings signed in at each of
+// #display, #digest, #webhooks and #account, and Settings signed out at each of the same four hashes.
 // color-contrast is disabled in jsdom (see axe.ts). Contrast for every variant is covered by the palette pair
 // tests (contrast.test.ts over palettePairs in palette.ts) and the themes-contrast tests over themePairs.
 // All other axe rules (WCAG 2.1 A and AA) stay on here.
@@ -49,6 +52,13 @@ interface PageCase {
   ready: () => Promise<unknown>;
 }
 
+const SETTINGS_SECTIONS = [
+  { hash: "display", heading: "Display settings" },
+  { hash: "digest", heading: "Daily digest" },
+  { hash: "webhooks", heading: "Webhooks" },
+  { hash: "account", heading: "Account" },
+] as const;
+
 const PAGES: PageCase[] = [
   {
     name: "Status",
@@ -67,23 +77,55 @@ const PAGES: PageCase[] = [
     ready: () => screen.findByTestId("stale-data-banner"),
   },
   {
-    name: "Watchlist with digest and webhook sections",
+    name: "Watchlist",
     element: () => <WatchlistPage />,
     prepare: () =>
       stubFetch({
         "GET /api/status/national": () => json(NORMAL),
         "GET /api/watchlist": () => json({ watchlist: ["JFK"] }),
-        "GET /api/digest": () => json({ enabled: true, hour: 18 }),
-        "GET /api/webhooks": () => json({ webhooks: [WEBHOOK] }),
       }),
     ready: async () => {
       await screen.findByRole("button", { name: "Remove New York JFK from watchlist" });
-      await screen.findByLabelText("Send at (UTC)");
-      await screen.findByText("hooks1.example.com");
-      await screen.findByRole("region", { name: "Daily digest" });
-      await screen.findByRole("region", { name: "Webhooks" });
     },
   },
+  ...SETTINGS_SECTIONS.map(
+    ({ hash, heading }): PageCase => ({
+      name: `Settings #${hash} (signed in)`,
+      element: () => <SettingsPage />,
+      prepare: () => {
+        stubFetch({
+          "GET /api/watchlist": () => json({ watchlist: ["JFK"] }),
+          "GET /api/digest": () => json({ enabled: true, hour: 18 }),
+          "GET /api/webhooks": () => json({ webhooks: [WEBHOOK] }),
+        });
+        window.history.replaceState(null, "", `/settings#${hash}`);
+      },
+      ready: async () => {
+        await screen.findByRole("heading", { name: heading });
+        if (hash === "digest") await screen.findByLabelText("Send at (UTC)");
+        if (hash === "webhooks") await screen.findByText("hooks1.example.com");
+      },
+    }),
+  ),
+  ...SETTINGS_SECTIONS.map(
+    ({ hash, heading }): PageCase => ({
+      name: `Settings #${hash} (signed out)`,
+      element: () => <SettingsPage />,
+      prepare: () => {
+        stubFetch({ "GET /api/watchlist": () => apiError(401, "unauthorized", "Sign in required.") });
+        window.history.replaceState(null, "", `/settings#${hash}`);
+      },
+      ready: async () => {
+        // The sign-in prompt shows once the session check returns 401. Display is usable without it.
+        if (hash === "display") {
+          await screen.findByRole("heading", { name: heading });
+          await screen.findAllByText("Sign in to manage your settings.");
+        } else {
+          await screen.findByRole("link", { name: "Go to sign in" });
+        }
+      },
+    }),
+  ),
   {
     name: "Sign-in",
     element: () => <SignInPage />,

@@ -26,9 +26,9 @@ afterEach(() => {
   window.history.pushState({}, "", "/");
 });
 
-describe("Daily digest section on the Watchlist page", () => {
+describe("Daily digest section on the Settings page", () => {
   function openWatchlist(digests: boolean) {
-    window.history.pushState({}, "", "/watchlist");
+    window.history.pushState({}, "", "/settings#digest");
     handlers["GET /api/status/national"] = () => json(NORMAL);
     handlers["GET /api/watchlist"] = () => json({ watchlist: ["JFK"] });
     handlers["GET /api/digest"] = () => json({ enabled: false, hour: 7 });
@@ -41,15 +41,15 @@ describe("Daily digest section on the Watchlist page", () => {
 
   it("is absent and makes no request while the flag is off", async () => {
     openWatchlist(false);
-    await screen.findByText("Account");
-    expect(screen.queryByRole("heading", { name: "Daily digest" })).toBeNull();
+    await screen.findByRole("region", { name: "Account", hidden: true });
+    expect(screen.queryByRole("heading", { name: "Daily digest", hidden: true })).toBeNull();
     expect(calls).not.toContain("GET /api/digest");
   });
 
   it("sits before the Account section while the flag is on", async () => {
     openWatchlist(true);
     const section = await screen.findByRole("region", { name: "Daily digest" });
-    const account = screen.getByRole("region", { name: "Account" });
+    const account = screen.getByRole("region", { name: "Account", hidden: true });
     expect(section.compareDocumentPosition(account) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

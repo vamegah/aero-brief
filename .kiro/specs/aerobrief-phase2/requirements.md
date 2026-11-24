@@ -89,6 +89,8 @@ Terms of the MVP spec (`.kiro/specs/aerobrief/requirements.md`) keep their meani
 
 ### Requirement 3: Preserve MVP behavior and tests with every flag off
 
+> Superseded in part by the UI refresh (owner decision of 2026-11-24): the flags-off look (same behavior, not same pixels, and the tokens.css, palette.ts and existing-test guardrail). See .kiro/specs/ui-refresh/requirements.md.
+
 **User Story:** As a maintainer, I want `phase-2` with all flags off to behave as `main`, so that turning every flag off returns the contest MVP.
 
 #### Acceptance Criteria
@@ -163,6 +165,8 @@ Terms of the MVP spec (`.kiro/specs/aerobrief/requirements.md`) keep their meani
 
 ### Requirement 8: Offer dark mode with a System, Light and Dark choice
 
+> Superseded in part by the UI refresh (owner decision of 2026-11-24): criterion 8.1. See .kiro/specs/ui-refresh/requirements.md.
+
 **User Story:** As a user, I want a dark theme that follows my system setting or my own choice, so that I can read AeroBrief comfortably in low light.
 
 #### Acceptance Criteria
@@ -183,6 +187,8 @@ Terms of the MVP spec (`.kiro/specs/aerobrief/requirements.md`) keep their meani
 
 ### Requirement 9: Offer a high-contrast theme that meets WCAG 2.1 Level AAA
 
+> Superseded in part by the UI refresh (owner decision of 2026-11-24): criteria 9.7 and 9.12. See .kiro/specs/ui-refresh/requirements.md.
+
 **User Story:** As a user with low vision, I want an opt-in high-contrast theme, so that I can read every status without strain.
 
 #### Acceptance Criteria
@@ -201,6 +207,8 @@ Terms of the MVP spec (`.kiro/specs/aerobrief/requirements.md`) keep their meani
 12. THE Frontend SHALL give the "Theme" and "High contrast" controls the same stored keys and behavior on every page.
 
 ### Requirement 10: Let a User opt in to a daily digest
+
+> Superseded in part by the UI refresh (owner decision of 2026-11-24): criterion 10.1. See .kiro/specs/ui-refresh/requirements.md.
 
 **User Story:** As a user, I want to choose a daily digest and the hour it arrives, so that I get a summary without checking the site.
 

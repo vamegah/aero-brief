@@ -1,6 +1,8 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WatchlistTable } from "../../src/components/WatchlistTable";
+import { FeaturesContext } from "../../src/features/use-features";
+import { SettingsPage } from "../../src/pages/SettingsPage";
 import { WatchlistPage } from "../../src/pages/WatchlistPage";
 import { jsonResponse, makeAirports, okStatus, type FetchFn } from "./fixtures";
 
@@ -74,10 +76,24 @@ describe("WatchlistPage layout", () => {
     await waitFor(() => expect(add.disabled).toBe(false));
   });
 
-  it("deletes the account through the confirm dialog, and cancel closes it", async () => {
+  it("no longer shows the Display settings, Daily digest, Webhooks or Account sections", async () => {
+    render(
+      <FeaturesContext.Provider value={{ darkMode: true, highContrast: true, digests: true, webhooks: true }}>
+        <WatchlistPage />
+      </FeaturesContext.Provider>,
+    );
+    await screen.findByText("2 of 10 airports watched");
+    for (const name of ["Display settings", "Daily digest", "Webhooks", "Account"]) {
+      expect(screen.queryByRole("region", { name })).toBeNull();
+    }
+    expect(screen.queryByRole("button", { name: "Delete account" })).toBeNull();
+    expect(screen.queryByText("Delete account")).toBeNull();
+  });
+
+  it("deletes the account on /settings#account through the confirm dialog, and cancel closes it", async () => {
     const assign = vi.fn<(url: string) => void>();
-    vi.stubGlobal("location", { ...window.location, assign });
-    render(<WatchlistPage />);
+    vi.stubGlobal("location", { ...window.location, assign, hash: "#account" });
+    render(<SettingsPage />);
     fireEvent.click(await screen.findByRole("button", { name: "Delete account" }));
     const group = await screen.findByRole("group", { name: "Confirm account deletion" });
     fireEvent.click(within(group).getByRole("button", { name: "Cancel" }));
@@ -88,7 +104,6 @@ describe("WatchlistPage layout", () => {
     await waitFor(() => expect(assign).toHaveBeenCalledWith("/"));
   });
 });
-
 describe("WatchlistTable add control for watched airports", () => {
   it("renders only Remove for watched rows and only Add for unwatched rows", () => {
     const { container } = render(

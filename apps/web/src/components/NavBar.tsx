@@ -9,6 +9,7 @@ export interface NavBarProps {
 const LINKS = [
   { href: "/", label: "Status" },
   { href: "/watchlist", label: "Watchlist" },
+  { href: "/settings", label: "Settings" },
 ] as const;
 
 export function NavBar({ pathname }: NavBarProps) {

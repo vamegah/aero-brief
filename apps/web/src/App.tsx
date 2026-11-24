@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { DisplaySettings } from "./components/DisplaySettings";
 import { Footer } from "./components/Footer";
 import { NavBar } from "./components/NavBar";
 import { useFeatures } from "./features/use-features";
@@ -7,6 +6,7 @@ import { AirportPage, airportIdFromPath } from "./pages/AirportPage";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 import { DigestUnsubscribePage } from "./pages/DigestUnsubscribePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { SettingsPage } from "./pages/SettingsPage";
 import { SignInPage } from "./pages/SignInPage";
 import { StatusPage } from "./pages/StatusPage";
 import { UnsubscribePage } from "./pages/UnsubscribePage";
@@ -23,6 +23,8 @@ function pageFor(pathname: string, digests: boolean): ReactNode {
       return <AuthCallbackPage />;
     case "/digest/unsubscribe":
       return digests ? <DigestUnsubscribePage /> : <NotFoundPage />;
+    case "/settings":
+      return <SettingsPage />;
     case "/sign-in":
       return <SignInPage />;
     case "/unsubscribe":
@@ -52,7 +54,6 @@ export function App() {
         <p>FAA ground stop status for 20 major US airports.</p>
         {pageFor(pathname, digests)}
       </main>
-      <DisplaySettings />
       <Footer />
     </>
   );

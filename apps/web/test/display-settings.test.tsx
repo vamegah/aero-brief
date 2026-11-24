@@ -4,12 +4,12 @@ import { App } from "../src/App";
 import { ALL_FLAGS_OFF, type Features } from "../src/features/features-schema";
 import { FeaturesContext } from "../src/features/use-features";
 import { CONTRAST_KEY, THEME_CHANGE_EVENT, THEME_KEY, ThemeController } from "../src/theme/ThemeController";
-import { apiError } from "./a11y/fixtures";
+import { apiError, json } from "./a11y/fixtures";
 
 const DARK_ON: Features = { ...ALL_FLAGS_OFF, darkMode: true };
 const CONTRAST_ONLY: Features = { ...ALL_FLAGS_OFF, highContrast: true };
 
-function mount(features: Features, path = "/") {
+function mount(features: Features, path = "/settings") {
   window.history.pushState({}, "", path);
   return render(
     <FeaturesContext.Provider value={features}>
@@ -33,24 +33,26 @@ describe("DisplaySettings", () => {
   it("shows a Display settings region with a Theme fieldset and three radios", () => {
     mount(DARK_ON);
     const region = screen.getByRole("region", { name: "Display settings" });
-    expect(within(region).getByRole("heading", { level: 2, name: "Display settings" })).toBeTruthy();
+    expect(within(region).getByRole("heading", { level: 3, name: "Display settings" })).toBeTruthy();
     const group = within(region).getByRole("group", { name: "Theme" });
     expect(group.tagName).toBe("FIELDSET");
     const radios = within(group).getAllByRole("radio");
     expect(radios.map((r) => (r as HTMLInputElement).labels?.[0]?.textContent)).toEqual(["System", "Light", "Dark"]);
   });
 
-  it("sits after main and before the footer, outside the nav bar", () => {
+  it("sits inside main on /settings, outside the nav bar and the footer", () => {
     mount(DARK_ON);
     const region = screen.getByRole("region", { name: "Display settings" });
-    const main = screen.getByRole("main");
-    const footer = screen.getByRole("contentinfo");
-    expect(main.contains(region)).toBe(false);
-    expect(screen.getByRole("navigation").contains(region)).toBe(false);
-    expect(main.compareDocumentPosition(region) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(region.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("main").contains(region)).toBe(true);
+    expect(screen.getByRole("navigation", { name: "Main" }).contains(region)).toBe(false);
+    expect(screen.getByRole("contentinfo").contains(region)).toBe(false);
   });
 
+  it.each(["/", "/watchlist"])("is absent on %s", (path) => {
+    mount(DARK_ON, path);
+    expect(screen.queryByRole("region", { name: "Display settings" })).toBeNull();
+    expect(screen.queryByRole("radio")).toBeNull();
+  });
   it("defaults to System and pre-selects the stored value", () => {
     const first = mount(DARK_ON);
     expect((screen.getByRole("radio", { name: "System" }) as HTMLInputElement).checked).toBe(true);
@@ -111,7 +113,7 @@ describe("DisplaySettings", () => {
   });
 
   it("renders without a provider (all flags off)", () => {
-    window.history.pushState({}, "", "/");
+    window.history.pushState({}, "", "/settings");
     render(<App />);
     expect(screen.queryByText("Display settings")).toBeNull();
   });
@@ -176,7 +178,7 @@ describe("DisplaySettings", () => {
 
   it("applies the high-contrast variant without reload", () => {
     // main.tsx mounts the controller beside App; mirror that here.
-    window.history.pushState({}, "", "/");
+    window.history.pushState({}, "", "/settings");
     render(
       <FeaturesContext.Provider value={{ ...ALL_FLAGS_OFF, darkMode: true, highContrast: true }}>
         <ThemeController />
@@ -204,8 +206,16 @@ describe("DisplaySettings", () => {
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
-  it.each(["/", "/watchlist", "/sign-in", "/airport/ATL"])("is the same on %s", (path) => {
-    mount(DARK_ON, path);
+  it("works signed out (401) on /settings", () => {
+    mount(DARK_ON);
+    const group = within(screen.getByRole("region", { name: "Display settings" })).getByRole("group", { name: "Theme" });
+    expect(within(group).getAllByRole("radio")).toHaveLength(3);
+  });
+
+  it("works signed in on /settings#display", async () => {
+    vi.stubGlobal("fetch", () => Promise.resolve(json({ watchlist: [] })));
+    mount(DARK_ON, "/settings#display");
+    await screen.findByRole("heading", { level: 1, name: "AeroBrief" });
     const group = within(screen.getByRole("region", { name: "Display settings" })).getByRole("group", { name: "Theme" });
     expect(within(group).getAllByRole("radio")).toHaveLength(3);
   });

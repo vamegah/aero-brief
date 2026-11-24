@@ -20,6 +20,7 @@ describe("a11y: site navigation bar", () => {
     stubFetch({ "GET /api/watchlist": () => json({ watchlist: [] }) });
     const { container } = render(<NavBar pathname="/watchlist" />);
     await screen.findByRole("button", { name: "Sign out" });
+    expect(screen.getByRole("link", { name: "Settings" }).getAttribute("href")).toBe("/settings");
     expect(await runAxe(container)).toHaveNoViolations();
   });
 });

@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor, type RenderResult } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { App } from "../../src/App";
 import { ALL_FLAGS_OFF } from "../../src/features/features-schema";
 import { FeaturesContext } from "../../src/features/use-features";
-import { WatchlistPage } from "../../src/pages/WatchlistPage";
 import { runAxe } from "./axe";
 import { apiError, json, NORMAL, stubFetch, type Routes } from "./fixtures";
 
@@ -53,9 +53,10 @@ describe.each(THEMES)("a11y: Webhooks section, $theme theme", ({ theme, darkMode
   });
 
   function renderPage(): RenderResult {
+    window.history.pushState({}, "", "/settings#webhooks");
     return render(
       <FeaturesContext.Provider value={{ ...ALL_FLAGS_OFF, webhooks: true, darkMode, highContrast }}>
-        <WatchlistPage />
+        <App />
       </FeaturesContext.Provider>,
     );
   }

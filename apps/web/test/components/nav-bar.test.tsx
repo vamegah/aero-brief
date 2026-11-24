@@ -19,6 +19,7 @@ describe("NavBar", () => {
     expect(nav).toBeTruthy();
     expect(screen.getByRole("link", { name: "Status" }).getAttribute("href")).toBe("/");
     expect(screen.getByRole("link", { name: "Watchlist" }).getAttribute("href")).toBe("/watchlist");
+    expect(screen.getByRole("link", { name: "Settings" }).getAttribute("href")).toBe("/settings");
     expect((await screen.findByRole("link", { name: "Sign in" })).getAttribute("href")).toBe("/sign-in");
     expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
   });
@@ -53,7 +54,7 @@ describe("NavBar", () => {
     await screen.findByRole("button", { name: "Sign out" });
     const nav = screen.getByRole("navigation", { name: "Main" });
     const controls = nav.querySelectorAll("a[href], button");
-    expect(controls.length).toBe(3);
+    expect(controls.length).toBe(4);
     controls.forEach((el) => expect(el.getAttribute("tabindex")).not.toBe("-1"));
   });
 });

@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
 import { ALL_FLAGS_OFF } from "../../src/features/features-schema";
 import { FeaturesContext } from "../../src/features/use-features";
-import { WatchlistPage } from "../../src/pages/WatchlistPage";
 import { runAxe } from "./axe";
 import { apiError, json, NORMAL, stubFetch, type Routes } from "./fixtures";
 
@@ -36,9 +35,10 @@ describe.each(THEMES)("a11y: Daily digest section, $theme theme", ({ theme, dark
   });
 
   function renderPage(): RenderResult {
+    window.history.pushState({}, "", "/settings#digest");
     return render(
       <FeaturesContext.Provider value={{ ...ALL_FLAGS_OFF, digests: true, darkMode, highContrast }}>
-        <WatchlistPage />
+        <App />
       </FeaturesContext.Provider>,
     );
   }

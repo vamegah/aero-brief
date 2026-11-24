@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe("a11y: App with the Display settings section visible", () => {
-  it.each(["/", "/sign-in"])("has no violations at %s", async (path) => {
+  it.each(["/settings", "/settings#display"])("has no violations at %s", async (path) => {
     window.history.pushState({}, "", path);
     vi.stubGlobal("fetch", () => Promise.resolve(apiError(401, "unauthorized", "Sign in required.")));
     render(
@@ -26,7 +26,7 @@ describe("a11y: App with the Display settings section visible", () => {
   });
 
   it("has no violations with both flags on", async () => {
-    window.history.pushState({}, "", "/");
+    window.history.pushState({}, "", "/settings");
     vi.stubGlobal("fetch", () => Promise.resolve(apiError(401, "unauthorized", "Sign in required.")));
     render(
       <FeaturesContext.Provider value={{ ...ALL_FLAGS_OFF, darkMode: true, highContrast: true }}>

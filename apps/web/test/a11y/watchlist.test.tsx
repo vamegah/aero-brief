@@ -1,11 +1,13 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { SettingsPage } from "../../src/pages/SettingsPage";
 import { WatchlistPage } from "../../src/pages/WatchlistPage";
 import { runAxe } from "./axe";
 import { apiError, json, NORMAL, stubFetch, type Routes } from "./fixtures";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  window.location.hash = "";
 });
 
 function routes(extra: Routes = {}): Routes {
@@ -14,6 +16,14 @@ function routes(extra: Routes = {}): Routes {
     "GET /api/watchlist": () => json({ watchlist: ["JFK"] }),
     ...extra,
   };
+}
+
+/** Renders the Settings page on the Account section and waits until the session has loaded. */
+async function renderAccount() {
+  window.location.hash = "#account";
+  const view = render(<SettingsPage />);
+  await screen.findByRole("button", { name: "Delete account" });
+  return view;
 }
 
 /** Renders the page and waits until the status table and the saved list have loaded. */
@@ -43,19 +53,19 @@ describe("a11y: watchlist management", () => {
     expect(await runAxe(container)).toHaveNoViolations();
   });
 
-  it("has no violations in the account deletion confirmation state", async () => {
+  it("has no violations in the account deletion confirmation state (Settings #account)", async () => {
     stubFetch(routes());
-    const { container } = await renderLoaded();
+    const { container } = await renderAccount();
     fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
     await screen.findByRole("group", { name: "Confirm account deletion" });
     expect(await runAxe(container)).toHaveNoViolations();
   });
 
-  it("has no violations when account deletion fails", async () => {
+  it("has no violations when account deletion fails (Settings #account)", async () => {
     stubFetch(
       routes({ "DELETE /api/account": () => apiError(500, "internal", "Could not delete your account. Try again.") }),
     );
-    const { container } = await renderLoaded();
+    const { container } = await renderAccount();
     fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm delete account" }));
     await screen.findByText("Could not delete your account. Try again.");

@@ -98,9 +98,9 @@ export function DisplaySettings() {
   if (!darkMode && !highContrast) return null;
   return (
     <section className="display-settings" aria-labelledby="display-settings-heading">
-      <h2 id="display-settings-heading" className="display-settings__title">
+      <h3 id="display-settings-heading" className="display-settings__title">
         Display settings
-      </h2>
+      </h3>
       {darkMode ? <ThemeControl /> : null}
       {highContrast ? <ContrastControl /> : null}
     </section>

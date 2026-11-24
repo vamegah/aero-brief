@@ -157,3 +157,23 @@ Notes:
 - Not yet known whether Vercel's network is also denied by the FAA. Task 10 proves it on a Preview deployment before the poller changes. If Vercel is denied too, work stops and the owner is told (requirement 2.7). A second relay host would be another deviation and needs its own approval.
 - Probe Worker `aerobrief-faa-probe` was deleted on 2026-11-22. Its `workers.dev` URL now returns 404. `tools/faa-probe/` is still in the repo until the checkpoint task removes it.
 - Scraping, FAA SWIM and other data sources stay prohibited by `scope.md`. This entry does not change them.
+
+## 2026-11-24: UI refresh decisions
+
+The owner approved every recommendation on 2026-11-24. Spec: `.kiro/specs/ui-refresh/` (`design.md`, "Decisions (approved 2026-11-24)").
+
+- D1: One "Settings" link is added to the Nav_Bar. Only the nav tests change for it.
+- D2: Deep links use the hash: `/settings#display`, `#digest`, `#webhooks`, `#account`.
+- D3: The palette is retuned in `tokens.css` and `palette.ts`, and the two SHA-256 hashes in `tests/flags-off-guard.test.ts` are updated in the same commit.
+- D4: Signed-out visitors see the Display Section on `/settings`. Daily digest, Webhooks and Account show the sign-in state.
+- D5: Watchlist row "Add" is `secondary`, "Remove" is `ghost`. The page has no primary Button.
+- D6: CSS `display` overrides for stacked tables are accepted. ARIA roles are added only if the owner's phone check (task 10) finds that VoiceOver loses table semantics.
+- D7: The header brand is the single `<h1>`. The tagline moves to the Status page subtitle.
+- D8: The refresh supersedes Phase 2 Requirements 3, 8.1, 9.7, 9.12 and 10.1, and the Phase 2 guardrail against editing `tokens.css`, `palette.ts` and existing tests.
+- D9: The refresh ships to `main` before December 4, 2026, 2:00 PM PT, unflagged, and rolls back with `git revert` of the refresh commit range.
+- D10: The palette values in `design.md` are the starting point. The owner reviews them on a Vercel Preview of `phase-2` before `main` (task 10). A Preview is built only when a push changes files under `apps/web`, and the owner cannot use Vercel's Redeploy button (2FA), so every Preview needs a push that touches `apps/web`.
+- D11: Content max width is 1120 px.
+
+Supersession (D8): for this refresh only, it supersedes Phase 2 Requirements 3, 8.1, 9.7, 9.12 and 10.1 and the Phase 2 guardrail against editing `tokens.css`, `palette.ts` and existing tests. The Phase 2 spec is not otherwise changed.
+
+Scope (D9): the refresh is MVP polish approved by the owner on 2026-11-24. It is not a Phase 2 item, so the "contest set only" merge rule in `scope.md` does not cover it. It ships unflagged to `main` before December 4, 2026, 2:00 PM PT. Rollback is `git revert` of the refresh commit range.

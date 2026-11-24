@@ -1,15 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Banner } from "../components/Banner";
 import { Button } from "../components/Button";
-import { ConfirmDialog } from "../components/ConfirmDialog";
-import { DigestSettings } from "../components/DigestSettings";
 import { EmptyState } from "../components/EmptyState";
 import { ErrorRegion } from "../components/ErrorRegion";
 import { LoadingState } from "../components/LoadingState";
 import { PageHeader } from "../components/PageHeader";
 import { WatchlistTable } from "../components/WatchlistTable";
-import { WebhookSettings } from "../components/WebhookSettings";
-import { useFeatures } from "../features/use-features";
 import { useStatus } from "../hooks/use-status";
 import { useWatchlist } from "../hooks/use-watchlist";
 import { consumeSigninFlash, type SigninFlash } from "../lib/signin-flash";
@@ -17,10 +13,8 @@ import { consumeSigninFlash, type SigninFlash } from "../lib/signin-flash";
 const MAX_WATCHLIST = 10;
 
 export function WatchlistPage() {
-  const { webhooks, digests } = useFeatures();
   const { status } = useStatus();
-  const { watchlist, loading, unauthorized, error, busy, add, remove, removeAccount } = useWatchlist();
-  const [confirming, setConfirming] = useState(false);
+  const { watchlist, loading, unauthorized, error, busy, add, remove } = useWatchlist();
   const [flash, setFlash] = useState<SigninFlash | null>(null);
   // Read the flag once (StrictMode runs effects twice). State is set after mount so the text is
   // inserted into the live region that already exists, which is what screen readers announce.
@@ -32,11 +26,6 @@ export function WatchlistPage() {
   }, []);
 
   const airports = status !== null && status.state === "ok" ? status.airports : [];
-
-  async function onConfirmDelete() {
-    if (await removeAccount()) window.location.assign("/");
-    else setConfirming(false);
-  }
 
   if (unauthorized) {
     return (
@@ -88,26 +77,6 @@ export function WatchlistPage() {
           onRemove={(id) => void remove(id)}
         />
       ) : null}
-      {digests ? <DigestSettings watchlistCount={loading ? null : watchlist.length} /> : null}
-      {webhooks ? <WebhookSettings /> : null}
-      <section className="account-section" aria-labelledby="account-heading">
-        <h3 id="account-heading">Account</h3>
-        <p className="account-section__help">Permanently delete your account and watchlist.</p>
-        <Button variant="danger-outline" onClick={() => setConfirming(true)}>
-          Delete account
-        </Button>
-        <ConfirmDialog
-          open={confirming}
-          label="Confirm account deletion"
-          title="Delete your account?"
-          confirmLabel="Confirm delete account"
-          cancelLabel="Cancel"
-          onConfirm={() => void onConfirmDelete()}
-          onCancel={() => setConfirming(false)}
-        >
-          Delete your account and all your watchlist data? This cannot be undone.
-        </ConfirmDialog>
-      </section>
     </>
   );
 }

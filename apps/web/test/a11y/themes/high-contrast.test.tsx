@@ -87,7 +87,7 @@ describe.each(VARIANTS)("a11y: $theme theme", ({ theme, darkMode }) => {
   });
 
   it("App with the Display settings section and High contrast checkbox has no violations", async () => {
-    window.history.pushState({}, "", "/sign-in");
+    window.history.pushState({}, "", "/settings#display");
     vi.stubGlobal("fetch", () => Promise.resolve(apiError(401, "unauthorized", "Sign in required.")));
     renderHc(<App />);
     await screen.findByRole("region", { name: "Display settings" });

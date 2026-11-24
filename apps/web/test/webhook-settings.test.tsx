@@ -49,9 +49,9 @@ afterEach(() => {
 
 const list = (items: Item[]) => (): Response => json({ webhooks: items });
 
-describe("Webhooks section on the Watchlist page", () => {
+describe("Webhooks section on the Settings page", () => {
   function openWatchlist(webhooks: boolean) {
-    window.history.pushState({}, "", "/watchlist");
+    window.history.pushState({}, "", "/settings#webhooks");
     handlers["GET /api/status/national"] = () => json(NORMAL);
     handlers["GET /api/watchlist"] = () => json({ watchlist: [] });
     handlers["GET /api/webhooks"] = list([]);
@@ -64,15 +64,15 @@ describe("Webhooks section on the Watchlist page", () => {
 
   it("is absent and makes no request while the flag is off", async () => {
     openWatchlist(false);
-    await screen.findByText("Account");
-    expect(screen.queryByRole("heading", { name: "Webhooks" })).toBeNull();
+    await screen.findByRole("region", { name: "Account", hidden: true });
+    expect(screen.queryByRole("heading", { name: "Webhooks", hidden: true })).toBeNull();
     expect(calls).not.toContain("GET /api/webhooks");
   });
 
-  it("sits between the table area and the Account section while the flag is on", async () => {
+  it("sits before the Account section while the flag is on", async () => {
     openWatchlist(true);
     const section = await screen.findByRole("region", { name: "Webhooks" });
-    const account = screen.getByRole("region", { name: "Account" });
+    const account = screen.getByRole("region", { name: "Account", hidden: true });
     expect(section.compareDocumentPosition(account) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });
