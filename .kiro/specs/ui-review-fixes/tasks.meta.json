@@ -3,6 +3,10 @@
     "1.2 Write property tests for `reconcileWithSnapshot`": {
       "status": "passed",
       "lastRunTimestamp": 1795635120057
+    },
+    "19.2 Update the core tests in the same task as Task 19.1": {
+      "status": "passed",
+      "lastRunTimestamp": 1795642077640
     }
   },
   "executionHistory": {
@@ -407,6 +411,16 @@
         "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795637521240
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639781329
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639786752
       }
     ],
     "17. Ship": [
@@ -484,6 +498,339 @@
         "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795637478226
+      }
+    ],
+    "18.1 Diagnose and fix why `reconcileWithSnapshot` is not applied to the live response": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639781935
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639799363
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795641108024
+      }
+    ],
+    "18.2 Write the Live_Fixture render test": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639782809
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642154076
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642835421
+      }
+    ],
+    "19.1 Change `packages/core/src/status-derivation.ts`": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639782954
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795641121456
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642110022
+      }
+    ],
+    "19.2 Update the core tests in the same task as Task 19.1": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639783131
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642121293
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642136971
+      }
+    ],
+    "19.3 Route every web surface through the one derivation": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639783234
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642121821
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642137988
+      }
+    ],
+    "19.4 Record the owner decision in `docs/decisions.md`": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639783394
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642123314
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642138697
+      }
+    ],
+    "20.1 Share one duration formatter and change `explainStructured`": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639783601
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639800057
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795641108940
+      }
+    ],
+    "20.2 Update and add core and web tests in the same task as Task 20.1": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639783874
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642123830
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642139983
+      }
+    ],
+    "21.1 Remove the empty band and stray divider above the \"Account\" heading": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639784113
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639800899
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795641109681
+      }
+    ],
+    "21.2 Write the CSS assertion test": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639784348
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642124789
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642140624
+      }
+    ],
+    "22.1 Choose \"delivered\" or \"delivered at\" by display mode in `WebhookSettings.tsx`": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639784623
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639801581
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795641110510
+      }
+    ],
+    "22.2 Write tests for both wordings": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639785276
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642125316
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642141634
+      }
+    ],
+    "23.1 Show the derived status next to the Watching pill": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639785524
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642153219
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642833950
+      }
+    ],
+    "23.2 Write the Watchlist tests": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639785778
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642842750
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642853366
+      }
+    ],
+    "24.1 Change `.kiro/hooks/require-test-update.json` and verify the matcher": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639785988
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639797874
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795641111279
+      }
+    ],
+    "24.2 Update `docs/hooks.md` and `docs/kiro-usage.md`": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639786379
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642126297
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642142251
+      }
+    ],
+    "25. Checkpoint - Second round": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795639786588
+      },
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642864761
+      }
+    ],
+    "19. Recovering window from the estimate upper bound": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642139091
+      }
+    ],
+    "20. Likely impact text uses the duration formatter": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642140121
+      }
+    ],
+    "21. Settings Account card spacing": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642140767
+      }
+    ],
+    "22. Webhook delivery wording": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642141968
+      }
+    ],
+    "24. Hook fires after save under `packages/core/src/`": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642142466
+      }
+    ],
+    "18. Stale-active incident fix on the live response": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642835666
+      }
+    ],
+    "23. Watchlist status pill": [
+      {
+        "executionId": "5eb28ee5-477f-4f89-9d48-0202a437928f",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795642853679
       }
     ]
   }

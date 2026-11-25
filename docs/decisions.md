@@ -221,3 +221,15 @@ The owner decided on 2026-11-24: "Core 30, watchlist 30, keep the rest." Spec: `
 3. Only then the owner fast-forwards `main` from `phase-2` and pushes, before the deadline. The push deploys the API Worker, the Poller Worker and the web app.
 
 The reverse order would show the new counter of 30 against the old trigger of 10.
+
+## 2026-11-25: Recovering window follows the AeroBrief estimate
+
+**Decision.** An airport reads "Recovering" after a ground stop ends until the upper bound of the AeroBrief estimate for that stop has passed since the stop ended. The window is clamped to a minimum of 1 hour and a maximum of 24 hours. When the stop's start is unknown (outside the retention window) the window is the 24-hour maximum.
+
+**Supersedes.** Requirement 1.2 of `.kiro/specs/ui-improvements/requirements.md`, which fixed the window at 24 hours (`RECOVERY_PERIOD_MS`). The ui-improvements spec files are not edited. The change is specified in `.kiro/specs/ui-review-fixes/` (Requirement 19, design section 9).
+
+**Why.** A 40-minute stop should not leave an airport at "Recovering" for a full day.
+
+**Implementation.** `packages/core/src/status-derivation.ts` exports `RECOVERY_MIN_MS` (1 h), `RECOVERY_MAX_MS` (24 h, the old `RECOVERY_PERIOD_MS` value) and `recoveryWindowMs`. `RECOVERY_PERIOD_MS` is removed because nothing else imported it. The Overview, the Airports table and the watchlist all read `deriveAirportStatus`.
+
+**Approved by.** The owner, in the 2026-11-25 second-round review ("all").

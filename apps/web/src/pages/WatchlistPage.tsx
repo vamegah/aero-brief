@@ -8,6 +8,7 @@ import { MergeOffer } from "../components/MergeOffer";
 import { PageHeader } from "../components/PageHeader";
 import { SignedOutWatchlist } from "../components/SignedOutWatchlist";
 import { WatchlistTable } from "../components/WatchlistTable";
+import { airportStatusById } from "../lib/airport-status-by-id";
 import { sortBySeverity } from "../lib/local-watchlist";
 import { buildWatchedViews } from "../lib/watchlist-view";
 import { useStatus } from "../hooks/use-status";
@@ -44,6 +45,14 @@ export function WatchlistPage() {
       .sort((a, b) => (rank.get(a.airportId) ?? 0) - (rank.get(b.airportId) ?? 0));
     return [...watched, ...rawAirports.filter((a) => !rank.has(a.airportId))];
   }, [rawAirports, watchlist, status, events]);
+
+  const statusById = useMemo(
+    () =>
+      status !== null && status.state === "ok"
+        ? airportStatusById({ airports: status.airports, events, hasData: true, now: new Date() })
+        : undefined,
+    [status, events],
+  );
 
   if (unauthorized) return <SignedOutWatchlist status={status} events={events} />;
 

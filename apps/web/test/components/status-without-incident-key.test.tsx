@@ -53,13 +53,15 @@ describe("events without incidentKey", () => {
     expect(sfo[0]).toContain("1 h 30 min");
   });
 
-  it("a response with incidentKey groups by that key", () => {
+  it("a response with different keys still pairs the end with the earlier start (Requirement 1)", () => {
     window.history.replaceState(null, "", "/#events");
     const keyed: EventSummary[] = [
       { ...(OLD_EVENTS[1] as EventSummary), incidentKey: "one" },
-      { ...(OLD_EVENTS[0] as EventSummary), incidentKey: "two" }, // a different key: the end is not paired with the start
+      { ...(OLD_EVENTS[0] as EventSummary), incidentKey: "two" }, // a different key: the snapshot pairing joins them
     ];
     const { container } = render(<StatusView status={okStatus({ events: keyed })} events={keyed} loading={false} />);
-    expect(cardTexts(container, "SFO")).toHaveLength(2); // an active card and an ended card, not one pair
+    const sfo = cardTexts(container, "SFO");
+    expect(sfo).toHaveLength(1);
+    expect(sfo[0]).toContain("1 h 30 min");
   });
 });

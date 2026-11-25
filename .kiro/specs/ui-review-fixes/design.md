@@ -4,6 +4,8 @@
 
 This design implements the 11 owner-approved fixes from the 2026-11-25 screenshot review (`requirements.md`). All code changes are in `apps/web`, in TypeScript strict mode, matching the existing conventions of `.kiro/specs/ui-improvements/`. One requirement (Requirement 2) is investigation-only: it records findings about `packages/core/src/change-detector.ts` and `packages/core/src/event-keys.ts` but makes no change to either file in this spec's tasks.
 
+**Second round (2026-11-25).** Requirements 18 to 24 are designed in the "Second Round" section below. They also touch two pure files in `packages/core/src/` (`status-derivation.ts`, `explain.ts`, plus a new `format-duration.ts`), one Kiro hook and three docs files. Requirement 19 changes Requirement 1.2 of `.kiro/specs/ui-improvements/requirements.md` (fixed 24-hour Recovering) by owner decision.
+
 No new runtime dependency is added. No database migration. The nav bar DOM changes for Requirement 4 (owner-approved precedent); the airport table, banner, and `aria-live` region DOM stay exactly as they are — only `Status_Cell` text content and CSS change.
 
 ## Investigation: FAA mid-stop id change (Requirement 2)
@@ -127,6 +129,75 @@ export function hourWithLocalEquivalent(utcHour: number, timeZone: string, refer
 
 **Theme preview.** Per Requirement 10 Criterion 10.2, the design chooses the **three-swatch option** over removal. Reason: the single grey swatch carries no information today (it renders `var(--color-surface)`/`var(--color-border)` regardless of `selected.value` — the swatch never actually changes color with the theme choice, which is the complaint), but a working preview is more useful to a user choosing a theme than no preview at all, and the three-swatch version is achievable with zero new tokens: `themes.css`/`themes.ts` already define a full color set for `light` (the default, unscoped values in `tokens.css`) and `dark` (`html[data-theme="dark"]`); the HC variants are out of scope here since `ThemeControl` only offers System/Light/Dark. Each swatch is a small `<span>` with inline `style` reading the *resolved* value for that theme (not the live page theme), using the two already-existing variable sets: default (`:root`/`tokens.css`, used as "Light") and `html[data-theme="dark"]` (used as "Dark"); for "System" the swatch shows the OS-resolved choice at render time (same value as whichever of Light/Dark the system currently resolves to, read via `window.matchMedia("(prefers-color-scheme: dark)")`, matching `ThemeController`'s own resolution logic). Each swatch keeps a visible text label ("System"/"Light"/"Dark") so color is decoration, not the only signal, per `.kiro/steering/design.md` Principle 3. The existing `data-testid="theme-preview"` wrapper `<p>` is kept (now wrapping three swatches instead of one), so `apps/web/test/display-settings.test.tsx`'s existing `getByTestId("theme-preview")` query keeps resolving; its two assertions on `.textContent` (`"Preview: Dark theme"` etc.) are updated in the same task to assert the three labels are present instead of one combined sentence.
 
+## Second Round (2026-11-25): Components and Interfaces for Requirements 18 to 24
+
+### 8. Why Requirement 1's fix is not applied in production (Requirement 18)
+
+**Root cause (found by reading the code while writing this spec; Task 18.1 confirms it with a failing test first).** `apps/web/src/components/StatusView.tsx`, line 95, reads `const feed = buildIncidentFeed(events);`. It passes no second argument, although `buildIncidentFeed(events, snapshotAirports?)` and `reconcileWithSnapshot` exist in `apps/web/src/lib/incident-feed.ts` (lines 84 and 145 to 158). With `snapshotAirports` undefined, `activeGroundStopIds` yields no active set and `reconcileWithSnapshot` takes its Requirement 1.5 fallback (return the merged incidents unchanged). `mergeIncidents` alone cannot pair the ORD start (`faa:b8826b88-…`) with the ORD end (`faa:8dd7eae0-…`) because it groups by incidentKey. The result matches the live UI exactly: the start stays an open incident that reads "Active for 23 h", and the end becomes its own ended incident built from an end event alone, which reads "Started more than 24 hours ago". Task 1.4 is marked done and its text says to pass `ok?.airports`, but the line in the file does not do that, and the first-round tests call `buildIncidentFeed` and `IncidentCard` directly, so none of them renders `StatusView` from a real response. That gap is why the defect passed the first round.
+
+Both lists on the page read the one `feed` value: the Overview "Latest events" list uses `limitFeed(feed, LATEST_EVENT_COUNT)` (line 99) and the Events pane uses `filterIncidentFeed(feed, eventFilter)` (line 96). So passing the snapshot once at line 95 fixes both lists. Requirement 18.4 still asks the task to check that no second code path builds incidents from events (for example `network-overview.ts`'s own handling of events, `latestEndedKeys`, or `filterIncidentFeed` re-deriving activity), because the Overview chips and headline also read `events`.
+
+**Fix.** In `StatusView.tsx`, call `buildIncidentFeed(events, ok?.airports)` (omit the argument when `ok === null`, as before). Then check, with the Live_Fixture test, that `reconcileWithSnapshot` produces one ended ORD incident of 40 minutes. If the Live_Fixture still fails after the wiring fix, the next suspects are, in order: (a) `activeGroundStopIds` reading a field that is not on the live airport shape (the fixture's ORD airport has `groundStop: null`, so a mismatch between `airportId` and the live field name would leave ORD absent from the active set, which is the correct result here, but would break other airports); (b) the pairing step requiring `startedAt === endedAt` for an Unmatched_End while the live end event's key comes from `assignIncidentKeys` rather than the API; (c) `filterIncidentFeed` or `limitFeed` rebuilding `incidents` from `others`. The task fixes whichever it finds and records it in this section.
+
+**Test.** `apps/web/test/status-view-live-fixture.test.tsx` loads `fixtures-live-national-2026-11-25.json`, mounts `StatusView` with the fixture as the `ok` status and its events (fixed `now` of 2026-11-25T21:00:00Z, so the stale "Active for 23 h" wording would have appeared), and asserts, scoped to the Overview "Latest events" list and the Events pane separately: exactly one ORD incident card, state "Ended", text containing "lasted 40 min", no text "Active for", no text "Started more than 24 hours ago". It uses the existing `StatusView` test harness pattern (query by `#status-pane-overview` and `#status-pane-events`). No `<svg>`/`<img>` is added to the Status_View.
+
+### 9. Recovering window from the estimate (Requirement 19)
+
+**Change to a previous decision.** `.kiro/specs/ui-improvements/requirements.md` Requirement 1.2 set a fixed 24-hour Recovery_Period (`RECOVERY_PERIOD_MS = 24 * 60 * 60 * 1000`, `status-derivation.ts` line 22). The owner replaced it on 2026-11-25. `docs/decisions.md` gets a new dated entry (Task 19.4), and the ui-improvements spec files are not edited; this spec and `docs/decisions.md` carry the supersession.
+
+`packages/core/src/status-derivation.ts` (pure, no I/O):
+
+```ts
+export const RECOVERY_MIN_MS = 60 * 60 * 1000;      // 1 hour
+export const RECOVERY_MAX_MS = 24 * 60 * 60 * 1000; // 24 hours (the old RECOVERY_PERIOD_MS value)
+
+/** Recovery_Window_Limit for an ended stop of the given duration; null duration (unknown start) gives the maximum. */
+export function recoveryWindowMs(stopDurationMs: number | null): number {
+  if (stopDurationMs === null) return RECOVERY_MAX_MS;
+  const [, highMinutes] = normalizationEstimate(stopDurationMs);
+  return Math.min(RECOVERY_MAX_MS, Math.max(RECOVERY_MIN_MS, highMinutes * 60_000));
+}
+```
+
+`deriveAirportStatus` keeps its current inputs and adds one input, the ended stop's duration (`lastEndedDurationMs: number | null`), supplied by each caller from the same merged incident that gave `lastEndedAt`. Its condition at line 85 changes from `ageMs < RECOVERY_PERIOD_MS` to `ageMs < recoveryWindowMs(lastEndedDurationMs)`. `RECOVERY_PERIOD_MS` is kept as a deprecated alias of `RECOVERY_MAX_MS` only if another module imports it; Task 19.1 greps for importers and removes the constant when there are none. `normalizationEstimate` is not changed.
+
+**One derivation for every surface (19.5).** The Overview headline and chips (`network-overview.ts`), the Airports table pill (the `recoveringIds` from Task 4.2, derived from `overview.affected`), and the watchlist status (Task 23) all read `deriveAirportStatus`. Task 19.3 greps `apps/web/src` for `RECOVERY_PERIOD_MS`, `recovering` and `lastEndedAt`, routes every hit through `deriveAirportStatus`, and adds one test that asserts the three surfaces agree for the same airport, snapshot and events (a 40-minute stop that ended 90 minutes ago reads Normal on all three; one that ended 30 minutes ago reads Recovering on all three).
+
+### 10. Likely impact text (Requirement 20)
+
+The existing formatter is `formatDuration` in `apps/web/src/lib/ground-stop-durations.ts` and returns text prefixed with "Lasted". `packages/core` may not import from `apps/web`, so the unit logic moves down: a new pure `packages/core/src/format-duration.ts` exports `formatDurationText(ms)`, which returns "less than 1 min", "45 min", "1 h 20 min" or "2 h" using the same whole-minute floor and the same branches as today. The web `formatDuration` becomes `Lasted ${formatDurationText(ms)}`, so every existing web test keeps passing and the two places share one implementation. `explainStructured`'s `estimateText` becomes:
+
+```ts
+function estimateText(durationMs: number, basis: string): string {
+  const [low, high] = normalizationEstimate(durationMs);
+  return `AeroBrief estimate: delays may last about ${formatDurationText(low * 60_000)} to ${formatDurationText(high * 60_000)} after the ground stop ends, based on ${basis}.`;
+}
+```
+
+Examples: bounds of 660 and 2100 minutes read "about 11 h to 35 h"; bounds of 20 and 60 minutes read "about 20 min to 1 h". The `basis` sentence at `explain.ts` line 174 ("a ground stop that lasted about N minutes") is outside Requirement 20 and stays as is. `packages/core/src/index.ts` exports the new module. New mirrored tests: `packages/core/test/format-duration.test.ts` and `format-duration.pbt.test.ts`; updated: `explain.test.ts` and any `explain*.pbt.test.ts`.
+
+### 11. Account card spacing (Requirement 21)
+
+`.account-section` carries a `border-top` and `padding-top` meant for the section when it follows other sections on a page. Inside the Settings pane the Account card already has its own border, so the rule produces an empty band and a second line above the "Account" heading. The fix is a more specific rule, `.settings-pane .account-section { border-top: 0; padding-top: 0; }` (the actual Settings pane class is read from the Settings page and its stylesheet in Task 21.1), so any other use of `.account-section` is unaffected. CSS only, no DOM change. The test follows the `layout-css.test.ts` pattern: parse the stylesheet text and assert the override rule exists with both declarations at zero.
+
+### 12. Webhook delivery wording (Requirement 22)
+
+`WebhookSettings.tsx` currently builds "Last delivery: <word> at <TimeText />". The word "at" is correct only for absolute times. The component reads the `DisplayMode` from the same hook or context that `TimeText.tsx` uses (Task 22.1 finds it and adds no new context), and chooses the connector: none for `relative`, " at" for the three absolute modes. Output: "delivered 18 h ago" for relative, "delivered at 2026-11-25 15:05 UTC" or the local form for the absolute modes. If the time is missing or unparseable, the existing fallback text is kept unchanged.
+
+### 13. Watchlist status pill (Requirement 23)
+
+The signed-in Watchlist table (the component Task 23.1 finds under `apps/web/src/components/`) renders a Status_Cell with a "Watching" or "Not watching" pill. The cell content becomes that pill followed by the airport's status pill (`AirportStatusPill` for Recovering, `StatusPill` for Ground stop and Operating normally, as in `AirportTable.tsx`). Task 23.1 takes the status from the same input the Airports table uses: `deriveAirportStatus` per airport through a small shared helper in `apps/web/src/lib/` that `StatusView` also uses to build `recoveringIds`, so there is one code path. The table's `<tr>`/`<td>` structure is untouched. When no status response is available (loading or error), the cell shows only the Watching pill, as today, and the existing stale and error banners still render.
+
+### 14. Hook change (Requirement 24)
+
+`.kiro/hooks/require-test-update.json` changes from `trigger: "PreToolUse"`, `matcher: "write"` to `trigger: "PostFileSave"` with a path matcher written like `typecheck-on-save.json`'s:
+
+```json
+"matcher": "(^|[\\\\/])packages[\\\\/]core[\\\\/]src[\\\\/].+\\.ts$"
+```
+
+It matches `packages/core/src/status-derivation.ts` and `packages\core\src\explain.ts`, and does not match `docs/hooks.md`, `packages/core/test/explain.test.ts` or `apps/web/src/lib/incident-feed.ts`. The prompt keeps its content but changes tense: the file was just saved, so confirm that the mirrored tests (`<name>.test.ts`, `<name>.pbt.test.ts`, and for `schemas.ts` the three named files) are updated, and update them when they are not. It no longer needs the "if the path is not under packages/core/src, do nothing" branch, because the matcher restricts it. The reason recorded in `docs/hooks.md` (Hook 2) and in `docs/kiro-usage.md` (Hooks section): the `PreToolUse` version fired on every write, including docs and spec files, and relied on the agent to skip them. The "Limits" bullets in `docs/hooks.md` about blocking and about the `write` matcher are replaced by: a `PostFileSave` hook cannot block the save, and it covers only saves made through Kiro. Verification is a one-off PowerShell or Node check that applies the regex to the five sample paths and prints the results; it is not added to the repository.
+
 ## Data Models
 
 No new persisted data model. One new in-memory type (`ActiveGroundStopMap`, a `ReadonlySet<string>`) and one extended return type (`IncidentFeed` gains optional `endTimeNotRecorded?: ReadonlySet<string>`), both in `apps/web/src/lib/incident-feed.ts`. No Zod schema changes (`packages/core/src/schemas.ts` untouched).
@@ -171,7 +242,35 @@ For any UTC hour `h` in `0..23` and any IANA time zone string that `Intl.DateTim
 
 **Validates: Requirements 11.1**
 
+### Property 6: Recovery window is the clamped estimate upper bound
+
+For any ended ground stop with a known duration, any elapsed time since it ended, and no active stop at the airport, `deriveAirportStatus` returns "recovering" if and only if the elapsed time is less than `min(24 h, max(1 h, upper bound of normalizationEstimate(duration)))`; for an unknown duration the limit is 24 hours.
+
+**Validates: Requirements 19.1, 19.2, 19.3, 19.4**
+
+### Property 7: Recovery window is monotone in stop duration and bounded
+
+For any two ended-stop durations `a <= b`, `recoveryWindowMs(a) <= recoveryWindowMs(b)`, and for any duration the result lies in the closed range 1 hour to 24 hours.
+
+**Validates: Requirements 19.2**
+
+### Property 8: Duration text agrees across surfaces
+
+For any non-negative number of milliseconds `ms`, the web `formatDuration(ms)` equals "Lasted " followed by `formatDurationText(ms)`, and for any pair of estimate bounds, `explainStructured`'s likely-impact sentence contains `formatDurationText` of each bound in the form "about <low> to <high>" and contains no "minutes" unit for a bound of 60 minutes or more.
+
+**Validates: Requirements 20.1, 20.2, 20.3**
+
+### Property 9: Webhook connector depends only on the display mode
+
+For any delivery timestamp and any `DisplayMode`, the webhook delivery text contains "delivered at " if and only if the mode is not `relative`, and never contains "at" directly before relative text.
+
+**Validates: Requirements 22.1, 22.2**
+
 ## Testing Strategy
+
+Second-round additions. Example tests: the Live_Fixture render test (Requirement 18, the regression test the first round lacked); the three-surface agreement test (Requirement 19.5); the Account card CSS assertion (Requirement 21); the six Watchlist pill combinations (Requirement 23); and the hook matcher check against five sample paths (Requirement 24). Property tests (fast-check, `numRuns >= 100`) cover Properties 6 and 7 in `packages/core/test/status-derivation.pbt.test.ts`, Property 8 in `packages/core/test/format-duration.pbt.test.ts` plus `apps/web/test/ground-stop-durations.pbt.test.ts`, and Property 9 in `apps/web/test/webhook-settings.pbt.test.tsx` (or as example tests over the four modes if the web harness makes the property form cost more than it adds). Because Requirements 19 and 20 change `packages/core/src/`, the mirrored tests in `packages/core/test/` are updated in the same task, as `.kiro/steering/structure.md` and the test-update hook require.
+
+First-round testing strategy:
 
 Unit/example tests cover: the nav bar's Settings link and chevron icon and `aria-current` across its small, fixed link set (Requirement 4); `AirportTable`'s three status-cell branches (Requirement 8); `IncidentCard`'s header pill separation and the two ended-state text branches, using representative durations already exercised by `ground-stop-durations.pbt.test.ts` so this spec does not duplicate that property (Requirement 7); `WebhookSettings`'s `TimeText` integration, danger-outline class, and the three confirm-dialog interaction states (Requirements 5, 6); the CSS token assertions for search field width, webhook item border, and footer border, following the existing `layout-css.test.ts`/`palette-sync.test.ts` static-CSS-parsing pattern (Requirements 3, 12); the Watchlist signed-out spacing groups via class-name/DOM-presence assertions (Requirement 9); the contrast hint spacing and the three-swatch preview's labels and `data-testid` (Requirement 10); and the digest hour text updating on selection change before save (Requirement 11.3).
 

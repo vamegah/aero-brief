@@ -225,6 +225,36 @@ describe("WebhookSettings actions", () => {
     expect(screen.getByRole("button", { name: "Delete hooks1.example.com" }).className).toContain("btn--danger-outline");
   });
 
+  describe("delivery wording by display mode", () => {
+    afterEach(() => window.localStorage.clear());
+
+    async function renderDelivered(mode: string | null): Promise<string> {
+      window.localStorage.clear();
+      if (mode !== null) window.localStorage.setItem("aerobrief.timeDisplay", mode);
+      const at = new Date(Date.now() - 18 * 3_600_000).toISOString();
+      handlers["GET /api/webhooks"] = list([item(1, { lastOutcome: "delivered", lastOutcomeAt: at })]);
+      const { container } = render(<WebhookSettings />);
+      await screen.findByText("hooks1.example.com");
+      return (container.querySelector(".webhook-settings__outcome") as HTMLElement).textContent ?? "";
+    }
+
+    it("relative mode reads 'delivered 18 h ago' with no 'at'", async () => {
+      const text = await renderDelivered("relative");
+      expect(text).toContain("delivered 18 h ago");
+      expect(text).not.toMatch(/delivered at/);
+    });
+
+    it("defaults to the relative wording when nothing is stored", async () => {
+      expect(await renderDelivered(null)).toContain("delivered 18 h ago");
+    });
+
+    it.each(["airport_local", "my_local", "utc"])("%s mode reads 'delivered at'", async (mode) => {
+      const text = await renderDelivered(mode);
+      expect(text).toContain("delivered at ");
+      expect(text).not.toContain("ago");
+    });
+  });
+
   it("asks for confirmation naming the host, and cancelling does not delete", async () => {
     const w = item(1);
     handlers["GET /api/webhooks"] = list([w]);

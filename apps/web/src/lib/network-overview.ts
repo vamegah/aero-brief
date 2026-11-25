@@ -1,14 +1,10 @@
-import { isMonitoredId, type MonitoredId } from "@aerobrief/core/airports";
 import {
-  deriveAirportStatus,
   summarizeNetwork,
   type AirportStatusKind,
   type DerivedAirportStatus,
   type NetworkSummary,
 } from "@aerobrief/core/status-derivation";
-
-const STARTED = "GROUND_STOP_STARTED";
-const ENDED = "GROUND_STOP_ENDED";
+import { airportStatusById } from "./airport-status-by-id";
 
 export interface OverviewAirport {
   airportId: string;
@@ -70,37 +66,6 @@ export function formatEstimate(range: readonly [number, number]): string {
   return `AeroBrief estimate: back to normal in about ${formatMinutes(range[0])} to ${formatMinutes(range[1])} (${ESTIMATE_BASIS})`;
 }
 
-interface AirportEventTimes {
-  lastEndedAt: string | null;
-  lastStartedAt: string | null;
-}
-
-/** Per airport: newest ended time, and the newest start at or before it. */
-function eventTimesByAirport(events: readonly OverviewEvent[]): Map<string, AirportEventTimes> {
-  const ended = new Map<string, number>();
-  for (const e of events) {
-    const t = Date.parse(e.occurredAt);
-    if (e.airportId === null || e.type !== ENDED || Number.isNaN(t)) continue;
-    if (t > (ended.get(e.airportId) ?? -Infinity)) ended.set(e.airportId, t);
-  }
-  const started = new Map<string, number>();
-  for (const e of events) {
-    const t = Date.parse(e.occurredAt);
-    const endMs = e.airportId === null ? undefined : ended.get(e.airportId);
-    if (e.airportId === null || e.type !== STARTED || Number.isNaN(t) || endMs === undefined || t > endMs) continue;
-    if (t > (started.get(e.airportId) ?? -Infinity)) started.set(e.airportId, t);
-  }
-  const result = new Map<string, AirportEventTimes>();
-  for (const [id, endMs] of ended) {
-    const startMs = started.get(id);
-    result.set(id, {
-      lastEndedAt: new Date(endMs).toISOString(),
-      lastStartedAt: startMs === undefined ? null : new Date(startMs).toISOString(),
-    });
-  }
-  return result;
-}
-
 function latestEventTime(events: readonly OverviewEvent[]): string | null {
   let best: { ms: number; iso: string } | null = null;
   for (const e of events) {
@@ -123,25 +88,10 @@ export function buildNetworkOverview(input: {
   now: Date;
 }): NetworkOverview {
   const { airports, events, stale, hasData, now } = input;
-  const times = eventTimesByAirport(events);
   const names = new Map(airports.map((a) => [a.airportId, a.name]));
-  const statuses: DerivedAirportStatus[] = [];
-  for (const airport of airports) {
-    if (!isMonitoredId(airport.airportId)) continue;
-    const t = times.get(airport.airportId);
-    statuses.push(
-      deriveAirportStatus({
-        airportId: airport.airportId as MonitoredId,
-        hasData,
-        activeGroundStop: airport.groundStop !== null,
-        lastEndedAt: t?.lastEndedAt ?? null,
-        lastStartedAt: t?.lastStartedAt ?? null,
-        now,
-      }),
-    );
-  }
+  const byId = airportStatusById({ airports, events, hasData, now });
+  const statuses: DerivedAirportStatus[] = [...byId.values()];
   const summary = summarizeNetwork(statuses);
-  const byId = new Map(statuses.map((s) => [s.airportId as string, s]));
   const affected: AffectedAirportView[] = summary.affected.map(({ airportId, kind }) => {
     const derived = byId.get(airportId);
     const view: AffectedAirportView = { airportId, name: names.get(airportId) ?? airportId, kind };

@@ -2,7 +2,10 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { EventSummary } from "../../src/api/client";
 import { StatusView } from "../../src/components/StatusView";
-import { AIRPORT_COUNT, okStatus } from "./fixtures";
+import { AIRPORT_COUNT, airportsWithStops, okStatus } from "./fixtures";
+
+// Incident "b" (LAX) is active only when the snapshot shows a LAX ground stop (Requirement 1).
+const withLaxStop = () => okStatus({ airports: airportsWithStops("LAX") });
 
 // Requirements 11.1, 11.2, 11.4, 11.5, 11.6, 11.7.
 
@@ -93,7 +96,7 @@ describe("Airports pane filter and search", () => {
 describe("Events pane filters", () => {
   it("filters by state and updates the count", () => {
     open("events");
-    render(<StatusView status={okStatus()} events={EVENTS} loading={false} />);
+    render(<StatusView status={withLaxStop()} events={EVENTS} loading={false} />);
     const region = pane("events").querySelector("[role='status']") as HTMLElement;
     expect(region.textContent).toBe("Showing 2 of 2 incidents");
     fireEvent.change(screen.getByLabelText("State"), { target: { value: "active" } });
@@ -106,7 +109,7 @@ describe("Events pane filters", () => {
 
   it("shows Clear filters when nothing matches and clears all three filters", () => {
     open("events");
-    render(<StatusView status={okStatus()} events={EVENTS} loading={false} />);
+    render(<StatusView status={withLaxStop()} events={EVENTS} loading={false} />);
     fireEvent.change(screen.getByLabelText("Airport"), { target: { value: "LAX" } });
     fireEvent.change(screen.getByLabelText("State"), { target: { value: "ended" } });
     expect(pane("events").textContent).toContain("No events match these filters.");
@@ -120,7 +123,7 @@ describe("Events pane filters", () => {
 describe("Filter state in the URL", () => {
   it("writes the state with replaceState, keeps the hash and adds no history entry", () => {
     const length = window.history.length;
-    render(<StatusView status={okStatus()} events={EVENTS} loading={false} />);
+    render(<StatusView status={withLaxStop()} events={EVENTS} loading={false} />);
     fireEvent.click(screen.getByRole("button", { name: "Affected (1)" }));
     fireEvent.change(screen.getByLabelText("Search airports"), { target: { value: "Las Vegas" } });
     fireEvent.change(screen.getByLabelText("Airport"), { target: { value: "LAX" } });
@@ -161,12 +164,12 @@ describe("Filter state in the URL", () => {
 
   it("restores the Events pane filters, and ignores an unknown airport or type", () => {
     open("events", "?airport=LAX&state=active");
-    render(<StatusView status={okStatus()} events={EVENTS} loading={false} />);
+    render(<StatusView status={withLaxStop()} events={EVENTS} loading={false} />);
     expect((screen.getByLabelText("Airport") as HTMLSelectElement).value).toBe("LAX");
     expect(pane("events").textContent).toContain("Showing 1 of 2 incidents");
     document.body.innerHTML = "";
     open("events", "?airport=ZZZ&type=NOPE");
-    render(<StatusView status={okStatus()} events={EVENTS} loading={false} />);
+    render(<StatusView status={withLaxStop()} events={EVENTS} loading={false} />);
     expect(pane("events").textContent).toContain("Showing 2 of 2 incidents");
   });
 

@@ -43,6 +43,11 @@ export function makeAirports(): AirportSummary[] {
   }));
 }
 
+/** Airports where the given ids have an active ground stop and every other airport has none. */
+export function airportsWithStops(...ids: string[]): AirportSummary[] {
+  return makeAirports().map((a) => ({ ...a, groundStop: ids.includes(a.airportId) ? { reasonText: "thunderstorms" } : null }));
+}
+
 export function okStatus(overrides: Partial<Omit<OkStatus, "state">> = {}): OkStatus {
   return {
     state: "ok",

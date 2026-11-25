@@ -1,5 +1,6 @@
 import { airportById, artccName } from "./airports";
 import type { DetectedEvent, GroundStopEvent, NationwideEvent } from "./change-detector";
+import { formatDurationText } from "./format-duration";
 import type { Incident } from "./incidents";
 import { normalizationEstimate } from "./status-derivation";
 
@@ -127,7 +128,7 @@ function structuredWhy(reason: string | null): string {
 
 function estimateText(durationMs: number, basis: string): string {
   const [low, high] = normalizationEstimate(durationMs);
-  return `AeroBrief estimate: delays may last about ${low} to ${high} minutes after the ground stop ends, based on ${basis}.`;
+  return `AeroBrief estimate: delays may last about ${formatDurationText(low * 60_000)} to ${formatDurationText(high * 60_000)} after the ground stop ends, based on ${basis}.`;
 }
 
 /**

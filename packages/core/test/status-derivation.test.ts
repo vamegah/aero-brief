@@ -2,9 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { MONITORED_IDS } from '../src/airports';
 import {
   AIRPORT_STATUS_KINDS,
-  RECOVERY_PERIOD_MS,
+  RECOVERY_MAX_MS,
+  RECOVERY_MIN_MS,
   STATUS_CATALOG,
   deriveAirportStatus,
+  recoveryWindowMs,
   normalizationEstimate,
   summarizeNetwork,
 } from '../src/status-derivation';
@@ -58,15 +60,63 @@ describe('deriveAirportStatus', () => {
     expect(r.normalizationEstimateMinutes).toEqual([30, 90]);
   });
 
-  it('is normal exactly at the end of the recovery period', () => {
-    const r = deriveAirportStatus({
-      airportId: 'ORD',
-      hasData: true,
-      activeGroundStop: false,
-      lastEndedAt: new Date(NOW.getTime() - RECOVERY_PERIOD_MS).toISOString(),
-      now: NOW,
-    });
-    expect(r.kind).toBe('normal');
+  it('is normal exactly at the end of the recovery window when the duration is unknown (24 h)', () => {
+    const at = (ageMs: number) =>
+      deriveAirportStatus({
+        airportId: 'ORD',
+        hasData: true,
+        activeGroundStop: false,
+        lastEndedAt: new Date(NOW.getTime() - ageMs).toISOString(),
+        now: NOW,
+      }).kind;
+    expect(at(RECOVERY_MAX_MS - 1)).toBe('recovering');
+    expect(at(RECOVERY_MAX_MS)).toBe('normal');
+  });
+
+  it('is normal for a 40-minute stop that ended 90 minutes ago, recovering at 30 minutes', () => {
+    const kindAt = (agoMin: number) => {
+      const ended = new Date(NOW.getTime() - agoMin * 60_000);
+      return deriveAirportStatus({
+        airportId: 'ATL',
+        hasData: true,
+        activeGroundStop: false,
+        lastEndedAt: ended.toISOString(),
+        lastStartedAt: new Date(ended.getTime() - 40 * 60_000).toISOString(),
+        now: NOW,
+      }).kind;
+    };
+    // 40 min stop: estimate upper bound 60 min, so the window is exactly the 1 h minimum.
+    expect(kindAt(30)).toBe('recovering');
+    expect(kindAt(59)).toBe('recovering');
+    expect(kindAt(60)).toBe('normal');
+    expect(kindAt(90)).toBe('normal');
+  });
+
+  it('uses lastEndedDurationMs over lastStartedAt, and null means the 24 h maximum', () => {
+    const ended = new Date(NOW.getTime() - 5 * 3_600_000);
+    const base = { airportId: 'ATL' as const, hasData: true, activeGroundStop: false, lastEndedAt: ended.toISOString(), now: NOW };
+    expect(deriveAirportStatus({ ...base, lastEndedDurationMs: 40 * 60_000 }).kind).toBe('normal');
+    expect(deriveAirportStatus({ ...base, lastEndedDurationMs: null }).kind).toBe('recovering');
+    expect(deriveAirportStatus({ ...base, lastEndedDurationMs: 4 * 3_600_000 }).kind).toBe('recovering');
+  });
+});
+
+describe('recoveryWindowMs', () => {
+  it('clamps to 1 h at the minimum and 24 h at the maximum', () => {
+    expect(RECOVERY_MIN_MS).toBe(3_600_000);
+    expect(RECOVERY_MAX_MS).toBe(86_400_000);
+    expect(recoveryWindowMs(0)).toBe(RECOVERY_MIN_MS);
+    expect(recoveryWindowMs(10 * 60_000)).toBe(RECOVERY_MIN_MS);
+    expect(recoveryWindowMs(30 * 24 * 3_600_000)).toBe(RECOVERY_MAX_MS);
+  });
+
+  it('is the estimate upper bound between the clamps', () => {
+    expect(recoveryWindowMs(2 * 3_600_000)).toBe(3 * 3_600_000);
+    expect(recoveryWindowMs(16 * 3_600_000)).toBe(RECOVERY_MAX_MS);
+  });
+
+  it('gives the maximum for an unknown duration', () => {
+    expect(recoveryWindowMs(null)).toBe(RECOVERY_MAX_MS);
   });
 
   it('is data_unavailable without data, even with an active stop', () => {

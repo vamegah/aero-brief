@@ -2,7 +2,12 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { EventSummary } from "../../src/api/client";
 import { StatusView } from "../../src/components/StatusView";
-import { okStatus } from "./fixtures";
+import { airportsWithStops, okStatus } from "./fixtures";
+
+// The snapshot decides which open starts are active (Requirement 1), so the events below match it:
+// ATL and LAX have a ground stop. Ended events are older than every start at the same airport, so
+// no end pairs with a start and each event stays its own card.
+const withStops = () => okStatus({ airports: airportsWithStops("ATL", "LAX") });
 
 function setHash(hash: string): void {
   window.history.replaceState(null, "", `/${hash}`);
@@ -16,7 +21,7 @@ function makeEvents(count: number): EventSummary[] {
       incidentKey: `evt-${i}`,
       type,
       airportId: type === "NATIONWIDE_EVENT" ? null : i % 2 === 0 ? "ATL" : "LAX",
-      occurredAt: new Date(Date.UTC(2026, 0, 2, 11, 59 - i)).toISOString(),
+      occurredAt: new Date(Date.UTC(2026, 0, 2, 11, 59 - i - (type === "GROUND_STOP_ENDED" ? 100 : 0))).toISOString(),
       explanation: `Explanation ${i}`,
     };
   });
@@ -94,7 +99,7 @@ describe("Status dashboard", () => {
     [5, 5],
     [8, 5],
   ])("Overview shows %i events as %i incident cards, active first, and the View all events link", (given, shown) => {
-    render(<StatusView status={okStatus()} events={makeEvents(given)} loading={false} />);
+    render(<StatusView status={withStops()} events={makeEvents(given)} loading={false} />);
     const cards = pane("overview").querySelectorAll(".event-card");
     expect(cards).toHaveLength(shown);
     if (shown > 0) {
@@ -110,7 +115,7 @@ describe("Status dashboard", () => {
 
   it("Events pane has no repeated Data as of line, shows the count line and the filtered list", () => {
     setHash("#events");
-    render(<StatusView status={okStatus()} events={makeEvents(6)} loading={false} />);
+    render(<StatusView status={withStops()} events={makeEvents(6)} loading={false} />);
     const events = pane("events");
     expect(events.textContent).not.toContain("Data as of");
     expect(events.querySelectorAll(".event-card")).toHaveLength(6);

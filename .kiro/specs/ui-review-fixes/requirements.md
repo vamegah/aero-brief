@@ -6,6 +6,8 @@ This spec records 11 owner-approved fixes from a screenshot review conducted on 
 
 This spec follows the guardrails already in force: `.kiro/steering/tech.md` (approved stack only), `.kiro/steering/structure.md` (file layout and import rules), `.kiro/steering/design.md` (visual design hard rules), and `.kiro/steering/scope.md` (MVP boundaries). The nav bar DOM may change for Requirement 4, as the owner previously approved for nav bar navigation behavior (`.kiro/specs/ui-improvements/requirements.md`, decision 2); the airport table, banners, and `aria-live` region DOM stay unchanged per hard rule 1. No new runtime dependency is introduced.
 
+**Second round (2026-11-25, owner: "all").** Requirements 18 to 24 add seven fixes found after the first round reached Preview. Requirement N is built by Task N, and Requirements 13 to 17 are intentionally unused. Requirement 19 changes `packages/core/src/status-derivation.ts` and Requirement 20 changes `packages/core/src/explain.ts`, so the "apps/web only" scope above no longer holds for those two; both are pure functions and keep their mirrored tests in `packages/core/test/`. Requirement 19 also supersedes Requirement 1.2 of `.kiro/specs/ui-improvements/requirements.md` by owner decision. Requirement 24 edits a Kiro hook and two docs files.
+
 ## Glossary
 
 - **Frontend**: The React 18 + Vite app in `apps/web`.
@@ -26,6 +28,11 @@ This spec follows the guardrails already in force: `.kiro/steering/tech.md` (app
 - **Send_Hour**: The UTC hour selected in the Daily digest "Send at (UTC)" control (`DigestSettings.tsx`).
 - **Table_Rule_Token**: The `--color-table-rule` CSS custom property (`apps/web/src/styles/tokens.css`), already present in `palettePairs` usage per theme.
 - **Deadline**: December 4, 2026, 2:00 PM PT.
+- **Live_Fixture**: The saved production response `apps/web/test/fixtures-live-national-2026-11-25.json` from `/api/status/national`.
+- **Status_View**: The `StatusView.tsx` page with its Overview, Airports and Events panes.
+- **Status_Derivation**: `deriveAirportStatus` in `packages/core/src/status-derivation.ts`.
+- **Recovery_Window_Limit**: The elapsed time after a ground stop ends at which an airport stops reading "recovering" (Requirement 19).
+- **Explainer**: `explainStructured` in `packages/core/src/explain.ts`.
 
 ## Requirements
 
@@ -156,6 +163,93 @@ This spec follows the guardrails already in force: `.kiro/steering/tech.md` (app
 1. THE `.webhook-settings__item` top border SHALL use the Table_Rule_Token (`--color-table-rule`) in place of the current `--color-border` value.
 2. THE `.site-footer` top border SHALL be changed from its current 2px `--color-border` rule to a lighter treatment using the Table_Rule_Token, keeping the border present and visible.
 3. THE change SHALL be limited to CSS token references; no new color token SHALL be introduced, and any resulting new color pair SHALL be checked against the existing `palettePairs`/contrast test suite and added if it is not already covered.
+
+### Requirement 18: Stale-active incident fix works on the live national response
+
+**User Story:** As a traveler, I want the Events pane and the Overview "Latest events" list to show a finished ground stop as ended, so that I do not read "Active for 23 h" for a stop the FAA lifted.
+
+**Owner approval:** Second-round fixes, 2026-11-25 ("all"). Requirement 1 is unchanged; this requirement records that its fix does not work in production and what must hold once it does.
+
+**Evidence:** The saved live response `apps/web/test/fixtures-live-national-2026-11-25.json` holds an ORD `GROUND_STOP_STARTED` event (incidentKey `faa:b8826b88-…`, 2026-11-24T21:25:31Z), an ORD `GROUND_STOP_ENDED` event (incidentKey `faa:8dd7eae0-…`, 2026-11-24T22:05:29Z), and an ORD airport with `groundStop: null`. With that response the live UI still shows ORD "Active for 23 h" in the Events pane and in the Overview "Latest events" list, plus an ended ORD card reading "Started more than 24 hours ago".
+
+#### Acceptance Criteria
+
+1. WHEN the Frontend renders the Status_View from the Live_Fixture, THE Events pane SHALL show exactly one ORD incident, in the ended state, with a duration of 40 minutes (the difference between the paired start and end times, to the minute).
+2. WHEN the Frontend renders the Status_View from the Live_Fixture, THE Overview "Latest events" list SHALL show the same single ended ORD incident and SHALL show no ORD incident in the active state.
+3. WHEN the Frontend renders the Status_View from the Live_Fixture, THE Frontend SHALL render no ORD card with the text "Active for" and no ORD card with the text "Started more than 24 hours ago".
+4. THE Frontend SHALL apply `reconcileWithSnapshot` to every incident list that the Status_View renders from events, including the Events pane and the Overview "Latest events" list, using the same snapshot airports in each.
+5. THE design document SHALL record the root cause found for why Requirement 1's fix did not take effect on the live response, naming the code path and the field or argument involved.
+6. THE Frontend SHALL contain an automated test that renders the Status_View from the Live_Fixture and asserts Criteria 1, 2 and 3 for both the Events pane and the Overview "Latest events" list.
+
+### Requirement 19: Recovering window ends at the estimate's upper bound
+
+**User Story:** As a traveler, I want "Recovering" to last only as long as AeroBrief expects delays to last, so that an airport does not read "Recovering" for a full day after a 40-minute stop.
+
+**Owner decision (2026-11-25):** This requirement changes Requirement 1.2 of `.kiro/specs/ui-improvements/requirements.md`, which fixed the Recovery_Window at 24 hours (`RECOVERY_PERIOD_MS`). The owner replaced that fixed period with the estimate-based window below. The decision is recorded in `docs/decisions.md` and noted here and in `design.md`.
+
+#### Acceptance Criteria
+
+1. WHEN a ground stop at an airport has ended and no Active_Ground_Stop exists at that airport, THE Status_Derivation SHALL return "recovering" until the elapsed time since the stop ended reaches the Recovery_Window_Limit.
+2. THE Status_Derivation SHALL compute the Recovery_Window_Limit as the upper bound of the AeroBrief estimate for the ended stop (the second value of `normalizationEstimate` for that stop's duration, in minutes), clamped to a minimum of 1 hour and a maximum of 24 hours.
+3. WHEN the elapsed time since the stop ended is greater than or equal to the Recovery_Window_Limit, THE Status_Derivation SHALL return "normal" for that airport.
+4. IF the duration of the ended stop is unknown (the start is outside the retention window), THEN THE Status_Derivation SHALL use the maximum Recovery_Window_Limit of 24 hours.
+5. THE Overview headline and chips, THE Airports table "Recovering" pill, and THE watchlist status SHALL all obtain the "recovering" decision from the same `deriveAirportStatus` call and SHALL NOT compute a separate recovery window.
+6. THE property tests and unit tests of `packages/core/src/status-derivation.ts` SHALL be updated in the same task as the change, at `packages/core/test/status-derivation.test.ts` and `packages/core/test/status-derivation.pbt.test.ts`, to assert the clamp bounds and the boundary at the Recovery_Window_Limit.
+7. THE file `docs/decisions.md` SHALL contain an entry dated 2026-11-25 that records this decision and names Requirement 1.2 of the ui-improvements spec as superseded.
+
+### Requirement 20: Likely impact text formats durations with the duration formatter
+
+**User Story:** As a traveler, I want "likely impact" to say "about 11 h to 35 h" instead of a count of raw minutes, so that I can read it at a glance.
+
+#### Acceptance Criteria
+
+1. WHEN `explainStructured` produces a "likely impact" sentence from an estimate, THE Explainer SHALL format the lower and upper bounds with the shared duration formatter, in the form "about <low> to <high>", for example "about 11 h to 35 h" or "about 20 min to 1 h".
+2. THE Explainer SHALL output the word "minutes" as a unit for no estimate bound of 60 minutes or more.
+3. THE Explainer SHALL use one duration formatter implementation for the estimate bounds and for the incident-card duration text, so that the same number of minutes reads the same way in both places.
+4. THE unit tests and property tests of `packages/core/src/explain.ts` SHALL be updated in the same task as the change, at `packages/core/test/explain.test.ts` and any `explain*.pbt.test.ts` file, to assert the new wording.
+
+### Requirement 21: Settings Account card has no empty band above its heading
+
+**User Story:** As a signed-in user, I want the Account card to start with its heading, so that the card does not show an empty band and a stray divider.
+
+#### Acceptance Criteria
+
+1. THE Settings page SHALL render the "Account" heading of the Account card with no empty vertical band above it, and no divider line above it other than the card's own border.
+2. THE Frontend SHALL remove the top border and the top padding that `.account-section` applies inside the Settings pane, using CSS only.
+3. THE Frontend SHALL contain an automated CSS assertion test that fails when `.account-section` inside the Settings pane has a `border-top` or a `padding-top` greater than zero.
+
+### Requirement 22: Webhook delivery text reads correctly for relative and absolute times
+
+**User Story:** As a user with webhooks, I want "delivered 18 h ago" and "delivered at 3:05 PM", so that the sentence reads naturally in either time display.
+
+#### Acceptance Criteria
+
+1. WHILE the Time_Display_Preference is `relative`, THE webhook item SHALL render the delivery text as "delivered" followed by the relative time text, for example "delivered 18 h ago", with no "at" before the relative text.
+2. WHILE the Time_Display_Preference is `airport_local`, `my_local`, or `utc`, THE webhook item SHALL render the delivery text as "delivered at" followed by the absolute time text.
+3. THE Frontend SHALL contain automated tests that cover Criterion 1 and Criterion 2.
+
+### Requirement 23: Signed-in Watchlist shows each airport's status
+
+**User Story:** As a signed-in traveler, I want each Watchlist row to show whether the airport is Recovering, in a Ground Stop, or Normal, so that I can see disruption without leaving the Watchlist.
+
+#### Acceptance Criteria
+
+1. WHILE a visitor is signed in, THE Watchlist airport table Status_Cell SHALL show the airport's status pill (Ground stop, Recovering, or Operating normally) next to the existing "Watching" or "Not watching" pill.
+2. THE Watchlist SHALL obtain the status pill from the same `deriveAirportStatus` result that Requirement 19 Criterion 5 names, and SHALL NOT compute a separate status.
+3. THE Watchlist SHALL make this change to Status_Cell content only; the table's row, column, and cell DOM structure SHALL remain as asserted by the existing tests.
+4. THE Frontend SHALL contain automated tests that assert the Ground stop, Recovering, and Operating normally pills next to both "Watching" and "Not watching".
+
+### Requirement 24: The test-update hook fires after a save under packages/core/src
+
+**User Story:** As the owner, I want the test-update hook to run after a save of a core source file only, so that it does not interrupt every write, including docs.
+
+#### Acceptance Criteria
+
+1. THE file `.kiro/hooks/require-test-update.json` SHALL use the trigger `PostFileSave` and a `matcher` regex on the file path that matches paths under `packages/core/src/` and no other path, written in the style of `.kiro/hooks/typecheck-on-save.json`.
+2. THE hook action SHALL remain an agent prompt that asks the agent to confirm or update the mirrored tests in `packages/core/test/`, and, for `schemas.ts`, `schemas.test.ts`, `snapshot-roundtrip.pbt.test.ts` and `faa-body.pbt.test.ts`.
+3. THE files `docs/hooks.md` (Hook 2) and the Hooks section of `docs/kiro-usage.md` SHALL describe the new trigger and matcher and SHALL state the reason for the change: the `PreToolUse` version with matcher `write` interrupted every write, including docs.
+4. THE matcher SHALL be verified against sample paths: it SHALL match `packages/core/src/status-derivation.ts` and `packages\core\src\explain.ts`, and SHALL NOT match `docs/hooks.md`, `packages/core/test/explain.test.ts`, or `apps/web/src/lib/incident-feed.ts`.
+5. THE edited hook file SHALL parse as valid JSON.
 
 ## Non-Functional Requirements
 

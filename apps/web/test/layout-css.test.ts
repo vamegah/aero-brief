@@ -415,3 +415,14 @@ describe("layout css: Watchlist search width and signed-out spacing (ui-review-f
     expect(declared(primitives, ".signed-out-section .watchlist-search", "margin-top", null)).toBe("var(--space-5)");
   });
 });
+
+describe("layout css: Settings Account card spacing (ui-review-fixes Requirements 21.1, 21.2, 21.3)", () => {
+  it("the Settings pane removes the divider, top padding and top margin from .account-section", () => {
+    const rule = rulesOf(settingsCss).find(
+      (r) => r.media === null && r.selectors.includes(".settings__pane .account-section"),
+    );
+    expect(rule?.decls.get("border-top")).toBe("0");
+    expect(rule?.decls.get("padding-top")).toBe("0");
+    expect(rule?.decls.get("margin-top")).toBe("0");
+  });
+});

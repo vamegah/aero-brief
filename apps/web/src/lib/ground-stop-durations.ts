@@ -1,3 +1,5 @@
+import { formatDurationText } from "@aerobrief/core/format-duration";
+
 const STARTED = "GROUND_STOP_STARTED";
 const ENDED = "GROUND_STOP_ENDED";
 
@@ -43,11 +45,5 @@ export function pairGroundStopDurations(events: readonly DurationEvent[]): Map<n
 
 /** "Lasted less than 1 min", "Lasted 45 min", "Lasted 1 h 20 min", "Lasted 2 h". */
 export function formatDuration(ms: number): string {
-  const totalMinutes = Math.floor(Math.max(0, ms) / 60_000);
-  if (totalMinutes < 1) return "Lasted less than 1 min";
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  if (hours === 0) return `Lasted ${minutes} min`;
-  if (minutes === 0) return `Lasted ${hours} h`;
-  return `Lasted ${hours} h ${minutes} min`;
+  return `Lasted ${formatDurationText(ms)}`;
 }

@@ -89,6 +89,13 @@
   max-width: 100%;
 }
 
+/* The pane is already a Card: the Account section needs no divider, top margin or top padding. */
+.settings__pane .account-section {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 /* Wide (768px and up, the same breakpoint as the nav bar): side menu. Below it, tab bar. */
 @media (min-width: 768px) {
   .settings,

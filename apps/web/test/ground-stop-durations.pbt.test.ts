@@ -1,6 +1,7 @@
-import fc from "fast-check";
-import { describe, it } from "vitest";
-import { pairGroundStopDurations } from "../src/lib/ground-stop-durations";
+﻿import fc from "fast-check";
+import { describe, expect, it } from "vitest";
+import { formatDurationText } from "@aerobrief/core/format-duration";
+import { formatDuration, pairGroundStopDurations } from "../src/lib/ground-stop-durations";
 
 const T0 = Date.UTC(2026, 0, 2, 0, 0, 0);
 
@@ -61,6 +62,19 @@ describe("Property 39: Ground stop duration pairing", () => {
           { type: "GROUND_STOP_ENDED", airportId: `B${k}`, occurredAt: new Date(T0 + (m + 5) * 60_000).toISOString() },
         ]);
         return pairGroundStopDurations(events).size === 0;
+      }),
+      { numRuns: 100 },
+    );
+  });
+});
+
+// Feature: ui-review-fixes, Property 8: Duration text agrees across surfaces
+describe("formatDuration agrees with the core formatter", () => {
+  it("is 'Lasted ' plus formatDurationText", () => {
+    // **Validates: Requirements 20.3**
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 100_000_000 }), (ms) => {
+        expect(formatDuration(ms)).toBe(`Lasted ${formatDurationText(ms)}`);
       }),
       { numRuns: 100 },
     );

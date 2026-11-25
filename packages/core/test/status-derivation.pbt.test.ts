@@ -2,7 +2,9 @@ import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
 import { MONITORED_IDS } from '../src/airports';
 import {
-  RECOVERY_PERIOD_MS,
+  RECOVERY_MAX_MS,
+  RECOVERY_MIN_MS,
+  recoveryWindowMs,
   MIN_ESTIMATE_WINDOW_MINUTES,
   AIRPORT_STATUS_KINDS,
   deriveAirportStatus,
@@ -32,7 +34,7 @@ describe('Property 1: Status derivation returns exactly one of the four live sta
         fc.boolean(),
         fc.boolean(),
         nowMs,
-        fc.option(fc.integer({ min: -RECOVERY_PERIOD_MS * 2, max: RECOVERY_PERIOD_MS * 2 }), { nil: null }),
+        fc.option(fc.integer({ min: -RECOVERY_MAX_MS * 2, max: RECOVERY_MAX_MS * 2 }), { nil: null }),
         (id, hasData, activeGroundStop, now, offset) => {
           const lastEndedAt = offset === null ? null : new Date(now - offset).toISOString();
           const result = deriveAirportStatus({
@@ -56,14 +58,14 @@ describe('Property 1: Status derivation returns exactly one of the four live sta
 // Feature: ui-improvements, Property 2: Recovery window boundary
 // **Validates: Requirements 1.2**
 describe('Property 2: Recovery window boundary', () => {
-  it('is recovering iff no active stop and now - lastEndedAt < RECOVERY_PERIOD_MS', () => {
+  it('with an unknown duration is recovering iff no active stop and now - lastEndedAt < RECOVERY_MAX_MS', () => {
     fc.assert(
       fc.property(
         airportId,
         nowMs,
         fc.oneof(
-          fc.integer({ min: -RECOVERY_PERIOD_MS * 2, max: RECOVERY_PERIOD_MS * 2 }),
-          fc.constantFrom(-1, 0, 1, RECOVERY_PERIOD_MS - 1, RECOVERY_PERIOD_MS, RECOVERY_PERIOD_MS + 1),
+          fc.integer({ min: -RECOVERY_MAX_MS * 2, max: RECOVERY_MAX_MS * 2 }),
+          fc.constantFrom(-1, 0, 1, RECOVERY_MAX_MS - 1, RECOVERY_MAX_MS, RECOVERY_MAX_MS + 1),
         ),
         (id, now, ageMs) => {
           const result = deriveAirportStatus({
@@ -73,7 +75,7 @@ describe('Property 2: Recovery window boundary', () => {
             lastEndedAt: new Date(now - ageMs).toISOString(),
             now: new Date(now),
           });
-          expect(result.kind).toBe(ageMs < RECOVERY_PERIOD_MS ? 'recovering' : 'normal');
+          expect(result.kind).toBe(ageMs < RECOVERY_MAX_MS ? 'recovering' : 'normal');
           if (result.kind === 'recovering') {
             expect(result.recoveringSinceMs).toBe(Math.max(0, ageMs));
             expect(result.normalizationEstimateMinutes).toBeDefined();
@@ -82,6 +84,62 @@ describe('Property 2: Recovery window boundary', () => {
           }
         },
       ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+const durationMsArb = fc.oneof(
+  fc.integer({ min: 0, max: 40 * 24 * 3_600_000 }),
+  fc.constantFrom(0, 20 * 60_000, 40 * 60_000, 2 * 3_600_000, 16 * 3_600_000, 17 * 3_600_000),
+);
+
+// Feature: ui-review-fixes, Property 6: Recovery window is the clamped estimate upper bound
+// **Validates: Requirements 19.1, 19.2, 19.3, 19.4, 19.6**
+describe('Property 6: Recovery window is the clamped estimate upper bound', () => {
+  it('is recovering iff elapsed < clamp(estimateHigh, 1 h, 24 h); unknown duration uses 24 h', () => {
+    fc.assert(
+      fc.property(
+        airportId,
+        nowMs,
+        fc.option(durationMsArb, { nil: null }),
+        fc.integer({ min: 0, max: RECOVERY_MAX_MS + 3_600_000 }),
+        fc.boolean(),
+        (id, now, duration, ageRaw, atLimit) => {
+          const limit = duration === null ? RECOVERY_MAX_MS : Math.min(RECOVERY_MAX_MS, Math.max(RECOVERY_MIN_MS, normalizationEstimate(duration)[1] * 60_000));
+          expect(recoveryWindowMs(duration)).toBe(limit);
+          const ageMs = atLimit ? limit : ageRaw;
+          for (const a of [ageMs - 1, ageMs, ageMs + 1]) {
+            const result = deriveAirportStatus({
+              airportId: id,
+              hasData: true,
+              activeGroundStop: false,
+              lastEndedAt: new Date(now - a).toISOString(),
+              lastEndedDurationMs: duration,
+              now: new Date(now),
+            });
+            expect(result.kind).toBe(a < limit ? 'recovering' : 'normal');
+          }
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// Feature: ui-review-fixes, Property 7: Recovery window is monotone in stop duration and bounded
+// **Validates: Requirements 19.2, 19.4, 19.6**
+describe('Property 7: Recovery window is monotone in stop duration and bounded', () => {
+  it('never shrinks as the stop gets longer and stays within [1 h, 24 h]', () => {
+    fc.assert(
+      fc.property(durationMsArb, durationMsArb, (a, b) => {
+        const [short, long] = a <= b ? [a, b] : [b, a];
+        expect(recoveryWindowMs(short)).toBeLessThanOrEqual(recoveryWindowMs(long));
+        for (const d of [a, b, null]) {
+          expect(recoveryWindowMs(d)).toBeGreaterThanOrEqual(RECOVERY_MIN_MS);
+          expect(recoveryWindowMs(d)).toBeLessThanOrEqual(RECOVERY_MAX_MS);
+        }
+      }),
       { numRuns: 200 },
     );
   });

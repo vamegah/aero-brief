@@ -50,11 +50,11 @@ describe("Overview pane", () => {
   it("shows the recovering detail line with time since end and the AeroBrief estimate", () => {
     const card = renderOverview(okStatus({ airports: calm() }), [
       ev("GROUND_STOP_ENDED", "LAX", "2026-01-02T10:00:00.000Z"),
-      ev("GROUND_STOP_STARTED", "LAX", "2026-01-02T09:00:00.000Z"),
+      ev("GROUND_STOP_STARTED", "LAX", "2026-01-02T08:00:00.000Z"),
     ]);
     expect(card.textContent).toContain("Recovering: 1");
     expect(card.textContent).toContain("Ended 2 h ago.");
-    expect(card.textContent).toContain("AeroBrief estimate: back to normal in about 30 min to 1 h 30 min");
+    expect(card.textContent).toContain("AeroBrief estimate: back to normal in about 1 h to 3 h");
     expect(card.textContent).toContain("not an FAA figure");
   });
 

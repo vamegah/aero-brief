@@ -11,7 +11,8 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
 - Add no runtime dependency. Icons stay inline SVG (`aria-hidden`) or the existing CSS `mask-image` span pattern; nothing inside the Status_View renders `<svg>`/`<img>`.
 - Restyle with CSS and class names. The airport table, banners, and `aria-live` region DOM stay unchanged except for `Status_Cell` text content (Requirement 8). The nav bar DOM MAY change for Requirement 4; update `test/components/nav-bar.test.tsx` and `test/a11y/nav-bar.test.tsx` in the same task.
 - Never lower a contrast threshold. Fix the token and add any new pair to `palettePairs`.
-- `packages/core` is not modified by this spec (Requirement 2 is investigation-only; its finding is already recorded in `design.md`).
+- Tasks 1 to 17 do not modify `packages/core` (Requirement 2 is investigation-only; its finding is already recorded in `design.md`). The second round does: Task 19 changes `status-derivation.ts` and Task 20 adds `format-duration.ts` and changes `explain.ts`, each with its mirrored tests in `packages/core/test/` in the same task, because `.kiro/steering/structure.md` requires it and the test-update hook checks it.
+- Second-round tasks 18 to 25 also edit `.kiro/hooks/require-test-update.json`, `docs/decisions.md`, `docs/hooks.md` and `docs/kiro-usage.md` (Tasks 19.4, 24.1, 24.2). Nothing is committed.
 
 ## Tasks
 
@@ -181,15 +182,109 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
 - [x] 15. Checkpoint - Digest local time and lighter separators
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 16. Owner Preview review
-  - Deploy or point the owner to the Vercel Preview of this branch (signed-out views, per the existing rollout pattern in `.kiro/specs/ui-improvements/requirements.md`) and a phone-width view, and ask the owner to confirm all 11 fixes read correctly, including the Requirement 7.3 wording question flagged in `design.md`.
+### Second round (2026-11-25, owner: "all")
+
+Tasks 18 to 25 are listed here, ahead of Tasks 16 and 17, because they run first: Task 16 (owner review) and Task 17 (ship) keep their IDs and depend on Tasks 18 to 25. The tests in these tasks are required (no `*`) because the first round's optional tests left the Requirement 1 wiring defect unnoticed.
+
+- [x] 18. Stale-active incident fix on the live response
+  - [x] 18.1 Diagnose and fix why `reconcileWithSnapshot` is not applied to the live response
+    - First write the failing test of Task 18.2 against the current code and confirm it fails.
+    - `design.md` section 8 names the probable cause: `StatusView.tsx` line 95 calls `buildIncidentFeed(events)` with no snapshot airports. Change it to pass `ok?.airports` (no argument when `ok === null`).
+    - Check that no other code path builds incidents from events for the Overview "Latest events" list or the Events pane (`latestEndedKeys`, `filterIncidentFeed`, `limitFeed`, `network-overview.ts`). If the fixture still fails after the wiring fix, work through the suspects (a), (b), (c) listed in `design.md` section 8, fix the one found, and record the final root cause in that section.
+    - Edit `apps/web/src/components/StatusView.tsx` and, only if the diagnosis requires it, `apps/web/src/lib/incident-feed.ts`. Do not change the status marks of Tasks 1.1 to 1.4.
+    - _Requirements: 18.4, 18.5, 1.1, 1.2, 1.4_
+
+  - [x] 18.2 Write the Live_Fixture render test
+    - Create `apps/web/test/status-view-live-fixture.test.tsx`. Load `apps/web/test/fixtures-live-national-2026-11-25.json`, render `StatusView` with a fixed `now` of 2026-11-25T21:00:00Z, and assert for the Overview "Latest events" list and the Events pane separately: one ended ORD incident that lasted 40 min, no ORD card containing "Active for", no ORD card containing "Started more than 24 hours ago".
+    - _Requirements: 18.1, 18.2, 18.3, 18.6_
+
+- [x] 19. Recovering window from the estimate upper bound
+  - [x] 19.1 Change `packages/core/src/status-derivation.ts`
+    - Add `RECOVERY_MIN_MS`, `RECOVERY_MAX_MS` and `recoveryWindowMs` as in `design.md` section 9; read the real signature of `deriveAirportStatus` first and add the ended-stop duration input (`null` when the start is unknown) with the smallest change that keeps existing callers compiling.
+    - Replace the `RECOVERY_PERIOD_MS` comparison with `recoveryWindowMs`; grep for importers of `RECOVERY_PERIOD_MS` and keep it as an alias of `RECOVERY_MAX_MS` only if one remains.
+    - _Requirements: 19.1, 19.2, 19.3, 19.4_
+
+  - [x] 19.2 Update the core tests in the same task as Task 19.1
+    - Update `packages/core/test/status-derivation.test.ts` (clamp at 1 h and 24 h, boundary exactly at the limit, unknown duration, the 40-minute stop that ended 90 minutes ago) and `packages/core/test/status-derivation.pbt.test.ts`; fix any existing assertion that assumed the fixed 24-hour period.
+    - **Property 6: Recovery window is the clamped estimate upper bound**
+    - **Property 7: Recovery window is monotone in stop duration and bounded**
+    - **Validates: Requirements 19.1, 19.2, 19.3, 19.4, 19.6**
+
+  - [x] 19.3 Route every web surface through the one derivation
+    - Create the shared helper `apps/web/src/lib/airport-status-by-id.ts` that returns the `deriveAirportStatus` result per airport id from the snapshot airports and the merged incidents (including each airport's last ended time and duration).
+    - Use it in `network-overview.ts` (headline and chips) and in `StatusView.tsx` for `recoveringIds` (Airports table); leave the Watchlist wiring to Task 23.1. Grep `apps/web/src` for `RECOVERY_PERIOD_MS`, `recovering` and `lastEndedAt` and remove any separate window computation.
+    - Add a test in `apps/web/test/` asserting that the Overview, the Airports table pill and the helper agree for a stop that ended 30 minutes ago (Recovering) and one that ended 90 minutes ago (Normal), both 40-minute stops. Update existing web tests that assumed 24 hours.
+    - _Requirements: 19.5_
+
+  - [x] 19.4 Record the owner decision in `docs/decisions.md`
+    - Append an entry dated 2026-11-25: the Recovery_Window now ends at the estimate upper bound, clamped to 1 to 24 hours; it supersedes Requirement 1.2 of `.kiro/specs/ui-improvements/requirements.md`; the owner approved it in the 2026-11-25 second-round review ("all"). Follow the heading style of the existing entries.
+    - _Requirements: 19.7_
+
+- [x] 20. Likely impact text uses the duration formatter
+  - [x] 20.1 Share one duration formatter and change `explainStructured`
+    - Create `packages/core/src/format-duration.ts` exporting `formatDurationText(ms)`; export it from `packages/core/src/index.ts`.
+    - Change `apps/web/src/lib/ground-stop-durations.ts` so `formatDuration(ms)` returns `Lasted ` plus `formatDurationText(ms)` with identical output to today.
+    - Change `estimateText` in `packages/core/src/explain.ts` as in `design.md` section 10.
+    - _Requirements: 20.1, 20.2, 20.3_
+
+  - [x] 20.2 Update and add core and web tests in the same task as Task 20.1
+    - Create `packages/core/test/format-duration.test.ts` and `packages/core/test/format-duration.pbt.test.ts`; update `packages/core/test/explain.test.ts` and any `explain*.pbt.test.ts` for the new wording ("about 11 h to 35 h", "about 20 min to 1 h"); keep `apps/web/test/ground-stop-durations.pbt.test.ts` passing and add the "Lasted " agreement check.
+    - **Property 8: Duration text agrees across surfaces**
+    - **Validates: Requirements 20.1, 20.2, 20.3, 20.4**
+
+- [x] 21. Settings Account card spacing
+  - [x] 21.1 Remove the empty band and stray divider above the "Account" heading
+    - Find the Settings pane class and the `.account-section` rule in `apps/web/src/styles/`; add an override scoped to the Settings pane that sets `border-top: 0` and `padding-top: 0`. CSS only; no DOM change.
+    - _Requirements: 21.1, 21.2_
+
+  - [x] 21.2 Write the CSS assertion test
+    - Extend `apps/web/test/layout-css.test.ts` (or the equivalent CSS-parsing test) to assert the scoped override exists with both declarations at zero.
+    - _Requirements: 21.3_
+
+- [x] 22. Webhook delivery wording
+  - [x] 22.1 Choose "delivered" or "delivered at" by display mode in `WebhookSettings.tsx`
+    - Read the `DisplayMode` from the same hook or context `TimeText.tsx` uses; render "delivered <TimeText>" for `relative` and "delivered at <TimeText>" for the other three modes.
+    - _Requirements: 22.1, 22.2_
+
+  - [x] 22.2 Write tests for both wordings
+    - Extend `apps/web/test/webhook-settings.test.tsx`: relative mode shows "delivered 18 h ago" with no "at"; each absolute mode shows "delivered at".
+    - **Property 9: Webhook connector depends only on the display mode**
+    - **Validates: Requirements 22.1, 22.2, 22.3**
+
+- [x] 23. Watchlist status pill
+  - [x] 23.1 Show the derived status next to the Watching pill
+    - Find the signed-in Watchlist table component; render the status pill (Ground stop, Recovering, Operating normally) from the helper of Task 19.3 inside the existing Status_Cell, after the "Watching" or "Not watching" pill. Cell content only; no `<tr>`/`<td>` change. With no status response, render only the Watching pill as today.
+    - _Requirements: 23.1, 23.2, 23.3_
+
+  - [x] 23.2 Write the Watchlist tests
+    - Add tests in `apps/web/test/` asserting each of the three status pills renders next to both "Watching" and "Not watching", and that the table's cell count per row is unchanged.
+    - _Requirements: 23.3, 23.4_
+
+- [x] 24. Hook fires after save under `packages/core/src/`
+  - [x] 24.1 Change `.kiro/hooks/require-test-update.json` and verify the matcher
+    - Set `trigger` to `PostFileSave` and `matcher` as in `design.md` section 14; reword the prompt for a file that was just saved.
+    - Verify the matcher with a one-off script against these paths: match `packages/core/src/status-derivation.ts` and `packages\core\src\explain.ts`; no match `docs/hooks.md`, `packages/core/test/explain.test.ts`, `apps/web/src/lib/incident-feed.ts`. Confirm the file parses as JSON.
+    - _Requirements: 24.1, 24.2, 24.4, 24.5_
+
+  - [x] 24.2 Update `docs/hooks.md` and `docs/kiro-usage.md`
+    - Rewrite Hook 2 in `docs/hooks.md` and item 2 of the Hooks section in `docs/kiro-usage.md`: new trigger and matcher, and the reason (the `PreToolUse` version interrupted every write, including docs). Replace the outdated "Limits" bullets as described in `design.md` section 14 and add a History line dated 2026-11-25.
+    - _Requirements: 24.3_
+
+- [-] 25. Checkpoint - Second round
+  - Run `npm test`, `npm run typecheck` and the web build (`npm run build -w apps/web`), and parse every file in `.kiro/hooks/` as JSON. Ensure all pass, ask the user if questions arise. Do not commit, push, or deploy.
+  - _Requirements: 18.6, 19.5, 20.4, 21.3, 22.3, 23.4, 24.5_
+
+- [~] 16. Owner Preview review
+  - Runs after Task 25. Deploy or point the owner to the Vercel Preview of this branch (signed-out views, per the existing rollout pattern in `.kiro/specs/ui-improvements/requirements.md`) and a phone-width view, and ask the owner to confirm all 11 fixes read correctly, including the Requirement 7.3 wording question flagged in `design.md`. For the second round, also ask the owner to confirm the seven fixes of Requirements 18 to 24 (the live ORD incident, Recovering length, likely-impact wording, Account card, webhook wording, Watchlist status, hook).
   - _Requirements: all_
 
 - [~] 17. Ship
-  - Confirm every checkpoint and the owner Preview review passed; remind the owner that fast-forwarding and pushing `main` before the Deadline (December 4, 2026, 2:00 PM PT) is a manual step performed by the owner, not by this task.
+  - Runs after Task 16. Confirm every checkpoint, Task 25 and the owner Preview review passed; remind the owner that fast-forwarding and pushing `main` before the Deadline (December 4, 2026, 2:00 PM PT) is a manual step performed by the owner, not by this task.
   - _Requirements: all_
 
 ## Notes
+
+- Second round: Task 16 and Task 17 depend on Tasks 18 to 25. In the dependency graph Task 25 is wave 16, Task 16 is wave 17 and Task 17 is wave 18. Task 18.1 writes the Task 18.2 test first to prove the failure, then fixes; the test file is listed in the later wave so the final run covers the combined result of Tasks 18 and 19.
 
 - Tasks marked with `*` are optional and can be skipped for a faster ship, but Requirement 1 (Task 1.2/1.3) and Requirement 11 (Task 13.2) carry the two property tests that most directly protect against regressions in the pairing logic and the time-zone conversion; skipping them trades confidence for speed.
 - Requirement 2 (the Core investigation) has no tasks: its finding is recorded in `design.md`'s "Investigation" section, and no file under `packages/core/` is touched by this spec.
@@ -212,8 +307,13 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
     { "id": 9, "tasks": ["13.4"] },
     { "id": 10, "tasks": ["12"] },
     { "id": 11, "tasks": ["15"] },
-    { "id": 12, "tasks": ["16"] },
-    { "id": 13, "tasks": ["17"] }
+    { "id": 12, "tasks": ["18.1", "19.1", "20.1", "21.1", "22.1", "24.1"] },
+    { "id": 13, "tasks": ["19.2", "19.3", "19.4", "20.2", "21.2", "22.2", "24.2"] },
+    { "id": 14, "tasks": ["18.2", "23.1"] },
+    { "id": 15, "tasks": ["23.2"] },
+    { "id": 16, "tasks": ["25"] },
+    { "id": 17, "tasks": ["16"] },
+    { "id": 18, "tasks": ["17"] }
   ]
 }
 ```

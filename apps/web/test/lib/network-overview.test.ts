@@ -26,14 +26,14 @@ describe("buildNetworkOverview", () => {
   it("marks an airport recovering with time since end and the estimate", () => {
     const events = [
       { type: "GROUND_STOP_ENDED", airportId: "LAX", occurredAt: "2026-01-02T10:00:00.000Z" },
-      { type: "GROUND_STOP_STARTED", airportId: "LAX", occurredAt: "2026-01-02T09:00:00.000Z" },
+      { type: "GROUND_STOP_STARTED", airportId: "LAX", occurredAt: "2026-01-02T08:00:00.000Z" },
     ];
     const o = overview({ events });
     const lax = o.affected[0]!;
     expect(lax.kind).toBe("recovering");
     expect(lax.sinceText).toBe("Ended 2 h ago");
     expect(lax.estimateText).toContain("AeroBrief estimate");
-    expect(lax.estimateText).toContain("30 min to 1 h 30 min");
+    expect(lax.estimateText).toContain("1 h to 3 h");
     expect(lax.estimateText).toContain("not an FAA figure");
     expect(o.latestEventAt).toBe("2026-01-02T10:00:00.000Z");
   });

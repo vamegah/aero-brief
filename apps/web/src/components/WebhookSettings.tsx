@@ -9,6 +9,7 @@ import {
   type TestResult,
   type WebhookItem,
 } from "../api/webhooks";
+import { useDisplayMode } from "../hooks/use-display-mode";
 import { Button } from "./Button";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { EmptyState } from "./EmptyState";
@@ -29,7 +30,8 @@ function errorText(err: unknown, fallback: string): string {
   return fallback;
 }
 
-function outcomeText(item: WebhookItem): ReactNode {
+function OutcomeText({ item }: { item: WebhookItem }): ReactNode {
+  const mode = useDisplayMode();
   if (item.lastOutcome === null) return "No deliveries yet.";
   const word = item.lastOutcome === "delivered" || item.lastOutcome === "failed" || item.lastOutcome === "skipped"
     ? item.lastOutcome
@@ -39,7 +41,9 @@ function outcomeText(item: WebhookItem): ReactNode {
   }
   return (
     <>
-      Last delivery: {word} at <TimeText iso={item.lastOutcomeAt} />.
+      Last delivery: {word}
+      {mode === "relative" ? " " : " at "}
+      <TimeText iso={item.lastOutcomeAt} />.
     </>
   );
 }
@@ -209,10 +213,10 @@ export function WebhookSettings() {
                   <p className="webhook-settings__host">{item.host}</p>
                   {item.state === "disabled" ? (
                     <p className="webhook-settings__disabled">
-                      Disabled after repeated failures. {outcomeText(item)}
+                      Disabled after repeated failures. <OutcomeText item={item} />
                     </p>
                   ) : (
-                    <p className="webhook-settings__outcome">Active. {outcomeText(item)}</p>
+                    <p className="webhook-settings__outcome">Active. <OutcomeText item={item} /></p>
                   )}
                   {testResults[item.id] !== undefined ? (
                     <p className="webhook-settings__result">{testResults[item.id]}</p>

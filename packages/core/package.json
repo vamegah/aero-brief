@@ -12,7 +12,8 @@
     "./status-derivation": "./src/status-derivation.ts",
     "./faa-relay": "./src/faa-relay.ts",
     "./explain": "./src/explain.ts",
-    "./incidents": "./src/incidents.ts"
+    "./incidents": "./src/incidents.ts",
+    "./format-duration": "./src/format-duration.ts"
   },
   "types": "./src/index.ts",
   "scripts": {

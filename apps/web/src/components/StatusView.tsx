@@ -14,6 +14,8 @@ import {
 import { STATUS_SECTION_IDS, STATUS_SECTION_LABELS, resolveStatusSection } from "../lib/status-sections";
 import { useDashboardQuery } from "../hooks/use-dashboard-query";
 import { useLocationHash } from "../hooks/use-location-hash";
+import type { DerivedAirportStatus } from "@aerobrief/core/status-derivation";
+import { airportStatusById } from "../lib/airport-status-by-id";
 import { buildNetworkOverview } from "../lib/network-overview";
 import { sortAirports } from "../lib/sort-airports";
 import { AirportTable } from "./AirportTable";
@@ -92,7 +94,9 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
   };
   const setSearch = (search: string): void => setDashQuery((prev) => ({ ...prev, search }));
   const setScope = (airportScope: AirportScope): void => setDashQuery((prev) => ({ ...prev, airportScope }));
-  const feed = buildIncidentFeed(events);
+  // The snapshot decides which open starts are still active and pairs an end with a start whose
+  // incident key differs. Without an "ok" status the feed falls back to the events alone.
+  const feed = ok === null ? buildIncidentFeed(events) : buildIncidentFeed(events, ok.airports);
   const shownFeed = filterIncidentFeed(feed, eventFilter);
   const shownCount = feedSize(shownFeed);
   const totalCount = feedSize(feed);
@@ -111,8 +115,12 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
           })
         : null;
 
+  const statusById =
+    ok === null
+      ? new Map<string, DerivedAirportStatus>()
+      : airportStatusById({ airports: ok.airports, events, hasData: true, now: now ?? new Date() });
   const recoveringIds: ReadonlySet<string> = new Set(
-    (overview?.affected ?? []).filter((a) => a.kind === "recovering").map((a) => a.airportId),
+    [...statusById.values()].filter((s) => s.kind === "recovering").map((s) => s.airportId),
   );
   const activeStops = new Map<string, { reason: string | null; expectedEnd: string | null }>();
   for (const airport of ok?.airports ?? []) {

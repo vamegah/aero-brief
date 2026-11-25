@@ -18,8 +18,21 @@ export const AIRPORT_STATUS_KINDS: readonly AirportStatusKind[] = [
   "normal",
 ];
 
-/** Default Recovery_Period: how long an airport reads "Recovering" after a ground stop ends. */
-export const RECOVERY_PERIOD_MS = 24 * 60 * 60 * 1000;
+/** Shortest Recovery_Window: an airport reads "Recovering" for at least this long after a stop ends. */
+export const RECOVERY_MIN_MS = 60 * 60 * 1000;
+
+/** Longest Recovery_Window, and the window when the stop's duration is unknown. */
+export const RECOVERY_MAX_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Recovery_Window_Limit for an ended stop: the upper bound of its Normalization_Estimate,
+ * clamped to [RECOVERY_MIN_MS, RECOVERY_MAX_MS]. A null duration (start unknown) gives the maximum.
+ */
+export function recoveryWindowMs(stopDurationMs: number | null): number {
+  if (stopDurationMs === null) return RECOVERY_MAX_MS;
+  const [, highMinutes] = normalizationEstimate(stopDurationMs);
+  return Math.min(RECOVERY_MAX_MS, Math.max(RECOVERY_MIN_MS, highMinutes * 60_000));
+}
 
 /** Smallest width of the Normalization_Estimate range, in minutes. */
 export const MIN_ESTIMATE_WINDOW_MINUTES = 15;
@@ -63,7 +76,8 @@ export interface DerivedAirportStatus {
  * deferred event-type pipeline exists.
  *
  * `lastEndedAt` is the most recent GROUND_STOP_ENDED time (ISO) among retained events, or null.
- * The Recovery_Period runs from that time; an unparseable value counts as no ended stop.
+ * The Recovery_Window runs from that time for `recoveryWindowMs(duration)`; an unparseable value
+ * counts as no ended stop.
  * The estimate in a recovering result is based on the ground stop's duration when `lastStartedAt`
  * is given, otherwise on the minimum window.
  */
@@ -74,6 +88,11 @@ export function deriveAirportStatus(input: {
   lastEndedAt: string | null;
   /** Start time (ISO) of the ground stop that ended at `lastEndedAt`, when known. */
   lastStartedAt?: string | null;
+  /**
+   * Duration of the ended stop in ms; `null` when the start is unknown. When omitted it is taken
+   * from `lastStartedAt` (null if that is missing or unparseable).
+   */
+  lastEndedDurationMs?: number | null;
   now: Date;
 }): DerivedAirportStatus {
   const { airportId, hasData, activeGroundStop, lastEndedAt, now } = input;
@@ -82,14 +101,20 @@ export function deriveAirportStatus(input: {
   if (lastEndedAt !== null) {
     const endedMs = Date.parse(lastEndedAt);
     const ageMs = now.getTime() - endedMs;
-    if (Number.isFinite(ageMs) && ageMs < RECOVERY_PERIOD_MS) {
+    let durationMs: number | null;
+    if (input.lastEndedDurationMs !== undefined) {
+      durationMs = input.lastEndedDurationMs;
+    } else {
       const startedMs = input.lastStartedAt ? Date.parse(input.lastStartedAt) : Number.NaN;
-      const durationMs = endedMs - startedMs;
+      durationMs = Number.isFinite(startedMs) ? endedMs - startedMs : null;
+    }
+    if (durationMs !== null && !Number.isFinite(durationMs)) durationMs = null;
+    if (Number.isFinite(ageMs) && ageMs < recoveryWindowMs(durationMs)) {
       return {
         airportId,
         kind: "recovering",
         recoveringSinceMs: Math.max(0, ageMs),
-        normalizationEstimateMinutes: normalizationEstimate(Number.isFinite(durationMs) ? durationMs : 0),
+        normalizationEstimateMinutes: normalizationEstimate(durationMs ?? 0),
       };
     }
   }

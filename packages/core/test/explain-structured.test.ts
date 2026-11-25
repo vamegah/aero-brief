@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+﻿import { describe, expect, test } from "vitest";
 import { mergeIncidents } from "../src/incidents";
 import type { Incident } from "../src/incidents";
 import {
@@ -46,8 +46,20 @@ describe("explainStructured", () => {
     // 60 minutes elapsed: 30 to 90 minute range.
     const out = explainStructured(active, null, null, NOW);
     expect(out.likelyImpact).toBe(
-      "AeroBrief estimate: delays may last about 30 to 90 minutes after the ground stop ends, based on how long the ground stop has lasted so far (about 60 minutes).",
+      "AeroBrief estimate: delays may last about 30 min to 1 h 30 min after the ground stop ends, based on how long the ground stop has lasted so far (about 60 minutes).",
     );
+  });
+
+  test("estimate bounds use the shared duration formatter, never raw minutes", () => {
+    const long: Incident = {
+      ...active,
+      endedAt: "2024-06-02T00:00:00.000Z",
+      durationMs: 1388 * 60_000,
+    };
+    const out = explainStructured(long, null, null, NOW);
+    expect(out.likelyImpact).toContain("about 11 h 34 min to 34 h 42 min after the ground stop ends");
+    const short = explainStructured({ ...active, endedAt: START, durationMs: 40 * 60_000 }, null, null, NOW);
+    expect(short.likelyImpact).toContain("about 20 min to 1 h after");
   });
 
   test("ended incident uses the ground stop duration as the basis", () => {
@@ -74,7 +86,7 @@ describe("explainStructured", () => {
     ]);
     const out = explainStructured(incident as Incident, null, null, NOW);
     expect(out.whatsHappening).toContain("has ended");
-    expect(out.likelyImpact).toContain("about 0 to 15 minutes");
+    expect(out.likelyImpact).toContain("about less than 1 min to 15 min");
     expect(Object.values(out).every((v) => v.length > 0)).toBe(true);
   });
 
@@ -96,3 +108,4 @@ describe("explainStructured", () => {
     expect(() => explainStructured(bad, null, null, NOW)).toThrow(UnsupportedEventTypeError);
   });
 });
+
