@@ -89,6 +89,11 @@
         "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795627648267
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795627809723
       }
     ],
     "5. Checkpoint - Verify the repository and the hook files": [
@@ -101,6 +106,11 @@
         "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795626939632
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795627810613
       }
     ],
     "6. Confirm each hook fires in Kiro (**needs user action**)": [
@@ -108,6 +118,11 @@
         "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795626428679
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795627819292
       }
     ],
     "1. Make the two hooks real": [
