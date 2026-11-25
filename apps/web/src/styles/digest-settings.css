@@ -20,6 +20,7 @@
   color: var(--color-text);
 }
 
+.digest-settings__local,
 .digest-settings__hint,
 .digest-settings__error,
 .digest-settings__status,

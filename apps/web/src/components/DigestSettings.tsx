@@ -5,7 +5,17 @@ import { Button } from "./Button";
 import { FormLabel } from "./FormLabel";
 import { LoadingState } from "./LoadingState";
 
+import { hourWithLocalEquivalent } from "../lib/digest-local-time";
+
 const DEFAULT_HOUR = 7;
+
+function browserTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  } catch {
+    return "UTC";
+  }
+}
 const HOURS = Array.from({ length: 24 }, (_, hour) => hour);
 
 function hourLabel(hour: number): string {
@@ -116,6 +126,9 @@ export function DigestSettings({ watchlistCount }: { watchlistCount: number | nu
               </option>
             ))}
           </select>
+          <p id="digest-hour-local" className="digest-settings__local" aria-live="polite">
+            {hourWithLocalEquivalent(hour, browserTimeZone(), new Date())}
+          </p>
           {saveError !== null ? (
             <div className="digest-settings__error">
               <p>{saveError}</p>

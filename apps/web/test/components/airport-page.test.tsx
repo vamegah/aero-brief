@@ -85,7 +85,7 @@ describe("AirportPage ground stop durations", () => {
     // The started and ended events merge into one incident card, shown in the Overview latest
     // events and in the Events pane, each with the total duration. The airport page's own
     // EventCard list is unchanged (tests above).
-    const occurrences = await screen.findAllByText("Lasted 1 h 20 min");
+    const occurrences = await screen.findAllByText(/^Ended\s+· lasted 1 h 20 min$/, { selector: ".incident-card__duration" });
     expect(occurrences).toHaveLength(2);
     for (const el of occurrences) {
       const pane = el.closest(".status-pane") as HTMLElement;

@@ -68,6 +68,19 @@ describe("DigestSettings", () => {
     expect(screen.getAllByRole("button")).toHaveLength(1);
   });
 
+  it("updates the local-time text when another hour is selected, before saving", async () => {
+    handlers["GET /api/digest"] = () => json({ enabled: false, hour: 7 });
+    render(<DigestSettings watchlistCount={2} />);
+    const select = await screen.findByLabelText("Send at (UTC)");
+    const local = document.getElementById("digest-hour-local") as HTMLElement;
+    expect(local.textContent).toMatch(/^07:00 UTC \(.+ your time\)$/);
+    const before = local.textContent;
+    fireEvent.change(select, { target: { value: "9" } });
+    expect(local.textContent).toMatch(/^09:00 UTC \(.+ your time\)$/);
+    expect(local.textContent).not.toBe(before);
+    expect(calls).not.toContain("PUT /api/digest");
+  });
+
   it("shows stored settings", async () => {
     handlers["GET /api/digest"] = () => json({ enabled: true, hour: 18 });
     render(<DigestSettings watchlistCount={2} />);

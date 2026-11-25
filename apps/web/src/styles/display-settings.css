@@ -40,14 +40,9 @@
   color: var(--color-text-muted);
 }
 
-.display-settings__contrast {
-  margin-top: var(--space-3);
-}
-
-.display-settings__hint {
-  margin: var(--space-1) 0 0;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+/* Tighter than the shared hint: the description sits directly under its label. */
+.display-settings__contrast .display-settings__hint {
+  margin-top: 2px;
 }
 
 /* TimeText (ui-improvements task 8.5). Tokens only. Pairs: text-primary on surface-raised, focus on page. */
@@ -153,18 +148,37 @@
 
 .display-settings__preview {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-4);
   margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
-/* The swatch uses the live page tokens, so it changes as soon as the theme controller applies the choice. */
+.display-settings__preview-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.display-settings__preview-item[data-selected="true"] {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* Each swatch shows that theme's own surface-raised, border and text-primary values (set inline from themePalettes,
+   so no new token is added). The text label beside it carries the meaning. */
 .display-settings__swatch {
-  width: var(--space-6);
-  height: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-8);
+  height: var(--space-6);
+  border: 1px solid;
   border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
 }

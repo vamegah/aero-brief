@@ -2,16 +2,16 @@ import { useEffect, useId, useRef, useState } from "react";
 import { SignOutButton } from "./SignOutButton";
 
 export interface AccountMenuProps {
-  /** Current location pathname; the Settings link gets aria-current="page" on /settings. */
+  /** Current location pathname. Settings is a top-level nav link, so the menu does not use it. */
   pathname: string;
 }
 
 /**
- * Account disclosure for signed-in visitors. The button toggles a panel with a Settings link
- * and Sign out. Escape closes the panel and returns focus to the button; a pointer press
- * outside the menu closes it.
+ * Account disclosure for signed-in visitors. The button toggles a panel with Sign out.
+ * Escape closes the panel and returns focus to the button; a pointer press outside the
+ * menu closes it.
  */
-export function AccountMenu({ pathname }: AccountMenuProps) {
+export function AccountMenu(_props: AccountMenuProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLLIElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -51,14 +51,19 @@ export function AccountMenu({ pathname }: AccountMenuProps) {
         onClick={() => setOpen((value) => !value)}
       >
         Account
+        <svg
+          className="account-menu__chevron"
+          aria-hidden="true"
+          focusable="false"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+        >
+          <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </button>
       {open ? (
         <ul id={panelId} className="account-menu__panel">
-          <li>
-            <a href="/settings#account" aria-current={pathname === "/settings" ? "page" : undefined}>
-              Settings
-            </a>
-          </li>
           <li>
             <SignOutButton />
           </li>

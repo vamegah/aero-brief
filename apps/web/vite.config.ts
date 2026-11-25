@@ -16,7 +16,7 @@ export default defineConfig({
     // palette-sync.test.ts, themes-sync.test.ts and layout-css.test.ts need the real CSS text.
     css: {
       include: [
-        /styles\/(?:tokens|themes|shell|tables|controls|settings|surfaces|primitives|app)\.css(?:\?.*)?$/,
+        /styles\/(?:tokens|themes|shell|tables|controls|settings|surfaces|primitives|app|webhook-settings)\.css(?:\?.*)?$/,
         /src\/index\.css(?:\?.*)?$/,
       ],
     },

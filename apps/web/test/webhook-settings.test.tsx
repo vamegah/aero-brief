@@ -128,7 +128,9 @@ describe("WebhookSettings states", () => {
     };
     render(<WebhookSettings />);
     expect(await screen.findByText(/Disabled after repeated failures/)).toBeTruthy();
-    expect(screen.getByText(/2026-01-02 11:30 UTC/)).toBeTruthy();
+    const time = document.querySelector(".webhook-settings__disabled time") as HTMLElement;
+    expect(time.getAttribute("datetime")).toBe("2026-01-02T11:30:00.000Z");
+    expect(document.body.textContent).not.toContain("2026-01-02 11:30 UTC");
     fireEvent.click(screen.getByRole("button", { name: /Re-enable/ }));
     await waitFor(() => expect(screen.queryByText(/Disabled after repeated failures/)).toBeNull());
     expect(screen.queryByRole("button", { name: /Re-enable/ })).toBeNull();
@@ -207,7 +209,34 @@ describe("WebhookSettings actions", () => {
     render(<WebhookSettings />);
     await screen.findByText("hooks1.example.com");
     fireEvent.click(screen.getByRole("button", { name: "Delete hooks1.example.com" }));
+    expect(calls.some((c) => c.startsWith("DELETE"))).toBe(false);
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm delete webhook" }));
     expect(await screen.findByText("You have no webhooks yet.")).toBeTruthy();
+    expect(calls).toContain(`DELETE /api/webhooks/${w.id}`);
+  });
+
+  it("renders the delivery time as a <time> element and Delete as danger-outline", async () => {
+    const w = item(1, { lastOutcome: "delivered", lastOutcomeAt: "2026-01-02T11:30:00.000Z" });
+    handlers["GET /api/webhooks"] = list([w]);
+    const { container } = render(<WebhookSettings />);
+    await screen.findByText("hooks1.example.com");
+    expect(container.querySelector(".webhook-settings__outcome time")?.getAttribute("datetime")).toBe(w.lastOutcomeAt);
+    expect(container.textContent).not.toMatch(/\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/);
+    expect(screen.getByRole("button", { name: "Delete hooks1.example.com" }).className).toContain("btn--danger-outline");
+  });
+
+  it("asks for confirmation naming the host, and cancelling does not delete", async () => {
+    const w = item(1);
+    handlers["GET /api/webhooks"] = list([w]);
+    handlers[`DELETE /api/webhooks/${w.id}`] = () => json({ deleted: true });
+    render(<WebhookSettings />);
+    await screen.findByText("hooks1.example.com");
+    fireEvent.click(screen.getByRole("button", { name: "Delete hooks1.example.com" }));
+    expect(await screen.findByRole("heading", { name: /hooks1\.example\.com/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Confirm delete webhook" })).toBeNull());
+    expect(calls.some((c) => c.startsWith("DELETE"))).toBe(false);
+    expect(screen.getByText("hooks1.example.com")).toBeTruthy();
   });
 
   it("reports the test result in the live region and leaves focus on the button", async () => {
@@ -246,13 +275,15 @@ describe("WebhookSettings actions", () => {
     expect(live.textContent).toMatch(/not sent/);
   });
 
-  it("keeps one always-mounted polite live region and makes every button secondary", async () => {
+  it("keeps one always-mounted polite live region and has no primary button", async () => {
     handlers["GET /api/webhooks"] = list([item(1, { state: "disabled" })]);
     const { container } = render(<WebhookSettings />);
     expect(container.querySelectorAll("[aria-live]")).toHaveLength(1);
     await screen.findByText("hooks1.example.com");
     expect(container.querySelectorAll("[aria-live]")).toHaveLength(1);
     expect(container.querySelector(".btn--primary")).toBeNull();
-    expect(container.querySelectorAll(".btn--secondary").length).toBeGreaterThanOrEqual(4);
+    // Re-enable, Send test event and Add webhook are secondary; Delete is danger-outline (Requirement 6.1).
+    expect(container.querySelectorAll(".btn--secondary").length).toBeGreaterThanOrEqual(3);
+    expect(container.querySelectorAll(".btn--danger-outline")).toHaveLength(1);
   });
 });

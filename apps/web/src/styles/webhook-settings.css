@@ -14,7 +14,7 @@
 
 .webhook-settings__item {
   padding: var(--space-3) 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-table-rule);
 }
 
 .webhook-settings__host {

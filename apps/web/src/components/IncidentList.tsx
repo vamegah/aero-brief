@@ -11,6 +11,8 @@ export interface IncidentListProps {
   activeStops?: ReadonlyMap<string, { reason: string | null; expectedEnd: string | null }>;
   /** Recovery detail keyed by incident key. */
   recovery?: ReadonlyMap<string, IncidentRecovery>;
+  /** Keys of incidents whose end time was not recorded. */
+  endTimeNotRecorded?: ReadonlySet<string>;
 }
 
 function stopFor(incident: Incident, stops: IncidentListProps["activeStops"]) {
@@ -19,7 +21,7 @@ function stopFor(incident: Incident, stops: IncidentListProps["activeStops"]) {
 }
 
 /** The list of incident cards. Unrecognized event types fall back to `EventCard`. Renders nothing when empty. */
-export function IncidentList({ feed, now, activeStops, recovery }: IncidentListProps) {
+export function IncidentList({ feed, now, activeStops, recovery, endTimeNotRecorded }: IncidentListProps) {
   return (
     <ul className="event-list incident-list">
       {feed.incidents.map((incident) => {
@@ -32,6 +34,7 @@ export function IncidentList({ feed, now, activeStops, recovery }: IncidentListP
               {...(now !== undefined ? { now } : {})}
               {...(stop !== undefined ? { reason: stop.reason, expectedEnd: stop.expectedEnd } : {})}
               {...(detail !== undefined ? { recovery: detail } : {})}
+              {...(endTimeNotRecorded?.has(incident.incidentKey) ? { endTimeNotRecorded: true } : {})}
             />
           </li>
         );

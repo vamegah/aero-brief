@@ -1,12 +1,17 @@
 import type { AirportSummary } from "../api/client";
 import { FAA_STATUS_URL, GroundStopDetails, type ActiveGroundStop } from "./GroundStopDetails";
+import { AirportStatusPill } from "./AirportStatusPill";
 import { StatusPill } from "./StatusPill";
 
 export { FAA_STATUS_URL };
 
 export interface AirportTableProps {
   airports: readonly AirportSummary[];
+  /** Airport ids whose ground stop ended recently. Shown as "Recovering" instead of "Operating normally". */
+  recoveringIds?: ReadonlySet<string>;
 }
+
+const NO_RECOVERING: ReadonlySet<string> = new Set();
 
 /**
  * `fetchNationalStatus` always sets `expectedEnd` and `advisoryUrl` (null when unknown), so every
@@ -16,7 +21,7 @@ function hasDetails(stop: ActiveGroundStop): boolean {
   return stop.expectedEnd !== undefined || stop.advisoryUrl !== undefined;
 }
 
-export function AirportTable({ airports }: AirportTableProps) {
+export function AirportTable({ airports, recoveringIds = NO_RECOVERING }: AirportTableProps) {
   return (
     <table className="airport-table airport-table--status">
       <caption>Ground stop status by airport</caption>
@@ -41,7 +46,11 @@ export function AirportTable({ airports }: AirportTableProps) {
                   {hasDetails(airport.groundStop) ? <GroundStopDetails stop={airport.groundStop} airportId={airport.airportId} /> : null}
                 </>
               ) : (
-                <StatusPill variant="normal" text="No ground stop reported" />
+                recoveringIds.has(airport.airportId) ? (
+                  <AirportStatusPill kind="recovering" />
+                ) : (
+                  <StatusPill variant="normal" text="Operating normally" />
+                )
               )}
             </td>
           </tr>

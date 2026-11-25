@@ -39,7 +39,8 @@ describe("IncidentCard", () => {
     expect(card.classList.contains("event-card--resolved")).toBe(true);
     expect(card.classList.contains("event-card--active")).toBe(false);
     expect(card.textContent).toContain("Ended");
-    expect(card.textContent).toContain("Lasted 1 h 20 min");
+    expect(card.querySelector(".incident-card__duration")?.textContent).toMatch(/^Ended [\s\S]+ · lasted 1 h 20 min$/);
+    expect(card.querySelector(".incident-card__duration time")?.getAttribute("datetime")).toBe(resolved.endedAt);
     expect(card.querySelector("span.icon--check[aria-hidden='true']")).not.toBeNull();
     expect(card.querySelector("span.icon--stop-octagon")).toBeNull();
   });
@@ -119,9 +120,31 @@ describe("IncidentCard", () => {
   it("says the start is unavailable for an incident built from an end event alone", () => {
     const orphan: Incident = { ...resolved, startedAt: resolved.endedAt as string, durationMs: 0 };
     const { container } = render(<IncidentCard incident={orphan} now={NOW} />);
-    expect(container.textContent).not.toContain("Lasted");
+    expect(container.textContent).not.toContain("lasted");
+    expect(container.querySelector(".incident-card__duration")?.textContent).toBe("Started more than 24 hours ago");
     fireEvent.click(screen.getByRole("button"));
     expect(container.textContent).toContain("Not available (before the last 24 hours)");
+  });
+
+  it("renders the state label as a pill separate from the type and airport", () => {
+    const a = render(<IncidentCard incident={active} now={NOW} />);
+    const activePill = a.container.querySelector(".incident-card__state-pill") as HTMLElement;
+    expect(activePill.textContent).toBe("Active");
+    expect(activePill.classList.contains("status-pill")).toBe(true);
+    expect(activePill.classList.contains("status-pill--active")).toBe(true);
+    expect(a.container.querySelector(".incident-card__type")?.textContent).toBe("Ground stop");
+    a.unmount();
+
+    const e = render(<IncidentCard incident={resolved} now={NOW} />);
+    const endedPill = e.container.querySelector(".incident-card__state-pill") as HTMLElement;
+    expect(endedPill.textContent).toBe("Ended");
+    expect(endedPill.classList.contains("status-pill--neutral")).toBe(true);
+  });
+
+  it("says the end time is not recorded when flagged, even though the start looks unknown", () => {
+    const unpaired: Incident = { ...resolved, startedAt: resolved.endedAt as string, durationMs: 0 };
+    const { container } = render(<IncidentCard incident={unpaired} endTimeNotRecorded now={NOW} />);
+    expect(container.querySelector(".incident-card__duration")?.textContent).toBe("End time not recorded");
   });
 
   it("renders a system-wide incident without an airport link", () => {

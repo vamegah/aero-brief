@@ -1,0 +1,423 @@
+{
+  "pbtResults": {
+    "1.2 Write property tests for `reconcileWithSnapshot`": {
+      "status": "passed",
+      "lastRunTimestamp": 1795635120057
+    }
+  },
+  "executionHistory": {
+    "1.1 Implement `activeGroundStopIds` and `reconcileWithSnapshot` in `apps/web/src/lib/incident-feed.ts`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634304468
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634321511
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635369579
+      }
+    ],
+    "1.4 Wire the snapshot into `StatusView.tsx` and thread `endTimeNotRecorded` to `IncidentCard`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634304722
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635379255
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635389184
+      }
+    ],
+    "2.1 Add the state pill and header spacing to `IncidentCard.tsx`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634305342
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635401277
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636253090
+      }
+    ],
+    "2.2 Implement the ended-state duration text branches in `IncidentCard.tsx`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634305459
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636528933
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636538478
+      }
+    ],
+    "2.4 Add CSS for `incident-card__state-pill` spacing": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634305595
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636548311
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636557000
+      }
+    ],
+    "3. Checkpoint - Incident feed and card": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634305800
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636566680
+      }
+    ],
+    "4.1 Add `recoveringIds` to `AirportTable.tsx` and change the normal-state text": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634305916
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636270610
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636485042
+      }
+    ],
+    "4.2 Pass `recoveringIds` from `StatusView.tsx`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634306048
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636529632
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636539447
+      }
+    ],
+    "5.1 Always render the Settings link in `NavBar.tsx`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634306159
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635402117
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636254086
+      }
+    ],
+    "5.2 Add the down-arrow icon and control styling to `AccountMenu.tsx`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634306233
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636494917
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636517178
+      }
+    ],
+    "6. Checkpoint - Airport table and navigation": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634306309
+      }
+    ],
+    "7.1 Widen the Airports and Watchlist search fields and update their placeholder": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634306580
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636505738
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636518139
+      }
+    ],
+    "8.1 Replace `formatTime` with `TimeText` in `WebhookSettings.tsx`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634306728
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635403315
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636255110
+      }
+    ],
+    "8.2 Change the Delete button to `danger-outline` and add a confirm dialog": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634306862
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636506119
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636516108
+      }
+    ],
+    "9. Checkpoint - Search fields and webhook settings": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634307024
+      }
+    ],
+    "10.1 Add spacing classes to `SignedOutWatchlist.tsx` and its CSS": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634307245
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636271263
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636485407
+      }
+    ],
+    "11.1 Tighten the high-contrast hint spacing in `display-settings.css`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634307382
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636506438
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636519106
+      }
+    ],
+    "11.2 Replace the single swatch with three labeled swatches in `DisplaySettings.tsx`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634307495
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635404447
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636255866
+      }
+    ],
+    "12. Checkpoint - Watchlist spacing and display settings": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634307634
+      }
+    ],
+    "13.1 Implement `apps/web/src/lib/digest-local-time.ts`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634307948
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635405081
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636484482
+      }
+    ],
+    "13.3 Wire the local-time text into `DigestSettings.tsx`": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634308049
+      }
+    ],
+    "14.1 Change `.webhook-settings__item` and `.site-footer` borders to the table-rule token": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634308116
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636507036
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636519591
+      }
+    ],
+    "15. Checkpoint - Digest local time and lighter separators": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634308254
+      }
+    ],
+    "16. Owner Preview review": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634308316
+      }
+    ],
+    "17. Ship": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795634308382
+      }
+    ],
+    "1. Incident feed: snapshot-aware activity and cross-key pairing": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795635389375
+      }
+    ],
+    "10. Signed-out Watchlist spacing and grouping": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636485666
+      }
+    ],
+    "8. Webhook settings: time display, danger-outline delete, confirm dialog": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636516230
+      }
+    ],
+    "5. Navigation: Settings link, chevron icon, aria-current": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636517489
+      }
+    ],
+    "7. Search field width and placeholder text": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636518216
+      }
+    ],
+    "11. Display settings: contrast hint spacing and theme preview swatches": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636519183
+      }
+    ],
+    "14. Lighter separators: webhook list items and footer": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636519982
+      }
+    ],
+    "4. Airport table status cell text": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636539678
+      }
+    ],
+    "2. Incident card header and ended-state text": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795636557683
+      }
+    ]
+  }
+}

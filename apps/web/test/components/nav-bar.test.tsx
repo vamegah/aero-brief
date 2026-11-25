@@ -34,20 +34,19 @@ describe("NavBar", () => {
     expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
   });
 
-  it("shows an account menu instead of Sign in when signed in, with Settings and Sign out inside it", async () => {
+  it("shows an account menu instead of Sign in when signed in, with Sign out inside it and Settings as a top-level link", async () => {
     stubFetch(SIGNED_IN);
     render(<NavBar pathname="/watchlist" />);
     const account = await screen.findByRole("button", { name: "Account" });
     expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
     expect(account.getAttribute("aria-expanded")).toBe("false");
     expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Settings" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Settings" }).getAttribute("href")).toBe("/settings");
     fireEvent.click(account);
     expect(account.getAttribute("aria-expanded")).toBe("true");
     const panel = document.getElementById(account.getAttribute("aria-controls") ?? "");
-    expect(panel?.contains(screen.getByRole("link", { name: "Settings" }))).toBe(true);
-    expect(screen.getByRole("link", { name: "Settings" }).getAttribute("href")).toBe("/settings#account");
-    expect(screen.getByRole("button", { name: "Sign out" })).toBeTruthy();
+    expect(panel?.contains(screen.getByRole("button", { name: "Sign out" }))).toBe(true);
+    expect(panel?.contains(screen.getByRole("link", { name: "Settings" }))).toBe(false);
   });
 
   it("signing out from the account menu calls logout then returns to /", async () => {
@@ -65,11 +64,11 @@ describe("NavBar", () => {
     stubFetch(SIGNED_IN);
     render(<NavBar pathname="/" />);
     const account = await openAccountMenu();
-    const settings = screen.getByRole("link", { name: "Settings" });
-    settings.focus();
-    fireEvent.keyDown(settings, { key: "Escape" });
+    const signOut = screen.getByRole("button", { name: "Sign out" });
+    signOut.focus();
+    fireEvent.keyDown(signOut, { key: "Escape" });
     expect(account.getAttribute("aria-expanded")).toBe("false");
-    expect(screen.queryByRole("link", { name: "Settings" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Sign out" })).toBeNull();
     expect(document.activeElement).toBe(account);
   });
 
@@ -77,7 +76,7 @@ describe("NavBar", () => {
     stubFetch(SIGNED_IN);
     render(<NavBar pathname="/" />);
     const account = await openAccountMenu();
-    fireEvent.mouseDown(screen.getByRole("link", { name: "Settings" }));
+    fireEvent.mouseDown(screen.getByRole("button", { name: "Sign out" }));
     expect(account.getAttribute("aria-expanded")).toBe("true");
     fireEvent.mouseDown(document.body);
     expect(account.getAttribute("aria-expanded")).toBe("false");
@@ -95,10 +94,10 @@ describe("NavBar", () => {
     expect((await screen.findByRole("link", { name: "Sign in" })).getAttribute("aria-current")).toBe("page");
   });
 
-  it("marks Settings inside the account menu as the current page on /settings", async () => {
+  it("marks the Settings link as the current page on /settings", async () => {
     stubFetch(SIGNED_IN);
     render(<NavBar pathname="/settings" />);
-    await openAccountMenu();
+    await screen.findByRole("button", { name: "Account" });
     expect(screen.getByRole("link", { name: "Settings" }).getAttribute("aria-current")).toBe("page");
   });
 

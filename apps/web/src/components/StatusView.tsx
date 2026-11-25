@@ -111,6 +111,9 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
           })
         : null;
 
+  const recoveringIds: ReadonlySet<string> = new Set(
+    (overview?.affected ?? []).filter((a) => a.kind === "recovering").map((a) => a.airportId),
+  );
   const activeStops = new Map<string, { reason: string | null; expectedEnd: string | null }>();
   for (const airport of ok?.airports ?? []) {
     if (airport.groundStop !== null) {
@@ -131,7 +134,12 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
       ...(view.estimateText !== undefined ? { estimateText: view.estimateText } : {}),
     });
   }
-  const listProps = { ...(now !== undefined ? { now } : {}), activeStops, recovery };
+  const listProps = {
+    ...(now !== undefined ? { now } : {}),
+    activeStops,
+    recovery,
+    ...(feed.endTimeNotRecorded !== undefined ? { endTimeNotRecorded: feed.endTimeNotRecorded } : {}),
+  };
   // "Clear filters" is a secondary button: the page has no primary action.
   const clearFiltersButton = (onClick: () => void) => <Button onClick={onClick}>Clear filters</Button>;
 
@@ -225,7 +233,7 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
                     id="airport-search"
                     type="search"
                     value={query}
-                    placeholder="Search by code or city (for example, LAS, Las Vegas)"
+                    placeholder="Code or city, e.g. LAS or Las Vegas"
                     onChange={(event) => setSearch(event.target.value)}
                     autoComplete="off"
                   />
@@ -247,7 +255,7 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
               <p className="airport-search__count" role="status" aria-live="polite">
                 {`Showing ${shown.length} of ${ok.airports.length} airports`}
               </p>
-              <AirportTable airports={shown} />
+              <AirportTable airports={shown} recoveringIds={recoveringIds} />
               {shown.length === 0 && searching ? (
                 <EmptyState text="No airports match your search." action={clearFiltersButton(clearAirportFilters)} />
               ) : null}

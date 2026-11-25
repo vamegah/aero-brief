@@ -47,7 +47,7 @@ describe("Airports pane filter and search", () => {
   it("has the placeholder, a decorative search icon, and a clear button only when there is text", () => {
     const { container } = render(<StatusView status={okStatus()} events={[]} loading={false} />);
     const input = screen.getByLabelText("Search airports") as HTMLInputElement;
-    expect(input.placeholder).toBe("Search by code or city (for example, LAS, Las Vegas)");
+    expect(input.placeholder).toBe("Code or city, e.g. LAS or Las Vegas");
     expect(container.querySelector(".search-field span.icon--search[aria-hidden='true']")).not.toBeNull();
     expect(screen.queryByRole("button", { name: "Clear search" })).toBeNull();
     fireEvent.change(input, { target: { value: "atl" } });

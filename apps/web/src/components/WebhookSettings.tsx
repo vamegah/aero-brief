@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ApiRequestError } from "../api/client";
 import {
   createWebhook,
@@ -10,10 +10,12 @@ import {
   type WebhookItem,
 } from "../api/webhooks";
 import { Button } from "./Button";
+import { ConfirmDialog } from "./ConfirmDialog";
 import { EmptyState } from "./EmptyState";
 import { FormLabel } from "./FormLabel";
 import { LoadingState } from "./LoadingState";
 import { TextInput } from "./TextInput";
+import { TimeText } from "./TimeText";
 
 const MAX_WEBHOOKS = 3;
 const UNAVAILABLE = "Webhooks are not available right now.";
@@ -27,20 +29,19 @@ function errorText(err: unknown, fallback: string): string {
   return fallback;
 }
 
-function formatTime(iso: string | null): string | null {
-  if (iso === null) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  return `${d.toISOString().slice(0, 16).replace("T", " ")} UTC`;
-}
-
-function outcomeText(item: WebhookItem): string {
-  const at = formatTime(item.lastOutcomeAt);
+function outcomeText(item: WebhookItem): ReactNode {
   if (item.lastOutcome === null) return "No deliveries yet.";
   const word = item.lastOutcome === "delivered" || item.lastOutcome === "failed" || item.lastOutcome === "skipped"
     ? item.lastOutcome
     : "recorded";
-  return at === null ? `Last delivery: ${word}.` : `Last delivery: ${word} at ${at}.`;
+  if (item.lastOutcomeAt === null || Number.isNaN(new Date(item.lastOutcomeAt).getTime())) {
+    return `Last delivery: ${word}.`;
+  }
+  return (
+    <>
+      Last delivery: {word} at <TimeText iso={item.lastOutcomeAt} />.
+    </>
+  );
 }
 
 function testText(host: string, result: TestResult): string {
@@ -66,6 +67,7 @@ export function WebhookSettings() {
   const [message, setMessage] = useState("");
   const [testResults, setTestResults] = useState<Record<string, string>>({});
   const [retry, setRetry] = useState<(() => void) | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<WebhookItem | null>(null);
   const mounted = useRef(true);
 
   const load = useCallback(async (signal?: AbortSignal) => {
@@ -235,10 +237,10 @@ export function WebhookSettings() {
                       Send test event
                     </Button>
                     <Button
-                      variant="secondary"
+                      variant="danger-outline"
                       aria-label={`Delete ${item.host}`}
                       disabled={busy}
-                      onClick={() => onDelete(item)}
+                      onClick={() => setPendingDelete(item)}
                     >
                       Delete
                     </Button>
@@ -293,6 +295,22 @@ export function WebhookSettings() {
           </form>
         </>
       )}
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        label="Confirm webhook deletion"
+        title={`Delete the webhook for ${pendingDelete?.host ?? ""}?`}
+        confirmLabel="Confirm delete webhook"
+        cancelLabel="Cancel"
+        onConfirm={() => {
+          const target = pendingDelete;
+          setPendingDelete(null);
+          if (target !== null) onDelete(target);
+        }}
+        onCancel={() => setPendingDelete(null)}
+      >
+        Deliveries to this webhook stop and its signing secret is discarded. This cannot be undone.
+      </ConfirmDialog>
 
       <div aria-live="polite" className="webhook-settings__live">
         {message}

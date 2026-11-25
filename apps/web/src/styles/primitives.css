@@ -194,6 +194,20 @@
   margin: var(--space-3) 0;
 }
 
+/* Wide enough that the placeholder never truncates; full width on narrow screens. */
+@media (min-width: 768px) {
+  .airport-search {
+    min-width: 24rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .airport-search {
+    width: 100%;
+    max-width: none;
+  }
+}
+
 .airport-search__count {
   margin: 0 0 var(--space-2);
   font-size: var(--text-sm);
@@ -233,6 +247,44 @@
 
 .signed-out-intro .btn {
   text-decoration: none;
+}
+
+/* Signed-out watchlist grouping (ui-review-fixes Requirement 9): spacing tokens only. */
+.signed-out-intro__group > p {
+  margin: 0 0 var(--space-3);
+}
+
+.signed-out-intro__note {
+  margin: var(--space-5) 0 0;
+  color: var(--color-text-muted);
+}
+
+.signed-out-section {
+  margin-top: var(--space-6);
+}
+
+.signed-out-quick-add__label {
+  margin: 0 0 var(--space-2);
+}
+
+.signed-out-section .watchlist-search {
+  margin-top: var(--space-5);
+}
+
+/* Watchlist search field width (ui-review-fixes Requirement 3). Scoped so the shared
+   .airport-search rule stays owned by the Airports pane. */
+@media (min-width: 768px) {
+  .airport-search.watchlist-search {
+    min-width: 24rem;
+    max-width: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .airport-search.watchlist-search {
+    width: 100%;
+    max-width: none;
+  }
 }
 
 .watch-results,

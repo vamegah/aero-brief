@@ -57,6 +57,22 @@ describe("AirportTable ground stop details", () => {
   it("adds no detail to normal rows", () => {
     const { container } = table([{ airportId: "ATL", name: "Atlanta", groundStop: null }]);
     expect(container.querySelector(".airport-table__detail")).toBeNull();
-    expect(container.querySelectorAll("tbody td")[1]?.textContent).toBe("No ground stop reported");
+    expect(container.querySelectorAll("tbody td")[1]?.textContent).toBe("Operating normally");
+  });
+
+  it("shows the Recovering pill for an airport id in recoveringIds", () => {
+    const { container } = render(
+      <AirportTable
+        airports={[
+          { airportId: "ATL", name: "Atlanta", groundStop: null },
+          { airportId: "JFK", name: "New York JFK", groundStop: null },
+        ]}
+        recoveringIds={new Set(["ATL"])}
+      />,
+    );
+    const cells = container.querySelectorAll("tbody td:last-child");
+    expect(cells[0]?.textContent).toBe("Recovering");
+    expect(cells[0]?.querySelector("[data-status-kind='recovering']")).not.toBeNull();
+    expect(cells[1]?.textContent).toBe("Operating normally");
   });
 });

@@ -239,12 +239,29 @@ describe("DisplaySettings", () => {
   it("updates the live preview immediately on selection", () => {
     mount(DARK_ON);
     const preview = screen.getByTestId("theme-preview");
-    expect(preview.textContent).toBe("Preview: System theme");
+    const items = () => Array.from(preview.querySelectorAll("li"));
+    expect(items().map((li) => li.querySelector("span:not([aria-hidden])")?.textContent)).toEqual([
+      "System",
+      "Light",
+      "Dark",
+    ]);
+    expect(items().map((li) => li.getAttribute("data-selected"))).toEqual(["true", "false", "false"]);
     fireEvent.click(screen.getByRole("radio", { name: "Dark" }));
-    expect(preview.textContent).toBe("Preview: Dark theme");
     expect(preview.getAttribute("data-preview")).toBe("dark");
+    expect(items().map((li) => li.getAttribute("data-selected"))).toEqual(["false", "false", "true"]);
     fireEvent.click(screen.getByRole("radio", { name: "Light" }));
-    expect(preview.textContent).toBe("Preview: Light theme");
+    expect(preview.getAttribute("data-preview")).toBe("light");
+  });
+
+  it("shows each swatch in its own theme's colors", () => {
+    mount(DARK_ON);
+    const swatch = (name: string) =>
+      screen.getByTestId("theme-preview").querySelector<HTMLElement>(`[data-swatch="${name}"] .display-settings__swatch`)!;
+    expect(swatch("light").style.background).toBe("rgb(255, 255, 255)");
+    expect(swatch("dark").style.background).toBe("rgb(26, 33, 44)");
+    // jsdom has no matchMedia, so System resolves to light.
+    expect(swatch("system").style.background).toBe("rgb(255, 255, 255)");
+    expect(swatch("dark").getAttribute("aria-hidden")).toBe("true");
   });
 
   it("shows no theme preview when darkMode is off", () => {

@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { airportById, isMonitoredId } from "@aerobrief/core/airports";
 import { explainStructured } from "@aerobrief/core/explain";
 import type { Incident } from "@aerobrief/core/incidents";
@@ -29,6 +29,8 @@ export interface IncidentCardProps {
   expectedEnd?: string | null;
   /** Set only when the airport is Recovering from this incident. */
   recovery?: IncidentRecovery;
+  /** True when the incident started but its end was never recorded. */
+  endTimeNotRecorded?: boolean;
   /** Current time; tests pass a fixed value. */
   now?: Date;
 }
@@ -53,7 +55,7 @@ function startUnknown(incident: Incident): boolean {
  * Ended: neutral resolved style, check icon, "Ended" label and total duration. The native button
  * expands a timeline, the recovery status, the structured explanation and a link to the FAA site.
  */
-export function IncidentCard({ incident, reason = null, expectedEnd = null, recovery, now }: IncidentCardProps) {
+export function IncidentCard({ incident, reason = null, expectedEnd = null, recovery, endTimeNotRecorded = false, now }: IncidentCardProps) {
   const [open, setOpen] = useState(false);
   const detailsId = useId();
   const tickMs = useNow();
@@ -68,12 +70,24 @@ export function IncidentCard({ incident, reason = null, expectedEnd = null, reco
   const airport = code !== null && isMonitoredId(code) ? airportById(code) : null;
   const unknownStart = startUnknown(incident);
 
-  let durationText: string | null = null;
+  const timeProps = code !== null ? { airportId: code } : {};
+  let durationText: ReactNode = null;
   if (active) {
     const started = Date.parse(incident.startedAt);
     if (!Number.isNaN(started)) durationText = `Active for ${formatElapsed(current.getTime() - started)}`;
-  } else if (incident.durationMs !== null && !unknownStart) {
-    durationText = formatDuration(incident.durationMs);
+  } else if (endTimeNotRecorded) {
+    // Checked first: a start with no recorded end is stored with endedAt === startedAt, so it also looks like an unknown start.
+    durationText = "End time not recorded";
+  } else if (unknownStart) {
+    durationText = "Started more than 24 hours ago";
+  } else if (incident.durationMs !== null && incident.endedAt !== null) {
+    const lasted = formatDuration(incident.durationMs);
+    durationText = (
+      <>
+        Ended <TimeText iso={incident.endedAt} {...timeProps} /> · {lasted.charAt(0).toLowerCase()}
+        {lasted.slice(1)}
+      </>
+    );
   }
 
   return (
@@ -81,7 +95,11 @@ export function IncidentCard({ incident, reason = null, expectedEnd = null, reco
       <div className="event-card__header">
         <div className="event-card__title">
           <Icon name={stateIcon} />
-          <span className="event-card__type incident-card__state">{stateLabel}</span>
+          <span
+            className={`event-card__type incident-card__state incident-card__state-pill status-pill status-pill--${active ? "active" : "neutral"}`}
+          >
+            {stateLabel}
+          </span>
           <span className="incident-card__type">{typeLabel}</span>
           {code !== null ? (
             <strong className="event-card__airport">

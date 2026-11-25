@@ -70,14 +70,18 @@ export function SignedOutWatchlist({ status, events }: SignedOutWatchlistProps) 
         }
       />
       <section className="signed-out-intro" aria-label="About your watchlist">
-        <p>
-          Pick the airports you care about and see at a glance whether each one is running normally. Your list stays
-          in this browser.
+        <div className="signed-out-intro__group">
+          <p>
+            Pick the airports you care about and see at a glance whether each one is running normally. Your list stays
+            in this browser.
+          </p>
+          <a className="btn btn--primary" href="/sign-in">
+            Sign in
+          </a>
+        </div>
+        <p className="form__hint signed-out-intro__note">
+          The daily digest and email alerts need an account. Everything else here works without one.
         </p>
-        <a className="btn btn--primary" href="/sign-in">
-          Sign in
-        </a>
-        <p className="form__hint">The daily digest and email alerts need an account. Everything else here works without one.</p>
       </section>
 
       {saveFailed ? (
@@ -86,8 +90,8 @@ export function SignedOutWatchlist({ status, events }: SignedOutWatchlistProps) 
         </p>
       ) : null}
 
-      <section aria-label="Add airports">
-        <p id="quick-add-label">Quick add</p>
+      <section aria-label="Add airports" className="signed-out-section">
+        <p id="quick-add-label" className="signed-out-quick-add__label">Quick add</p>
         <div role="group" aria-labelledby="quick-add-label" className="chip-row">
           {QUICK_ADD_IDS.map((id) => (
             <Button
@@ -102,13 +106,13 @@ export function SignedOutWatchlist({ status, events }: SignedOutWatchlistProps) 
             </Button>
           ))}
         </div>
-        <div className="airport-search">
+        <div className="airport-search watchlist-search">
           <FormLabel htmlFor="watchlist-search">Search airports</FormLabel>
           <TextInput
             id="watchlist-search"
             type="search"
             value={query}
-            placeholder="Search by code or city (for example, LAS, Las Vegas)"
+            placeholder="Code or city, e.g. LAS or Las Vegas"
             onChange={(event) => setQuery(event.target.value)}
             autoComplete="off"
           />
@@ -143,7 +147,7 @@ export function SignedOutWatchlist({ status, events }: SignedOutWatchlistProps) 
         ) : null}
       </section>
 
-      <section aria-label="Watched airports">
+      <section aria-label="Watched airports" className="signed-out-section">
         <h3>Your airports</h3>
         {views.length === 0 ? (
           <EmptyState text="You are not watching any airports yet. Use a quick add button or the search above." />

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useFeatures } from "../features/use-features";
 import { setDisplayMode, useDisplayMode } from "../hooks/use-display-mode";
 import type { DisplayMode } from "../lib/time-text";
+import { themePalettes } from "../styles/themes";
 import { CONTRAST_KEY, THEME_CHANGE_EVENT, THEME_KEY } from "../theme/ThemeController";
 
 type ThemePreference = "system" | "light" | "dark";
@@ -49,6 +50,15 @@ function readPreference(): ThemePreference {
   }
 }
 
+/** The theme the OS asks for right now, matching ThemeController's own resolution. */
+function resolveSystem(): "light" | "dark" {
+  try {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+}
+
 function ThemeControl() {
   const [preference, setPreference] = useState<ThemePreference>(readPreference);
 
@@ -85,10 +95,32 @@ function ThemeControl() {
           </label>
         ))}
       </div>
-      <p className="display-settings__preview" data-testid="theme-preview" data-preview={selected.value}>
-        <span className="display-settings__swatch" aria-hidden="true" />
-        <span>Preview: {selected.label} theme</span>
-      </p>
+      <ul className="display-settings__preview" data-testid="theme-preview" data-preview={selected.value}>
+        {OPTIONS.map((option) => {
+          const colors = themePalettes[option.value === "system" ? resolveSystem() : option.value];
+          return (
+            <li
+              key={option.value}
+              className="display-settings__preview-item"
+              data-swatch={option.value}
+              data-selected={preference === option.value ? "true" : "false"}
+            >
+              <span
+                className="display-settings__swatch"
+                aria-hidden="true"
+                style={{
+                  background: colors["color-surface-raised"],
+                  borderColor: colors["color-border"],
+                  color: colors["color-text-primary"],
+                }}
+              >
+                Aa
+              </span>
+              <span>{option.label}</span>
+            </li>
+          );
+        })}
+      </ul>
     </fieldset>
   );
 }

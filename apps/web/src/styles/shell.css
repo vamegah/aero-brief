@@ -129,6 +129,20 @@ main {
   border-bottom-width: 5px;
 }
 
+/* Account menu button: a bordered control, same weight as the Sign in link. Text says "Account". */
+.nav-bar .account-menu__button {
+  gap: var(--space-1);
+  border: 2px solid var(--color-text-primary);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.account-menu__chevron {
+  flex: none;
+}
+
 /* Account menu: the panel is inline on Narrow and a dropdown on Wide. */
 .account-menu__panel {
   margin: 0;

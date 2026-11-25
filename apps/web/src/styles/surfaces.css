@@ -200,6 +200,16 @@ main > section > [role="status"] p {
   border-left-color: var(--color-table-rule);
 }
 
+/* Header: the state pill, event type and airport read as separate items. Pill colors come from .status-pill. */
+.incident-card__state-pill {
+  margin-right: var(--space-2);
+}
+
+.incident-card__type {
+  margin-right: var(--space-2);
+  font-weight: 600;
+}
+
 .incident-card__toggle {
   margin-top: var(--space-2);
 }

@@ -27,7 +27,7 @@ describe("a11y: site navigation bar", () => {
     stubFetch({ "GET /api/watchlist": () => json({ watchlist: [] }) });
     const { container } = render(<NavBar pathname="/settings" />);
     fireEvent.click(await screen.findByRole("button", { name: "Account" }));
-    expect(screen.getByRole("link", { name: "Settings" }).getAttribute("href")).toBe("/settings#account");
+    expect(screen.getByRole("link", { name: "Settings" }).getAttribute("href")).toBe("/settings");
     expect(screen.getByRole("button", { name: "Sign out" })).toBeTruthy();
     expect(await runAxe(container)).toHaveNoViolations();
   });

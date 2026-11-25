@@ -77,6 +77,29 @@ describe("WatchlistPage signed out", () => {
     expect(screen.getByText("0 of 30 airports watched")).not.toBeNull();
   });
 
+  it("uses the new search placeholder and the watchlist-scoped search class", async () => {
+    const { container } = await renderSignedOut();
+    const input = screen.getByRole("searchbox", { name: "Search airports" }) as HTMLInputElement;
+    expect(input.placeholder).toBe("Code or city, e.g. LAS or Las Vegas");
+    expect(container.querySelector(".airport-search.watchlist-search")).not.toBeNull();
+  });
+
+  it("groups the value statement with Sign in, separates the account note, and spaces the sections", async () => {
+    const { container } = await renderSignedOut();
+    const group = container.querySelector(".signed-out-intro .signed-out-intro__group");
+    expect(group).not.toBeNull();
+    expect(group?.textContent).toContain("Your list stays in this browser");
+    expect(group?.querySelector("a.btn--primary")?.textContent).toBe("Sign in");
+    const note = container.querySelector(".signed-out-intro__note");
+    expect(note?.textContent).toBe(ACCOUNT_NOTE);
+    expect(group?.contains(note ?? null)).toBe(false);
+    expect(container.querySelectorAll(".signed-out-section")).toHaveLength(2);
+    expect(container.querySelector("section[aria-label='Add airports'].signed-out-section")).not.toBeNull();
+    expect(container.querySelector("section[aria-label='Watched airports'].signed-out-section")).not.toBeNull();
+    expect(screen.getByText("Quick add")).not.toBeNull();
+    expect(screen.getByRole("heading", { name: "Your airports" })).not.toBeNull();
+  });
+
   it("keeps every control enabled next to the account note", async () => {
     await renderSignedOut();
     const buttons = screen.getAllByRole("button") as HTMLButtonElement[];

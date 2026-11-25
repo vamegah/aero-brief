@@ -98,6 +98,54 @@ describe("filterIncidentFeed state filter", () => {
   });
 });
 
+describe("buildIncidentFeed with a snapshot", () => {
+  const ordStart = ev({
+    incidentKey: "faa:b8826b88-17b7-4c73-beb7-bd42bdc00722",
+    type: "GROUND_STOP_STARTED",
+    airportId: "ORD",
+    occurredAt: "2026-11-24T21:25:31Z",
+  });
+  const ordEnd = ev({
+    incidentKey: "faa:8dd7eae0-81ce-4adb-8339-06fdd1eb4c97",
+    type: "GROUND_STOP_ENDED",
+    airportId: "ORD",
+    occurredAt: "2026-11-24T22:05:29Z",
+  });
+  const idle = [{ airportId: "ORD", groundStop: null }];
+
+  it("pairs the production ORD start and end across different FAA ids into one ended 40 min incident", () => {
+    const feed = buildIncidentFeed([ordEnd, ordStart], idle);
+    expect(feed.incidents).toHaveLength(1);
+    expect(feed.incidents[0]).toMatchObject({
+      incidentKey: ordStart.incidentKey,
+      airportId: "ORD",
+      startedAt: ordStart.occurredAt,
+      endedAt: ordEnd.occurredAt,
+    });
+    expect(feed.incidents[0]?.durationMs).toBe(39 * 60_000 + 58_000);
+    expect(feed.incidents.filter((i) => i.endedAt === null)).toEqual([]);
+    expect(feed.endTimeNotRecorded?.size).toBe(0);
+  });
+
+  it("marks an unpaired start at an inactive airport as ended with its end time not recorded", () => {
+    const feed = buildIncidentFeed([ordStart], idle);
+    expect(feed.incidents[0]?.endedAt).not.toBeNull();
+    expect([...(feed.endTimeNotRecorded ?? [])]).toEqual([ordStart.incidentKey]);
+  });
+
+  it("keeps a start active while its airport has a ground stop in the snapshot", () => {
+    const feed = buildIncidentFeed([ordStart], [{ airportId: "ORD", groundStop: {} }]);
+    expect(feed.incidents[0]?.endedAt).toBeNull();
+    expect(feed.endTimeNotRecorded?.size).toBe(0);
+  });
+
+  it("falls back to end-event classification without a snapshot", () => {
+    const feed = buildIncidentFeed([ordStart]);
+    expect(feed.incidents[0]?.endedAt).toBeNull();
+    expect(feed.endTimeNotRecorded).toBeUndefined();
+  });
+});
+
 describe("limitFeed and latestEndedKeys", () => {
   it("limits to the first N cards, incidents first", () => {
     const feed = buildIncidentFeed([started, ended, activeLax, nationwide, unknown]);

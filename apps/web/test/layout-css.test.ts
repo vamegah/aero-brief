@@ -380,3 +380,38 @@ describe("layout css: motion and color", () => {
     expect(stripComments(css), name).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
   });
 });
+
+// Imports are hoisted; kept with this block so the change stays an append.
+import webhookSettingsCss from "../src/styles/webhook-settings.css?raw";
+
+describe("layout css: lighter separators (ui-review-fixes Requirements 12.1, 12.2)", () => {
+  it("webhook list items use the table-rule token for their top border", () => {
+    expect(webhookSettingsCss.length).toBeGreaterThan(0);
+    const border = declared(rulesOf(webhookSettingsCss), ".webhook-settings__item", "border-top", null);
+    expect(border).toBe("1px solid var(--color-table-rule)");
+  });
+
+  it("the footer keeps a visible 1px border-top in the table-rule token", () => {
+    const border = declared(rulesOf(appCss), ".site-footer", "border-top", null);
+    expect(border).toBe("1px solid var(--color-table-rule)");
+  });
+});
+
+describe("layout css: Watchlist search width and signed-out spacing (ui-review-fixes Requirements 3.1, 3.2, 9)", () => {
+  const primitives = rulesOf(primitivesCss);
+
+  it("the Watchlist search field has min-width 24rem at 768px and wider", () => {
+    expect(declared(primitives, ".airport-search.watchlist-search", "min-width", WIDE)).toBe("24rem");
+    expect(declared(primitives, ".airport-search.watchlist-search", "max-width", WIDE)).toBe("none");
+  });
+
+  it("the Watchlist search field is full width below 768px", () => {
+    expect(declared(primitives, ".airport-search.watchlist-search", "width", "(max-width: 767px)")).toBe("100%");
+  });
+
+  it("the signed-out groups are separated with spacing tokens", () => {
+    expect(declared(primitives, ".signed-out-intro__note", "margin", null)).toBe("var(--space-5) 0 0");
+    expect(declared(primitives, ".signed-out-section", "margin-top", null)).toBe("var(--space-6)");
+    expect(declared(primitives, ".signed-out-section .watchlist-search", "margin-top", null)).toBe("var(--space-5)");
+  });
+});

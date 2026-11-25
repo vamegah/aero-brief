@@ -54,7 +54,7 @@ describe("Status airport filter", () => {
     const first = rows[0]?.querySelector("td:last-child") as HTMLElement;
     const second = rows[1]?.querySelector("td:last-child") as HTMLElement;
     expect(first.textContent).toBe("Ground stop");
-    expect(second.textContent).toBe("No ground stop reported");
+    expect(second.textContent).toBe("Operating normally");
     expect(first.querySelector(".status-pill .icon[aria-hidden='true']")).not.toBeNull();
   });
 });

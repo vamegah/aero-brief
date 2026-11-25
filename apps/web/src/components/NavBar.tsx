@@ -19,8 +19,6 @@ export function NavBar({ pathname }: NavBarProps) {
   const toggleRef = useRef<HTMLButtonElement>(null);
   const listId = useId();
   const current = (href: string) => (pathname === href ? ("page" as const) : undefined);
-  // The account menu holds Settings once signed in, so the plain link would repeat it.
-  const links = session === "signed-in" ? LINKS.filter(({ href }) => href !== "/settings") : LINKS;
 
   return (
     <nav
@@ -45,7 +43,7 @@ export function NavBar({ pathname }: NavBarProps) {
         Menu
       </button>
       <ul id={listId} className={open ? "nav-bar__list" : "nav-bar__list nav-bar__list--collapsed"}>
-        {links.map(({ href, label }) => (
+        {LINKS.map(({ href, label }) => (
           <li key={href}>
             <a href={href} aria-current={current(href)}>
               {label}
