@@ -2,7 +2,7 @@
 
 This document answers the Kiroween 2026 write-up questions. It describes what is in the repository today. Each section names the files that back its claims. Where the repo has no evidence of a feature, the section says so.
 
-AeroBrief is live at https://www.aerobriefs.com. The Kiroween 2026 submission is `main` as of December 4, 2026, 2:00 PM PT. It includes the four flagged Phase 2 features (all flag-gated, off by default), the 30 FAA Core 30 airports with a watchlist of 30 (decided 2026-11-24, see [`docs/decisions.md`](decisions.md)), the redesigned Status dashboard and Settings page, and the Vercel relay for the FAA feed. Tasks 14.4 (demo video) and 14.5 (repo public, submission) are still open. Numbers below that describe the MVP (20 airports, a cap of 10) are history and were true at the `mvp-contest-2026` tag.
+AeroBrief is live at https://www.aerobriefs.com. The Kiroween 2026 submission is `main` as of December 4, 2026, 2:00 PM PT. It includes the four Phase 2 features, which are live in production (all four flags on, verified by the owner on 2026-11-25, with Safe_Send_Mode on), the 30 FAA Core 30 airports with a watchlist of 30 (decided 2026-11-24, see [`docs/decisions.md`](decisions.md)), the redesigned Status dashboard and Settings page, the `ui-improvements` work, and the Vercel relay for the FAA feed. Numbers below that describe the MVP (20 airports, a cap of 10) are history and were true at the `mvp-contest-2026` tag. File counts were taken on 2026-11-25.
 
 ## Summary
 
@@ -10,11 +10,11 @@ AeroBrief is live at https://www.aerobriefs.com. The Kiroween 2026 submission is
 | --- | --- | --- |
 | Kiro IDE, CLI, Web or Crew | Kiro IDE only | No CLI, Web or Crew artifacts in the repo |
 | Custom agents | None created | No `.kiro/agents/` directory |
-| Agent hooks | 2 defined, both with known gaps, no record of firing | `.kiro/hooks/` |
-| Spec-driven development | Central. MVP spec: 18 requirements, 38 properties, 20 task sections. Phase 2 spec: 21 properties, features behind flags. Three later specs: FAA relay, UI refresh, Core 30 limits | `.kiro/specs/aerobrief/`, `.kiro/specs/aerobrief-phase2/`, `.kiro/specs/faa-403-poller/`, `.kiro/specs/ui-refresh/`, `.kiro/specs/core30-limits/` |
+| Agent hooks | 2 defined and rewritten in the current Kiro schema (the first two were broken). The agent's observation of one firing is in "Hooks"; the owner's confirmation is pending | `.kiro/hooks/`, `docs/hooks.md` |
+| Spec-driven development | Central. MVP spec: 18 requirements, 38 properties, 20 task sections. Phase 2 spec: 21 properties, features behind flags. Five later specs: FAA relay, UI refresh, Core 30 limits, UI improvements and submission polish | `.kiro/specs/aerobrief/`, `.kiro/specs/aerobrief-phase2/`, `.kiro/specs/faa-403-poller/`, `.kiro/specs/ui-refresh/`, `.kiro/specs/core30-limits/`, `.kiro/specs/ui-improvements/`, `.kiro/specs/submission-polish/` |
 | Steering | 5 files, all `inclusion: always` | `.kiro/steering/` |
-| MCP | Neon MCP used for read-only production checks. context7 available, no recorded use | `docs/decisions.md` |
-| Property-based testing | 76 `*.pbt.test.ts` files in the workspace now (44 at the MVP tag), fast-check. One bug caught by a Phase 2 property | `packages/*/test`, `apps/*/test` |
+| MCP | Neon MCP used for the Phase 2 branch and migrations, restore-point branches before production migrations, and read-only production checks. context7 available, no recorded use | `docs/decisions.md`, `docs/phase2-rollout.md` |
+| Property-based testing | 85 `*.pbt.test.ts` files in the workspace on 2026-11-25 (44 at the MVP tag), fast-check. Bugs caught by Phase 2 properties, see "Where Kiro surprised us" | `packages/*/test`, `apps/*/test` |
 | Kiro powers | None used | See Powers |
 
 ## Kiro IDE, CLI, Web, Crew
@@ -31,17 +31,18 @@ No custom agents were created. `.kiro/` contains `hooks`, `settings` (empty), `s
 
 ## Hooks
 
-Two hook files exist in `.kiro/hooks/`. Both are `askAgent` hooks (they prompt the agent; they do not run scripts).
+Two hook files exist in `.kiro/hooks/`. Both are agent hooks in the current Kiro schema (`version: "v1"`, a `hooks` array): they inject a prompt into the conversation and do not run scripts. The full description, the steps to make each fire and the firing record are in [`docs/hooks.md`](hooks.md).
 
-1. **`lint-on-save.json`** ("Lint on Save"). Trigger: `fileEdited` on `**/*.ts` and `**/*.tsx`. Prompt: run `npx eslint --fix` on the saved file.
-2. **`require-test-update.json`** ("Require PBT Update for Schema Changes"). Trigger: `preToolUse` on write tools. Prompt: if the write targets `src/lib/schemas/`, confirm the matching property-based test is updated first.
+1. **`typecheck-on-save.json`** ("Typecheck and test on save"). Trigger: `PostFileSave` on `.ts` and `.tsx` files under `apps/` or `packages/`. Prompt: run `npm run typecheck -w <workspace>` and `npx vitest --run` on the mirrored tests of the saved file, report failures, change nothing else.
+2. **`require-test-update.json`** ("Require test update for core logic and schemas"). Trigger: `PreToolUse`, matcher `write`. Prompt: before a write under `packages/core/src/`, confirm that the mirrored tests in `packages/core/test/` are updated; for `schemas.ts`, that `schemas.test.ts`, `snapshot-roundtrip.pbt.test.ts` and `faa-body.pbt.test.ts` cover the change.
 
-Known gaps:
+Limits, as stated in `docs/hooks.md`: both hooks are prompts that the agent follows, and neither blocks a write (only a `command` action that exits with code 2 does). The `write` matcher does not cover shell commands that write files. `PostFileSave` fires on saves made by the agent, not on a save typed in the editor.
 
-- **The lint hook has no ESLint behind it.** No ESLint config exists at the repo root, and no `package.json` lists `eslint`. CI runs `tsc --noEmit` and `vitest`, not ESLint.
-- **The schema hook watches paths this repo does not use.** It names `src/lib/schemas/` and `tests/pbt/`. Neither exists. Schemas live in `packages/core/src/schemas.ts` and PBT files in `packages/core/test/`. As written, the hook never matches a real write.
+**History.** The first two hooks were broken. They were committed in `66e1b0e` ("chore: add Kiro agent hooks") in an older flat format (`when`, `then`, `toolTypes`), and neither could work in this repository. `lint-on-save.json` ran `npx eslint --fix`, but no ESLint config exists at the repo root, no `package.json` lists `eslint`, and ESLint is outside the approved stack in `tech.md`. `require-test-update.json` watched `src/lib/schemas/` and `tests/pbt/`, which do not exist here (schemas live in `packages/core/src/schemas.ts`, PBT files in `packages/core/test/`), so it never matched a real write. No record shows either of them firing. The `submission-polish` spec (`.kiro/specs/submission-polish/`) replaced them on 2026-11-25: `lint-on-save.json` was deleted, `typecheck-on-save.json` was created, and `require-test-update.json` was rewritten. ESLint was not added.
 
-No evidence in the repo shows either hook firing, and neither automated a workflow that mattered to the build. The process improvements in this project came from the spec, the steering files and the tests, not from hooks. The hooks were committed (`66e1b0e`, "chore: add Kiro agent hooks") and not corrected afterward. Fixing them would mean pointing the schema hook at `packages/core/src/schemas*` and `packages/core/test/*.pbt.test.ts`, and either adding ESLint with approval or removing the lint hook.
+**Firing.** The agent that edited this document observed the Test_Gate hook fire in a Kiro session on 2026-11-25. It intercepted writes to `docs/kiro-usage.md` before they ran. The agent found that the path was outside `packages/core/src/`, as the hook prompt says to check, and the write then went ahead. This is the agent's observation only. It is not the owner's confirmation. The owner's confirmation for both hooks is pending and is recorded in the "Firing record" table of `docs/hooks.md`. No firing of the Typecheck hook has been observed.
+
+The process improvements in this project came mainly from the spec, the steering files and the tests. The hooks added a reminder, not an enforced check.
 
 ## Spec-driven development
 
@@ -95,6 +96,8 @@ The strategy that mattered most was `inclusion: always` for rules that are short
 ## MCP
 
 - **Neon MCP: used.** `docs/decisions.md` (2026-11-17, "Live smoke test (Task 13.3)") records read-only queries against the production Neon project and branch through the Neon MCP tools. They confirmed consecutive `poll` rows in `job_runs`, the stored `snapshots` rows and the new `magic_links` row. The file also records why: a direct Node connection to Neon from this machine failed with `UNABLE_TO_VERIFY_LEAF_SIGNATURE` (likely local TLS interception), so MCP was the working path. This replaces the earlier statement in this document that there was no evidence of MCP use.
+- **Neon MCP: Phase 2 branch and migrations.** The `phase-2` branch (`br-odd-feather-bbpy60hl`) was a copy-on-write child of production, and migrations 0004 and 0005 were applied to it with `run_sql_transaction` because the branch has no `__drizzle_migrations` table (`docs/decisions.md`, 2026-11-18 and 2026-11-19). The same file records the read-only count checks after the copied users were deleted.
+- **Neon MCP: production migrations with restore points.** Migrations 0004, 0005 and 0006 are applied to production through the Neon MCP, with a restore-point branch taken first: `pre-phase2-2026-11-23` (`br-muddy-glade-bb8m1nrz`) and `pre-core30-2026-11-24` (`br-quiet-cell-bbk67rmf`). This was verified on 2026-11-25. The backup step is `docs/phase2-rollout.md`, step 3a. The branch names and IDs come from that verification (the task brief for this change), not from a file in the repository.
 - **context7: available, not recorded.** A context7 MCP server was available in the Kiro environment. Nothing in the repo records using it, so no use is claimed.
 - No MCP configuration file is in the repo (`.kiro/settings/` is empty), so the server setup is not reproducible from the repository.
 
@@ -102,15 +105,16 @@ What MCP enabled: verifying production state (poller cadence, stored rows, token
 
 ## Property-based testing
 
-Property tests use fast-check under Vitest, as `tech.md` requires. The design defines 38 properties. The repo had 44 `*.pbt.test.ts` files at the MVP tag; the table shows that count by location, and the workspace has 76 now:
+Property tests use fast-check under Vitest, as `tech.md` requires. The design defines 38 properties. The repo had 44 `*.pbt.test.ts` files at the MVP tag. The workspace has 85 on 2026-11-25 (recounted with `Get-ChildItem -Recurse -Filter *.pbt.test.ts -File apps,packages,tests`, excluding `node_modules`):
 
 | Location | Files |
 | --- | --- |
-| `packages/core/test/` | 35 |
+| `packages/core/test/` | 58 |
+| `packages/db/test/` | 1 |
 | `packages/mail/test/` | 1 (`send-email.pbt.test.ts`) |
 | `apps/api/test/` | 2 (`history-clamp`, `nationwide-status`) |
-| `apps/poller/test/` | 4 (`outcome`, `recipients`, `reprocess`, `stale-gate`) |
-| `apps/web/test/` | 2 (`display-window`, `sort-airports`) |
+| `apps/poller/test/` | 7 |
+| `apps/web/test/` | 16 |
 
 Some properties are split across several files (the change detector has eight). Shared generators are in `packages/core/test/arbitraries.ts`.
 
@@ -127,22 +131,30 @@ Requirements using PBT, with property numbers from `design.md`:
 - Property 37, unsubscribe secret acceptance (Requirements 16.7, 16.8, 9.8): the current secret always verifies, the previous secret only before its expiry, and any other secret is rejected. Test: `packages/core/test/unsubscribe-secrets.pbt.test.ts`.
 - Property 38, advisory URL acceptance (Requirements 17.4, 17.5): only `https:` URLs on `faa.gov` or a subdomain pass, and look-alike hosts return `null`. Test: `packages/core/test/advisory-url.pbt.test.ts` (task 20.1).
 
-Did PBT catch issues unit tests would miss? In the MVP build the repo records no bug that a property test caught. Searches of `docs/decisions.md`, `tasks.md` and `git log` found none. Phase 2 has one (see "Phase 2: features behind flags"). What the properties guard against: duplicate alert emails (Properties 24 to 27, 33, 34), misclassifying a missing airport or a changed Snapshot as an event (Properties 5 to 8), wrong staleness at the 10 minute edge (Property 16), and accepting a forged unsubscribe link or a look-alike advisory host (Properties 26, 37, 38). The one production bug recorded (415 on DELETE, task 18.5) was in the HTTP layer, where no property test existed, and the fix added example-based regression tests.
+Did PBT catch issues unit tests would miss? In the MVP build the repo records no bug that a property test caught. Searches of `docs/decisions.md`, `tasks.md` and `git log` found none. Phase 2 has one (Property 10, see "Where Kiro surprised us", item a). Item d there is a second never-throws case in the Poller. What the properties guard against: duplicate alert emails (Properties 24 to 27, 33, 34), misclassifying a missing airport or a changed Snapshot as an event (Properties 5 to 8), wrong staleness at the 10 minute edge (Property 16), and accepting a forged unsubscribe link or a look-alike advisory host (Properties 26, 37, 38). The one production bug recorded (415 on DELETE, task 18.5) was in the HTTP layer, where no property test existed, and the fix added example-based regression tests.
 
 Unit tests sit next to the property tests (for example `change-detector.test.ts`, `explain.test.ts`). Database integration tests skip when no test database URL is set (Task 3.5). Run everything with `npm test`. CI runs the same, plus the accessibility suite and per-workspace typechecks, in `.github/workflows/ci.yml`.
 
 ## Phase 2: features behind flags
 
-After the MVP (tag `mvp-contest-2026`), four additions were built on the `phase-2` branch. The Kiroween 2026 submission is `main` as of the deadline and includes them: dark mode (`FEATURE_DARK_MODE`), a high-contrast AAA theme (`FEATURE_HIGH_CONTRAST`), signed webhooks (`FEATURE_WEBHOOKS`) and a daily digest email (`FEATURE_DIGESTS`). Each flag is off by default. This document does not claim that any flag is on in production. Turning on `FEATURE_WEBHOOKS` or `FEATURE_DIGESTS` needs migrations 0004 (webhooks) and 0005 (digest) in the production database, and the owner applies them (`docs/phase2-rollout.md`). The other Phase 2 scope items (paid data providers, SMS, Slack, PagerDuty, billing, single sign-on and the rest) are not built. The airport list grew only to the FAA Core 30 airports, by the owner's decision of 2026-11-24. This section covers the four flagged features.
+After the MVP (tag `mvp-contest-2026`), four additions were built on the `phase-2` branch. The Kiroween 2026 submission is `main` as of the deadline and includes them: dark mode (`FEATURE_DARK_MODE`), a high-contrast AAA theme (`FEATURE_HIGH_CONTRAST`), signed webhooks (`FEATURE_WEBHOOKS`) and a daily digest email (`FEATURE_DIGESTS`). In the code each flag is off unless it is set, and the production values are set by the owner.
+
+**Production state, verified 2026-11-25** (checks recorded in the task brief for this change; `main` at `5f19226`):
+
+- `/api/features` returns all four flags `true` in production.
+- Migrations 0004 (webhooks), 0005 (digest) and 0006 (Core 30 limits) are applied to the production database through the Neon MCP, each after a restore-point branch: `pre-phase2-2026-11-23` (`br-muddy-glade-bb8m1nrz`) and `pre-core30-2026-11-24` (`br-quiet-cell-bbk67rmf`). The procedure is `docs/phase2-rollout.md`, step 3a (back up first).
+- Safe_Send_Mode stays on. Digests and webhooks go only to allowlisted recipients (`packages/core/src/safe-send.ts`). The submission therefore does not claim that every user receives them.
+
+The other Phase 2 scope items (paid data providers, SMS, Slack, PagerDuty, billing, single sign-on and the rest) are not built. The airport list grew only to the FAA Core 30 airports, by the owner's decision of 2026-11-24. This section covers the four flagged features.
 
 What Kiro artifacts back this:
 
 - **A second spec.** `.kiro/specs/aerobrief-phase2/` holds `requirements.md`, `design.md`, `tasks.md` and `tasks.meta.json`. Its `.config.kiro` sets `workflowType: requirements-first`. The design has 21 numbered properties: 1 flag parsing; 2 and 3 theme resolution; 4 theme contrast; 5 allowlist filter; 6 to 10 digest (due selection, idempotency, content, composition, unsubscribe signature); 11 to 14 webhook URL safety, idempotent URL validation, URL masking and secret derivation; 15 to 21 webhook signing, tamper and replay rejection, retry bound, failure counter, payload validity, payload round trip and test-event rate limit. Each property cites the requirements it validates.
 - **Steering carried the rules.** `.kiro/steering/scope.md` has a "Phase 2 (branch `phase-2` only)" section. It lists what is in scope on that branch and what stays prohibited (no scraping, push, map view, native apps, passwords or FAA SWIM). It requires a feature flag for every Phase 2 feature, off by default, so that with every flag off the app behaves as `main` did. It requires every schema change to be a separate, reversible migration run only against a Neon branch until merged, and Phase 2 Workers to deploy under separate names. Its "Rule: roll back" says to turn a failed feature's flag off and revert its commits, or delete the branch if the branch as a whole fails. The `tech.md` approval rule still applied.
 - **One flag and one contiguous commit range per feature.** After the setup commit `556907b` (flags, `/api/features`, flags-off guards, deploy and migration-target guards), the history has `989708e` (dark mode), `fa2d6fa` (high contrast), `c8bb274` and `95da9f8` (webhooks), and `e5959c3` and `bbd419e` (digest). Because each feature is a contiguous range behind its own flag, the rollback rule can be applied to one feature without touching the others.
-- **A separate database branch.** Migrations 0004 and 0005 were applied to a Neon branch named `phase-2` (a copy-on-write child of production), not to production. `docs/decisions.md` records this, including that the copied production users were deleted and two allowlisted test users seeded. Email sending during testing was limited by `SAFE_SEND_MODE` and an allowlist (Property 5).
+- **A separate database branch.** Migrations 0004 and 0005 were first applied to a Neon branch named `phase-2` (a copy-on-write child of production), and only later to production (see "Production state" above). `docs/decisions.md` records the branch work, including that the copied production users were deleted and two allowlisted test users seeded. Email sending during testing was limited by `SAFE_SEND_MODE` and an allowlist (Property 5).
 - **Checkpoints as tasks.** The task list has checkpoint tasks: a regression run with all flags off (5.23), a run of the digest with its flag on (5.24), and an all-flags-on run of the full suite (6.2). `docs/decisions.md` records the 6.2 result: one failing test, caused by the test environment copying `FEATURE_*` process variables into `import.meta.env`, which a guard test rejects. The guard was not weakened.
-- **Hooks.** The two hooks in `.kiro/hooks/` were not changed for Phase 2, so the gaps listed under Hooks still apply. Nothing in the repo shows them firing during Phase 2.
+- **Hooks.** The two hooks in `.kiro/hooks/` were not changed during Phase 2 and were broken then (see "Hooks"). Nothing in the repo shows them firing during Phase 2. They were fixed afterwards by the `submission-polish` spec.
 
 Issues caught during the build, from the repo:
 
@@ -151,15 +163,38 @@ Issues caught during the build, from the repo:
 - **Scope drift in a test file.** The check that MVP tests were unchanged (task 6.1) found 35 added lines in `apps/web/test/components/airport-page.test.tsx`. They came from MVP section 21 (commit `086e681`), not from Phase 2. The project owner accepted the exception, and `docs/decisions.md` records that no MVP test was deleted, skipped or weakened.
 - **A task was dropped, not faked.** Task 4.37 (a delivery check against a real Slack workspace) was dropped by the project owner. The webhook payload follows Slack's documented `text` format, but delivery to a real Slack workspace is unverified.
 
-What this does not show: no production run of any Phase 2 feature, and no comparison with building without the spec.
+What this does not show: a comparison with building without the spec, delivery to a real Slack workspace (task 4.37 was dropped), and any send to a non-allowlisted recipient (Safe_Send_Mode is on).
 
 ## Later specs
 
-Three specs were added after the Phase 2 spec. Each has its own `requirements.md` or `bugfix.md`, `design.md` and `tasks.md` under `.kiro/specs/`, and each decision is in `docs/decisions.md`.
+Five specs were added after the Phase 2 spec (the fifth is `submission-polish`, described last). Each has its own `requirements.md` or `bugfix.md`, `design.md` and `tasks.md` under `.kiro/specs/`, and each decision is in `docs/decisions.md`.
 
 - **`faa-403-poller`.** The FAA answers Cloudflare Workers with HTTP 403. The fix is one Vercel Function, `apps/web/api/internal/faa-relay.ts`, that fetches only the fixed FAA URL for the Poller. `tech.md` lists it as the single approved exception (approved 2026-11-22). See `docs/production-runbook.md`, "FAA relay".
 - **`ui-refresh`.** The Status dashboard (Overview, Events and Airports sections) and the Settings page (Display, Daily digest, Webhooks and Account sections, with deep links such as `/settings#webhooks`). Decisions D1 to D11 are in `docs/decisions.md` (2026-11-24).
 - **`core30-limits`.** Moves the monitored list from 20 airports to the FAA Core 30 and the watchlist cap from 10 to 30 (owner decision, 2026-11-24). It adds migration `0006_watchlist_cap_30.sql` with a down file, and a pure step in `packages/core` that completes old 20-airport snapshots so the Poller keeps working during the switch. No feature flag: the limits are core product limits. Rollback is `git revert` and then the down file.
+- **`ui-improvements`.** The owner supplied a 17-requirement document for the product experience (recovery-aware status, one card per incident, structured explanations, a signed-out watchlist, the Airports view, time display, freshness, filters and search, Settings structure, navigation, footer, accessibility and more). `.kiro/specs/ui-improvements/requirements.md` marks every criterion with one of three dispositions, so nothing was silently dropped:
+  - **Build now**: for example the Overview and Network_Summary, one Incident_Card per incident, the five labeled explanation fields, the signed-out Watchlist stored in the browser, the freshness indicator, the time display setting, filters and search kept in the URL, the footer, and navigation that works at 320 px.
+  - **Deferred**, each with a reason: Minor Impact and Disrupted statuses, delay program and closure incidents (event types are not tracked), table grouping, the watch star and sortable headers (the airport table markup is fixed by `.kiro/steering/design.md`), the Operations_View and "View source" (the product is traveler view only), 7 and 30 day history (`scope.md` keeps 24 hours), hourly strips and the digest preview with time zone (needs a migration), automated screenshots (Playwright is outside `tech.md`), and the organization and single sign-on scaffolding.
+  - **Out of scope**: the map view (criteria 10.1, 10.2 and 10.5), because `scope.md` prohibits it.
+
+  The spec adds no database migration. One additive API field, `incidentKey`, exposes the existing `events.eventKey` column (task 3.1 in `.kiro/specs/ui-improvements/tasks.md`). Its `tasks.md` notes say the design has 18 correctness properties.
+- **`submission-polish`.** This spec fixed the two hooks and brought `docs/hooks.md`, this file, `docs/demo-script.md` and `docs/devpost-submission.md` in line with the live product. It changes no application code. Its design records the hook schema finding (`.kiro/specs/submission-polish/design.md`, "Hook schema: finding and decision").
+
+## Where Kiro surprised us
+
+Six cases where the result differed from what the spec or the task report led us to expect. Each cites the evidence in the repository.
+
+**(a) A property found a second string for one signature.** Property 10 of the Phase 2 spec says a digest unsubscribe signature verifies for exactly one string. The HMAC check alone was expected to guarantee that. The property test produced a counterexample (user `00000000-5f10-6582-8000-001a41acf1c7`, secret `( 60Q`). The decoder used `atob`, which ignores the unused trailing bits of the last base64url character, so two strings decoded to the same bytes. Evidence: commit `bbd419e` (changes `packages/core/src/digest/unsubscribe.ts`, adds regression tests to `packages/core/test/digest-unsubscribe.test.ts`) and the account under "Phase 2". The impact was small, because a signature still had to match an HMAC.
+
+**(b) The FAA answered Cloudflare with HTTP 403, and a probe settled it.** The production poller stored no Snapshot because the FAA returned 403. The first hypothesis was missing request headers. A throwaway probe Worker called the FAA URL three ways from Cloudflare colo DFW on 2026-11-21 (no headers, the AeroBrief `User-Agent`, a browser-like `User-Agent`). All three got 403 with an "Access Denied" page, so headers were ruled out. The same URL returned 200 from the owner's machine. A second probe on a Vercel Preview of `phase-2` reached the FAA and got HTTP 200 with JSON, so the fix is one Vercel Function that relays the fixed FAA URL. That is outside `tech.md`, so it was flagged and the owner approved it on 2026-11-22. Evidence: `.kiro/specs/faa-403-poller/probe-result.md`, `.kiro/specs/faa-403-poller/relay-probe-result.md`, `docs/decisions.md` (2026-11-22) and the approved exception in `.kiro/steering/tech.md`.
+
+**(c) A sub-agent reported a task as finished when it was not.** The sub-agent for task 17.4 (event card styles) reported it done, but the CSS had not been written. The orchestrator found the gap by checking the deployed stylesheet. Evidence: commit `a690842` ("Add missing event card styles (task 17.4)"), which adds 61 lines to `apps/web/src/index.css`.
+
+**(d) A thrown value could break the code that reports errors.** `fetchFaa` must never throw. A thrown object whose `toString` is not a function (`{ toString: "" }`), or whose `message` getter throws, could make the error-description code throw. The fix added `safeString` and `readStringProp` to `apps/poller/src/faa-client.ts`, and `describeError` in `apps/poller/src/poll.ts` has a matching regression test. Tests: "does not throw when the thrown object has a non-callable toString" and "describeError does not throw for a non-callable toString or a throwing message getter" in `apps/poller/test/faa-client.test.ts`. The fix is in commit `3527e43`, found with `git log --oneline -S safeString -- apps/poller/src/faa-client.ts`. That commit is the Core 30 change, and its message does not mention this fix. The repository also has a property test for the contract, "never throws and always returns a typed result, for any status, body or thrown value" (`apps/poller/test/faa-client.pbt.test.ts`, with `fc.anything()` for the thrown value). Which test first exposed the bug is not recorded in the repository.
+
+**(e) A CSS rule lost a specificity contest on a phone.** The owner's phone screenshots showed clipped Add and Remove buttons in the stacked table layout (640 px and below). The wide-screen rule sets `width: 1%` with higher specificity than the reset in the narrow block, so the reset never applied. Evidence: commit `5f19226` (a 7-line rule in `apps/web/src/styles/tables.css` with a comment on the cause, and a test in `apps/web/test/layout-css.test.ts`). The screenshots themselves are not in the repository; `docs/responsive-check.md` records that no screenshots are kept.
+
+**(f) The frontend was ahead of the API.** The new web code paired an incident's start and end events by an `incidentKey` field, which the production API did not return yet. The fix is a backward-compatible fallback that pairs events by airport when `incidentKey` is missing. Evidence: commit `9074304` ("Web: accept events without incidentKey and pair them by airport (works with the current production API)"), with `apps/web/src/lib/fallback-incident-keys.ts`, a unit test and a property test (`apps/web/test/fallback-incident-keys.pbt.test.ts`). The field itself comes from task 3.1 of `.kiro/specs/ui-improvements/tasks.md`.
 
 ## Powers
 
@@ -169,9 +204,11 @@ No Kiro powers were used to build AeroBrief. The Kiro environment had the postma
 
 - No comparison of Kiro IDE with CLI, Web or Crew. Only the IDE was used.
 - No custom agents. Only built-in Kiro sub-agents were used.
-- No claim that the hooks ran or protected anything. Both have known gaps.
+- No claim that the hooks protected anything. Both are prompts that do not block a write. One firing of the Test_Gate hook was observed by the agent in a Kiro session on 2026-11-25. The owner's confirmation of both hooks is pending (`docs/hooks.md`, "Firing record"), and no firing of the Typecheck hook is recorded.
 - No claim that context7 was used. It was available, and no use is recorded.
-- No MVP bug caught by a property test. The one recorded catch is in Phase 2.
+- No MVP bug caught by a property test. The recorded catch is in Phase 2 (item a).
+- No claim that a property test found the bug in item d. Which test exposed it first is not recorded.
+- No claim that digests or webhooks reach users outside the allowlist. Safe_Send_Mode is on.
+- No delivery check against a real Slack workspace (task 4.37 was dropped).
 - No measured comparison with vibe coding. No vibe-coded version exists.
-- No demo video and no submission status (Tasks 14.4 and 14.5 are open).
 - No Kiro powers.

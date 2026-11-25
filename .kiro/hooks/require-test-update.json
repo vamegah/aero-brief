@@ -1,14 +1,16 @@
 {
-  "enabled": true,
-  "name": "Require PBT Update for Schema Changes",
-  "description": "Before any write to src/lib/schemas/**, confirm the corresponding property-based test file is updated.",
-  "version": "1",
-  "when": {
-    "type": "preToolUse",
-    "toolTypes": ["write"]
-  },
-  "then": {
-    "type": "askAgent",
-    "prompt": "Check the target path of this write. If it is NOT under src/lib/schemas/, do nothing and let the write proceed. If it IS under src/lib/schemas/, do not proceed until you confirm that the corresponding property-based test file is updated to cover the change. Per the project's structure rules, the PBT file mirrors the source path: src/lib/schemas/<name>.ts maps to tests/pbt/<name>.pbt.test.ts. Verify that file exists and that it is updated (or is being updated in this same task) to reflect the schema change. If it is missing or out of date, update or create it first, then perform the schema write. If you cannot confirm this, stop and tell the user why."
-  }
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Require test update for core logic and schemas",
+      "description": "Before a write under packages/core/src/, confirm that the mirrored unit and property tests are updated. Schema changes also need the schema and property tests.",
+      "enabled": true,
+      "trigger": "PreToolUse",
+      "matcher": "write",
+      "action": {
+        "type": "agent",
+        "prompt": "Check the target path of this write. If it is NOT under packages/core/src/, do nothing and let the write proceed. If it IS under packages/core/src/, first confirm that the mirrored tests in packages/core/test/ are updated for this change, or are updated in this same task: for packages/core/src/<name>.ts they are <name>.test.ts and <name>.pbt.test.ts (and any other *.pbt.test.ts file whose name starts with <name>). If the path is packages/core/src/schemas.ts, the tests that must cover the change are schemas.test.ts, snapshot-roundtrip.pbt.test.ts and faa-body.pbt.test.ts. If a mirrored test is missing or does not cover the change, write or update it first, then perform the source write. If you cannot confirm coverage, stop and tell the user why."
+      }
+    }
+  ]
 }

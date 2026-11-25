@@ -1,0 +1,116 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Write the two hook files in the current Kiro v1 schema": [
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626426993
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626436378
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626540348
+      }
+    ],
+    "1.2 Write `docs/hooks.md`": [
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626427693
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626545308
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626554081
+      }
+    ],
+    "2. Update `docs/kiro-usage.md`": [
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626427973
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626563563
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626937273
+      }
+    ],
+    "3. Rewrite `docs/demo-script.md`": [
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626428364
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626564927
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626938160
+      }
+    ],
+    "4. Update `docs/devpost-submission.md`": [
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626428489
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626566178
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626938655
+      }
+    ],
+    "5. Checkpoint - Verify the repository and the hook files": [
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626428578
+      },
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626939632
+      }
+    ],
+    "6. Confirm each hook fires in Kiro (**needs user action**)": [
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626428679
+      }
+    ],
+    "1. Make the two hooks real": [
+      {
+        "executionId": "605da7a1-445a-4cd2-900a-0ed32ece662b",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795626554600
+      }
+    ]
+  }
+}

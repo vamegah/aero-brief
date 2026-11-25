@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Typecheck and test on save",
+      "description": "After the agent saves a .ts or .tsx file under apps/ or packages/, typecheck the affected workspace and run the tests that mirror the file.",
+      "enabled": true,
+      "trigger": "PostFileSave",
+      "matcher": "(^|[\\\\/])(apps|packages)[\\\\/].+\\.tsx?$",
+      "action": {
+        "type": "agent",
+        "prompt": "A TypeScript file under apps/ or packages/ was just saved. If its path contains node_modules, dist or .wrangler, do nothing. Otherwise: (1) Take the first two path segments of the saved file (for example packages/core or apps/api) and run `npm run typecheck -w <that path>`. (2) Find the Vitest files that mirror the saved file under the rule in .kiro/steering/structure.md: for <pkg-or-app>/src/<name>.ts that is <pkg-or-app>/test/<name>.test.ts and <name>.pbt.test.ts, and for a saved test file that file itself. If no mirror exists by name, search the test folder of the same workspace for files that import the saved module. Run `npx vitest --run <those files>`. (3) If anything fails, report each failure with its file and message in a short list. Do not change any file and do not install anything. Do not run ESLint; it is not part of this project."
+      }
+    }
+  ]
+}
