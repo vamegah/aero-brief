@@ -41,7 +41,7 @@ Fix the two Kiro hooks and bring four documents in line with the live product be
   - Take every UI label and path from the code in `apps/web/src` (read the components), not from memory.
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7_
 
-- [x] 4. Update `docs/devpost-submission.md`
+- [-] 4. Update `docs/devpost-submission.md`
   - Apply the edits in `design.md` ("Devpost_Copy edits"): live Phase 2 features with Safe_Send_Mode, the UI improvements, 30 Core airports, the relay with its approval, the Kiro story with at least two surprises, hooks, MCP, a recounted PBT file count, accurate "What's next" from the Deferred dispositions, and updated judge testing notes.
   - Remove every statement that a feature is off by default in production or that production use is not claimed. Do not list the map view as a next step.
   - Keep the category, the project name, the built-with list, the try-it links and the team checklist, updated where facts changed.
