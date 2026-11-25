@@ -575,6 +575,11 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795547367698
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795637403007
       }
     ],
     "11.2 Apply the migration": [
@@ -582,6 +587,11 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795547367817
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795637404229
       }
     ],
     "11.3 Check the result with read-only queries": [
@@ -589,6 +599,11 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795547367888
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795637404659
       }
     ],
     "12.1 Fast-forward `main` and push before December 4, 2026, 2:00 PM PT": [
@@ -596,6 +611,11 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795547367954
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795637405625
       }
     ],
     "13.1 Check https://www.aerobriefs.com": [
@@ -603,6 +623,11 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795547368050
+      },
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795637406475
       }
     ],
     "0. Record the owner's decision in the steering files and the decision log (docs only)": [
@@ -659,6 +684,27 @@
         "executionId": "f66a6549-b9cb-445f-95b7-ebb799a62bfc",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795551766775
+      }
+    ],
+    "11. Apply 0006 to production (needs user action, owner approval, before the push)": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795637404998
+      }
+    ],
+    "12. Ship (needs user action, owner only)": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795637405786
+      }
+    ],
+    "13. Final owner check on the live site (needs user action)": [
+      {
+        "executionId": "500f57b8-2a8d-4e48-b004-367578aa9553",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795637406715
       }
     ]
   }

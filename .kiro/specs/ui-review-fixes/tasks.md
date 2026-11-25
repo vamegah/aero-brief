@@ -58,7 +58,7 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
     - Add spacing-token rules to `apps/web/src/styles/surfaces.css` (or the incident card's existing stylesheet) for the new pill class; add any new color pair to `palettePairs` if one is introduced (reusing `.status-pill` colors should avoid this).
     - _Requirements: 7.1, 7.4_
 
-- [-] 3. Checkpoint - Incident feed and card
+- [x] 3. Checkpoint - Incident feed and card
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 4. Airport table status cell text
@@ -90,7 +90,7 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
     - Update `apps/web/test/components/nav-bar.test.tsx` and `apps/web/test/a11y/nav-bar.test.tsx` to assert: "Settings" renders as a top-level link when signed in; the Account button contains an `aria-hidden` SVG; `aria-current="page"` is set on the Settings link when `pathname === "/settings"`.
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-- [~] 6. Checkpoint - Airport table and navigation
+- [x] 6. Checkpoint - Airport table and navigation
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 7. Search field width and placeholder text
@@ -121,7 +121,7 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
     - Update `apps/web/test/webhook-settings.test.tsx`: assert a `<time>` element renders for the delivery time instead of the raw UTC string; assert the Delete button has the danger-outline class; assert clicking Delete opens a confirmation naming the host; assert confirming calls `deleteWebhook` and cancelling does not.
     - _Requirements: 5.1, 6.1, 6.2, 6.3, 6.4_
 
-- [~] 9. Checkpoint - Search fields and webhook settings
+- [x] 9. Checkpoint - Search fields and webhook settings
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 10. Signed-out Watchlist spacing and grouping
@@ -147,10 +147,10 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
     - Update `apps/web/test/display-settings.test.tsx`'s preview assertions to check for the three swatch labels instead of the single combined sentence.
     - _Requirements: 10.3_
 
-- [~] 12. Checkpoint - Watchlist spacing and display settings
+- [x] 12. Checkpoint - Watchlist spacing and display settings
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 13. Digest local-time equivalent
+- [x] 13. Digest local-time equivalent
   - [x] 13.1 Implement `apps/web/src/lib/digest-local-time.ts`
     - Add `localHourLabel` and `hourWithLocalEquivalent` as in `design.md`.
     - _Requirements: 11.1, 11.2_
@@ -160,7 +160,7 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
     - **Property 5: Local hour conversion is a consistent rotation**
     - **Validates: Requirements 11.1**
 
-  - [~] 13.3 Wire the local-time text into `DigestSettings.tsx`
+  - [x] 13.3 Wire the local-time text into `DigestSettings.tsx`
     - Render `hourWithLocalEquivalent(hour, browserTimeZone(), new Date())` next to the "Send at (UTC)" select, recomputed on every `hour` state change.
     - _Requirements: 11.1, 11.2, 11.3_
 
@@ -178,10 +178,10 @@ Build the 11 owner-approved fixes from the 2026-11-25 screenshot review on top o
     - Extend `apps/web/test/layout-css.test.ts` (or equivalent) to assert both selectors reference `--color-table-rule`.
     - _Requirements: 12.1, 12.2_
 
-- [~] 15. Checkpoint - Digest local time and lighter separators
+- [x] 15. Checkpoint - Digest local time and lighter separators
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 16. Owner Preview review
+- [-] 16. Owner Preview review
   - Deploy or point the owner to the Vercel Preview of this branch (signed-out views, per the existing rollout pattern in `.kiro/specs/ui-improvements/requirements.md`) and a phone-width view, and ask the owner to confirm all 11 fixes read correctly, including the Requirement 7.3 wording question flagged in `design.md`.
   - _Requirements: all_
 

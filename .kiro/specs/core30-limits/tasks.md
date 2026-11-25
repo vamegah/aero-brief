@@ -179,26 +179,26 @@ Change two core product limits (20 airports to the FAA Core 30, watchlist 10 to 
     - Run `packages/db/test/integration/watchlist-cap.test.ts` with the repo's documented opt-in test database variable pointing at the `phase-2` branch (the existing `phase2-target` guard refuses other hosts). Never print the connection string. If the variable is not set, say so and mark this sub-task as needing the owner.
     - _Requirements: 3.9, 8.6, 9.2_
 
-- [ ] 11. Apply 0006 to production (needs user action, owner approval, before the push)
-  - [~] 11.1 Take a restore point
+- [x] 11. Apply 0006 to production (needs user action, owner approval, before the push)
+  - [x] 11.1 Take a restore point
     - **Needs user action.** The owner creates a Neon snapshot or a child branch of the production branch and confirms it exists, as `docs/phase2-rollout.md` step 3a describes.
     - _Requirements: 9.1, 9.8_
 
-  - [~] 11.2 Apply the migration
+  - [x] 11.2 Apply the migration
     - **Needs user action.** The owner approves and runs `0006_watchlist_cap_30.sql` on the production database in one transaction that stops on the first error (the method in `docs/phase2-rollout.md` step 3c). Production has no `__drizzle_migrations` table, so do not use `drizzle-kit migrate`. The agent prepares the exact command text in the report and runs nothing.
     - _Requirements: 9.1, 9.3, 9.8_
 
-  - [~] 11.3 Check the result with read-only queries
+  - [x] 11.3 Check the result with read-only queries
     - **Needs user action.** The owner (or the agent through read-only Neon queries, if the owner allows it) checks: 30 rows in `airports`, the function text, the trigger present. The site still behaves as before until the push.
     - _Requirements: 9.1, 9.3_
 
-- [ ] 12. Ship (needs user action, owner only)
-  - [~] 12.1 Fast-forward `main` and push before December 4, 2026, 2:00 PM PT
+- [x] 12. Ship (needs user action, owner only)
+  - [x] 12.1 Fast-forward `main` and push before December 4, 2026, 2:00 PM PT
     - **Needs user action.** After tasks 9 and 11 are done, the owner fast-forwards `main` from `phase-2` (the Status dashboard and this work included) and pushes. The push deploys the API Worker, then the Poller Worker (`deploy-workers.yml`), and Vercel deploys the web app. Watch the Actions run finish.
     - _Requirements: 9.1, 9.4, 9.8_
 
-- [ ] 13. Final owner check on the live site (needs user action)
-  - [~] 13.1 Check https://www.aerobriefs.com
+- [x] 13. Final owner check on the live site (needs user action)
+  - [x] 13.1 Check https://www.aerobriefs.com
     - **Needs user action.** Within about 10 minutes of the push: the Status page shows 30 rows and the subtitle "30 major US airports"; search "honolulu" and "LGA" each find one row; `capturedAt` is newer than the push time and `stale` is false (`/api/status/national`); sign in, open the Watchlist, the counter reads "N of 30 airports watched"; add airports up to 30 if desired and confirm the 31st add shows "Your Watchlist already has 30 airports. Remove one to add another."
     - If anything fails, follow the rollback in `design.md` ("Release order") and `docs/decisions.md`.
     - _Requirements: 2.3, 2.6, 5.4, 5.10, 5.11, 6.1, 9.7_
