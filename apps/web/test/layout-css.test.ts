@@ -349,6 +349,17 @@ describe("layout css: footer and shared container (ui-improvements Requirements 
     expect(declared(app, ".site-footer__secondary", "font-size", null)).toBe("var(--text-xs)");
   });
 
+  it("lays the footer out as a two-column row with end-aligned links at 768px and up", () => {
+    expect(declared(app, ".site-footer__inner", "justify-content", WIDE)).toBe("space-between");
+    expect(declared(app, ".site-footer__inner", "flex-wrap", WIDE)).toBe("nowrap");
+    expect(declared(app, ".site-footer__inner", "align-items", WIDE)).toBe("center");
+    expect(declared(app, ".site-footer__inner", "padding-block", WIDE)).toBe("var(--space-6)");
+    expect(declared(app, ".site-footer__meta", "align-items", WIDE)).toBe("flex-end");
+    expect(declared(app, ".site-footer__links", "justify-content", WIDE)).toBe("flex-end");
+    expect(declared(app, ".site-footer__brand", "display", WIDE)).toBe("block");
+    expect(declared(app, ".site-footer__brand", "display", null)).toBe("none");
+  });
+
   it("the footer rules use no raw color or pixel spacing", () => {
     const code = stripComments(appCss);
     const footer = code.slice(code.indexOf(".site-footer {"), code.indexOf(".nav-bar a:focus-visible"));

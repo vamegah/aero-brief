@@ -43,6 +43,73 @@ a {
   font-size: var(--text-xs);
 }
 
+/* Phone: the grouping wrappers vanish so the items flow as one wrapped row stack (links, notice,
+   secondary). The brand label is desktop-only. */
+.site-footer__about,
+.site-footer__meta,
+.site-footer__links {
+  display: contents;
+}
+
+.site-footer__brand {
+  display: none;
+}
+
+.site-footer__links > .site-footer__item {
+  order: 1;
+}
+
+.site-footer__notice {
+  order: 2;
+}
+
+.site-footer__secondary {
+  order: 3;
+}
+
+/* Desktop: a balanced two-column row. Brand and notice on the left; links and the secondary line
+   on the right, aligned to the end. */
+@media (min-width: 768px) {
+  .site-footer__inner {
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--space-6);
+  }
+
+  .site-footer__about,
+  .site-footer__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .site-footer__meta {
+    align-items: flex-end;
+    text-align: end;
+    gap: var(--space-2);
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .site-footer__brand {
+    display: block;
+    color: var(--color-text);
+    font-size: var(--text-md);
+    font-weight: 600;
+  }
+
+  .site-footer__notice,
+  .site-footer__secondary {
+    flex: 0 1 auto;
+  }
+}
+
 /* Underlined at rest; the focus ring comes from the shared token. */
 .site-footer a {
   color: var(--color-link);

@@ -23,17 +23,24 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
-        <p className="site-footer__item site-footer__item--primary">
-          <ExternalLink href={API_DOCS_URL}>API documentation</ExternalLink>
-        </p>
-        <p className="site-footer__item site-footer__item--primary">
-          Data source: <ExternalLink href={FAA_STATUS_URL}>FAA NAS Status</ExternalLink>
-        </p>
-        <p className="site-footer__item site-footer__notice">{ADVISORY_NOTICE}</p>
-        <p className="site-footer__item site-footer__secondary">
-          License: <ExternalLink href={LICENSE_URL}>MIT</ExternalLink>
-          {" · "}Built with Kiro · Kiroween 2026
-        </p>
+        <div className="site-footer__about">
+          <p className="site-footer__item site-footer__brand">AeroBrief</p>
+          <p className="site-footer__item site-footer__notice">{ADVISORY_NOTICE}</p>
+        </div>
+        <div className="site-footer__meta">
+          <div className="site-footer__links">
+            <p className="site-footer__item site-footer__item--primary">
+              <ExternalLink href={API_DOCS_URL}>API documentation</ExternalLink>
+            </p>
+            <p className="site-footer__item site-footer__item--primary">
+              Data source: <ExternalLink href={FAA_STATUS_URL}>FAA NAS Status</ExternalLink>
+            </p>
+          </div>
+          <p className="site-footer__item site-footer__secondary">
+            License: <ExternalLink href={LICENSE_URL}>MIT</ExternalLink>
+            {" · "}Built with Kiro · Kiroween 2026
+          </p>
+        </div>
       </div>
     </footer>
   );
