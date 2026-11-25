@@ -270,7 +270,7 @@ Tasks 18 to 25 are listed here, ahead of Tasks 16 and 17, because they run first
     - Rewrite Hook 2 in `docs/hooks.md` and item 2 of the Hooks section in `docs/kiro-usage.md`: new trigger and matcher, and the reason (the `PreToolUse` version interrupted every write, including docs). Replace the outdated "Limits" bullets as described in `design.md` section 14 and add a History line dated 2026-11-25.
     - _Requirements: 24.3_
 
-- [-] 25. Checkpoint - Second round
+- [x] 25. Checkpoint - Second round
   - Run `npm test`, `npm run typecheck` and the web build (`npm run build -w apps/web`), and parse every file in `.kiro/hooks/` as JSON. Ensure all pass, ask the user if questions arise. Do not commit, push, or deploy.
   - _Requirements: 18.6, 19.5, 20.4, 21.3, 22.3, 23.4, 24.5_
 
