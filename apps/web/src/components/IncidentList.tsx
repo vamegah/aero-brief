@@ -1,5 +1,4 @@
 import type { Incident } from "@aerobrief/core/incidents";
-import type { EventSummary } from "../api/client";
 import type { IncidentFeed } from "../lib/incident-feed";
 import { EventCard } from "./EventCard";
 import { IncidentCard, type IncidentRecovery } from "./IncidentCard";
@@ -37,7 +36,7 @@ export function IncidentList({ feed, now, activeStops, recovery }: IncidentListP
           </li>
         );
       })}
-      {feed.others.map((event: EventSummary, index) => (
+      {feed.others.map((event, index) => (
         <li key={`other-${event.incidentKey}-${index}`}>
           <EventCard event={event} />
         </li>

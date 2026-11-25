@@ -1,6 +1,7 @@
 import { isMonitoredId } from "@aerobrief/core/airports";
 import { mergeIncidents, sortIncidents, type Incident } from "@aerobrief/core/incidents";
 import type { EventSummary } from "../api/client";
+import { assignIncidentKeys, withIncidentKeys, type KeyedEventSummary } from "./fallback-incident-keys";
 import type { EventFilter } from "./filter-events";
 
 /** The event shape `mergeIncidents` takes, derived so the web app needs no deep core import. */
@@ -11,7 +12,8 @@ export type CoreIncidentEvent = Parameters<typeof mergeIncidents>[0][number];
  * recognize, and for a ground stop event whose airport is not a monitored airport. The result
  * carries no FAA text: the `reason` is null because EventSummary does not include it.
  */
-export function toCoreEvent(event: EventSummary): CoreIncidentEvent | null {
+export function toCoreEvent(input: EventSummary): CoreIncidentEvent | null {
+  const event: KeyedEventSummary = { ...input, incidentKey: input.incidentKey ?? (assignIncidentKeys([input])[0] as string) };
   switch (event.type) {
     case "GROUND_STOP_STARTED":
     case "GROUND_STOP_ENDED":
@@ -41,13 +43,13 @@ export function toCoreEvent(event: EventSummary): CoreIncidentEvent | null {
 export interface IncidentFeed {
   incidents: Incident[];
   /** Events `toCoreEvent` rejected. They render with `EventCard`, newest first as received. */
-  others: EventSummary[];
+  others: KeyedEventSummary[];
 }
 
 export function buildIncidentFeed(events: readonly EventSummary[]): IncidentFeed {
   const recognized: CoreIncidentEvent[] = [];
-  const others: EventSummary[] = [];
-  for (const event of events) {
+  const others: KeyedEventSummary[] = [];
+  for (const event of withIncidentKeys(events)) {
     const core = toCoreEvent(event);
     if (core === null) others.push(event);
     else recognized.push(core);

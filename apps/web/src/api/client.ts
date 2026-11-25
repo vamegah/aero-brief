@@ -18,7 +18,8 @@ export type AirportSummary = {
 };
 
 export type EventSummary = {
-  incidentKey: string;
+  /** Absent from API versions that predate it. uildIncidentFeed derives a fallback key. */
+  incidentKey?: string;
   type: string;
   airportId: string | null;
   occurredAt: string;
@@ -98,7 +99,7 @@ export function normalizeNationalStatus(body: NationalStatusResponse): NationalS
 function isEventSummary(value: unknown): value is EventSummary {
   return (
     isRecord(value) &&
-    typeof value["incidentKey"] === "string" &&
+    (value["incidentKey"] === undefined || (typeof value["incidentKey"] === "string" && value["incidentKey"] !== "")) &&
     typeof value["type"] === "string" &&
     (value["airportId"] === null || typeof value["airportId"] === "string") &&
     typeof value["occurredAt"] === "string" &&
