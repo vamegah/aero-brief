@@ -6,6 +6,12 @@ export const ICON_NAMES = [
   "error",
   "loading",
   "empty",
+  // Airport_Status kinds (STATUS_CATALOG icons)
+  "info-circle",
+  "warning-triangle",
+  "stop-octagon",
+  "clock-arrow",
+  "question-mark",
 ] as const;
 
 export type IconName = (typeof ICON_NAMES)[number];

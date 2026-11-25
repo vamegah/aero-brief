@@ -1,6 +1,6 @@
 import type { AirportSummary } from "../api/client";
-import { formatUtc } from "../lib/format-time";
 import { MetricChip } from "./MetricChip";
+import { TimeText } from "./TimeText";
 
 export interface SummaryCardProps {
   airports: readonly AirportSummary[];
@@ -34,7 +34,7 @@ export function SummaryCard({ airports, nationwide, capturedAt }: SummaryCardPro
       <MetricChip label="Ground stops" value={groundStops} />
       <MetricChip label="Affected ARTCCs" value={nationwide.count} />
       <p className="summary-card__updated">
-        Last updated <time dateTime={capturedAt}>{formatUtc(capturedAt)}</time>
+        Last updated <TimeText iso={capturedAt} />
       </p>
     </section>
   );

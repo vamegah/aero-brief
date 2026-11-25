@@ -69,7 +69,7 @@ describe("AirportPage ground stop durations", () => {
     expect(screen.getByText("The ground stop at Atlanta ended.")).toBeTruthy();
   });
 
-  it("shows no duration on the status page", async () => {
+  it("shows one incident card with its total duration in each pane on the status page", async () => {
     vi.useFakeTimers({ toFake: ["Date"], now: NOW });
     open("/", {
       "GET /api/status/national": () =>
@@ -82,14 +82,16 @@ describe("AirportPage ground stop durations", () => {
           events: stopEvents(),
         }),
     });
-    // The event shows in the Overview latest events and in the Events pane.
-    const occurrences = await screen.findAllByText("The ground stop at Atlanta ended.");
+    // The started and ended events merge into one incident card, shown in the Overview latest
+    // events and in the Events pane, each with the total duration. The airport page's own
+    // EventCard list is unchanged (tests above).
+    const occurrences = await screen.findAllByText("Lasted 1 h 20 min");
     expect(occurrences).toHaveLength(2);
     for (const el of occurrences) {
       const pane = el.closest(".status-pane") as HTMLElement;
-      expect(within(pane).queryByText(/^Lasted /)).toBeNull();
+      expect(pane.querySelectorAll(".incident-card")).toHaveLength(1);
+      expect(within(pane).queryByText("The ground stop at Atlanta ended.")).toBeNull();
     }
-    expect(screen.queryByText(/^Lasted /)).toBeNull();
   });
 });
 

@@ -14,6 +14,12 @@ describe("matchesAirportSearch", () => {
     expect(matchesAirportSearch(ATL, "ATLANTA")).toBe(true);
   });
 
+  it("matches the city, from the summary or from the registry", () => {
+    expect(matchesAirportSearch({ airportId: "LAS", name: "Harry Reid International" }, "las vegas")).toBe(true);
+    expect(matchesAirportSearch({ airportId: "IAD", name: "Washington Dulles International", city: "Washington" }, "WASHINGTON")).toBe(true);
+    expect(matchesAirportSearch({ airportId: "LAS", name: "Harry Reid International" }, "honolulu")).toBe(false);
+  });
+
   it("ignores leading and trailing spaces", () => {
     expect(matchesAirportSearch(ATL, "  atl  ")).toBe(true);
   });

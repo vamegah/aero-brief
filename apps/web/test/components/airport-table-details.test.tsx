@@ -2,7 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { AirportSummary } from "../../src/api/client";
 import { AirportTable } from "../../src/components/AirportTable";
-import { formatUtc } from "../../src/lib/format-time";
+import { useUtcDisplayMode } from "./fixtures";
+
+useUtcDisplayMode();
 
 const END = "2026-01-02T14:30:00.000Z";
 
@@ -25,7 +27,7 @@ describe("AirportTable ground stop details", () => {
     ]);
     const detail = container.querySelector(".airport-table__detail");
     expect(detail?.textContent).toContain("Thunderstorms");
-    expect(detail?.textContent).toContain(`Expected to end around ${formatUtc(END)}`);
+    expect(detail?.textContent).toContain(`Expected to end around Jan 2, 2026, 14:30 UTC`);
     const link = screen.getByRole("link", { name: /FAA advisory/ });
     expect(link.getAttribute("href")).toBe(url);
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");

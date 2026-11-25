@@ -1,12 +1,25 @@
 import { AIRPORTS } from "@aerobrief/core/airports";
+import { afterEach, beforeEach } from "vitest";
 import type { AirportSummary, NationalStatusResponse } from "../../src/api/client";
+import { DISPLAY_MODE_KEY } from "../../src/hooks/use-display-mode";
 
 export type FetchFn = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 export type OkStatus = Extract<NationalStatusResponse, { state: "ok" }>;
 
 export const NOW = new Date("2026-01-02T12:00:00.000Z");
 export const CAPTURED_AT = "2026-01-02T11:00:00.000Z";
-export const CAPTURED_TEXT = "2026-01-02 11:00 UTC";
+/** Shown by TimeText when the display mode is "utc". Call `useUtcDisplayMode()` in the test file. */
+export const CAPTURED_TEXT = "Jan 2, 2026, 11:00 UTC";
+
+/** Registers hooks that pin the time Display_Setting to "utc" for each test, then clear it. */
+export function useUtcDisplayMode(): void {
+  beforeEach(() => {
+    window.localStorage.setItem(DISPLAY_MODE_KEY, "utc");
+  });
+  afterEach(() => {
+    window.localStorage.removeItem(DISPLAY_MODE_KEY);
+  });
+}
 
 const LEADING_IDS: readonly string[] = [
   "ATL", "LAX", "ORD", "DFW", "DEN", "JFK", "SFO", "SEA", "LAS", "MCO",

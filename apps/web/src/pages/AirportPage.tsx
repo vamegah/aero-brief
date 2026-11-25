@@ -13,12 +13,12 @@ import { EventList } from "../components/EventList";
 import { GroundStopDetails } from "../components/GroundStopDetails";
 import { LoadingState } from "../components/LoadingState";
 import { PageHeader } from "../components/PageHeader";
+import { TimeText } from "../components/TimeText";
 import { StaleDataBanner } from "../components/StaleDataBanner";
 import { StatusPill } from "../components/StatusPill";
 import { downloadTextFile, csvFileName } from "../lib/download-file";
 import { CSV_BOM, eventsToCsv } from "../lib/events-to-csv";
 import { selectDisplayEvents } from "../lib/display-window";
-import { formatUtc } from "../lib/format-time";
 import { formatDuration, pairGroundStopDurations } from "../lib/ground-stop-durations";
 import { NotFoundPage } from "./NotFoundPage";
 
@@ -94,13 +94,13 @@ export function AirportPage({ airportId }: { airportId: string }) {
             {ok.airport.groundStop !== null ? (
               <>
                 <StatusPill variant="active" text="Ground stop" />
-                <GroundStopDetails stop={ok.airport.groundStop} />
+                <GroundStopDetails stop={ok.airport.groundStop} airportId={ok.airport.airportId} />
               </>
             ) : (
               <StatusPill variant="normal" text="No ground stop reported" />
             )}
             <p className="summary-card__updated">
-              Last updated <time dateTime={ok.capturedAt}>{formatUtc(ok.capturedAt)}</time>
+              Last updated <TimeText iso={ok.capturedAt} airportId={ok.airport.airportId} />
             </p>
           </section>
           <div className="airport-events-heading">

@@ -6,8 +6,8 @@ const off = ALL_FLAGS_OFF;
 const flags = (over: Partial<Features>): Features => ({ ...off, ...over });
 
 describe("visibleSections", () => {
-  it("shows only account with every flag off", () => {
-    expect(visibleSections(off)).toEqual(["account"]);
+  it("shows display and account with every flag off", () => {
+    expect(visibleSections(off)).toEqual(["display", "account"]);
   });
 
   it("shows display for darkMode alone", () => {
@@ -19,11 +19,11 @@ describe("visibleSections", () => {
   });
 
   it("shows digest for digests alone", () => {
-    expect(visibleSections(flags({ digests: true }))).toEqual(["digest", "account"]);
+    expect(visibleSections(flags({ digests: true }))).toEqual(["display", "digest", "account"]);
   });
 
   it("shows webhooks for webhooks alone", () => {
-    expect(visibleSections(flags({ webhooks: true }))).toEqual(["webhooks", "account"]);
+    expect(visibleSections(flags({ webhooks: true }))).toEqual(["display", "webhooks", "account"]);
   });
 
   it("shows all four in fixed order with every flag on", () => {
@@ -48,8 +48,8 @@ describe("resolveSection", () => {
     expect(resolveSection("#nope", all)).toBe("display");
   });
 
-  it("falls back to account when the webhooks flag is off", () => {
-    expect(resolveSection("#webhooks", visibleSections(off))).toBe("account");
+  it("falls back to display when the webhooks flag is off", () => {
+    expect(resolveSection("#webhooks", visibleSections(off))).toBe("display");
   });
 
   it("resolves a visible section with or without the #", () => {

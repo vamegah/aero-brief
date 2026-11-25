@@ -93,43 +93,48 @@ describe("Status dashboard", () => {
     [3, 3],
     [5, 5],
     [8, 5],
-  ])("Overview shows %i events as %i cards, newest first, and the View all events link", (given, shown) => {
+  ])("Overview shows %i events as %i incident cards, active first, and the View all events link", (given, shown) => {
     render(<StatusView status={okStatus()} events={makeEvents(given)} loading={false} />);
     const cards = pane("overview").querySelectorAll(".event-card");
     expect(cards).toHaveLength(shown);
-    if (shown > 0) expect(cards[0]?.textContent).toContain("Explanation 0");
+    if (shown > 0) {
+      // Event 0 is the newest active ground stop at ATL. Raw explanation text is not shown.
+      expect(cards[0]?.textContent).toContain("Active");
+      expect(cards[0]?.textContent).toContain("ATL");
+      expect(cards[0]?.textContent).not.toContain("Explanation");
+    }
     const link = screen.getByRole("link", { name: "View all events" });
     expect(link.getAttribute("href")).toBe("#events");
     if (given === 0) expect(pane("overview").textContent).toContain("No events in the last 24 hours.");
   });
 
-  it("Events pane shows Data as of, count line and the filtered list", () => {
+  it("Events pane has no repeated Data as of line, shows the count line and the filtered list", () => {
     setHash("#events");
     render(<StatusView status={okStatus()} events={makeEvents(6)} loading={false} />);
     const events = pane("events");
-    expect(events.textContent).toContain("Data as of");
+    expect(events.textContent).not.toContain("Data as of");
     expect(events.querySelectorAll(".event-card")).toHaveLength(6);
-    expect(events.textContent).toContain("Showing 6 of 6 events");
+    expect(events.textContent).toContain("Showing 6 of 6 incidents");
     fireEvent.change(screen.getByLabelText("Airport"), { target: { value: "ATL" } });
-    expect(events.textContent).toContain("Showing 2 of 6 events");
+    expect(events.textContent).toContain("Showing 2 of 6 incidents");
     expect(events.querySelectorAll(".event-card")).toHaveLength(2);
     fireEvent.change(screen.getByLabelText("Event type"), { target: { value: "NATIONWIDE_EVENT" } });
-    expect(events.textContent).toContain("Showing 0 of 6 events");
+    expect(events.textContent).toContain("Showing 0 of 6 incidents");
     expect(events.textContent).toContain("No events match these filters.");
   });
 
   it("Events pane shows the no-events state with a zero count", () => {
     setHash("#events");
     render(<StatusView status={okStatus()} events={[]} loading={false} />);
-    expect(pane("events").textContent).toContain("Showing 0 of 0 events");
+    expect(pane("events").textContent).toContain("Showing 0 of 0 incidents");
     expect(pane("events").textContent).toContain("No events in the last 24 hours.");
     expect(pane("events").textContent).not.toContain("No events match these filters.");
   });
 
-  it("Airports pane shows Data as of and keeps search text across section switches", () => {
+  it("Airports pane has no repeated Data as of line and keeps search text across section switches", () => {
     setHash("#airports");
     render(<StatusView status={okStatus()} events={[]} loading={false} />);
-    expect(pane("airports").textContent).toContain("Data as of");
+    expect(pane("airports").textContent).not.toContain("Data as of");
     fireEvent.change(screen.getByLabelText("Search airports"), { target: { value: "ATL" } });
     act(() => {
       setHash("#events");

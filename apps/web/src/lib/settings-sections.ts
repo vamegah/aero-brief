@@ -10,10 +10,12 @@ export const SECTION_LABELS: Readonly<Record<SectionId, string>> = {
   account: "Account",
 };
 
-/** Visible sections in fixed order. "account" is always present, so the list is never empty. */
+/**
+ * Visible sections in fixed order. "display" and "account" are always present (the time
+ * preference is not a Phase 2 flag), so the list is never empty.
+ */
 export function visibleSections(features: Features): SectionId[] {
   return SECTION_IDS.filter((id) => {
-    if (id === "display") return features.darkMode || features.highContrast;
     if (id === "digest") return features.digests;
     if (id === "webhooks") return features.webhooks;
     return true;

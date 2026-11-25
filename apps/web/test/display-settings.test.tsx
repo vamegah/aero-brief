@@ -40,6 +40,22 @@ describe("DisplaySettings", () => {
     expect(radios.map((r) => (r as HTMLInputElement).labels?.[0]?.textContent)).toEqual(["System", "Light", "Dark"]);
   });
 
+  it("saves the time display choice, defaulting to Relative", () => {
+    mount(ALL_FLAGS_OFF);
+    const group = screen.getByRole("group", { name: "Time display" });
+    const labels = within(group).getAllByRole("radio").map((r) => (r as HTMLInputElement).labels?.[0]?.textContent);
+    expect(labels).toEqual([
+      "Relative (for example, 25 min ago)",
+      "Airport local time",
+      "My local time",
+      "UTC",
+    ]);
+    expect((within(group).getByRole("radio", { name: /^Relative/ }) as HTMLInputElement).checked).toBe(true);
+    fireEvent.click(within(group).getByRole("radio", { name: "UTC" }));
+    expect(localStorage.getItem("aerobrief.timeDisplay")).toBe("utc");
+    expect((within(group).getByRole("radio", { name: "UTC" }) as HTMLInputElement).checked).toBe(true);
+  });
+
   it("sits inside main on /settings, outside the nav bar and the footer", () => {
     mount(DARK_ON);
     const region = screen.getByRole("region", { name: "Display settings" });
@@ -105,17 +121,19 @@ describe("DisplaySettings", () => {
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
-  it("renders nothing when both flags are off", () => {
+  it("shows only the time control when both flags are off", () => {
     mount(ALL_FLAGS_OFF);
-    expect(screen.queryByRole("region", { name: "Display settings" })).toBeNull();
-    expect(screen.queryByText("Display settings")).toBeNull();
-    expect(screen.queryByRole("radio")).toBeNull();
+    const region = screen.getByRole("region", { name: "Display settings" });
+    expect(within(region).getByRole("group", { name: "Time display" })).toBeTruthy();
+    expect(within(region).queryByRole("group", { name: "Theme" })).toBeNull();
+    expect(within(region).queryByRole("checkbox")).toBeNull();
   });
 
-  it("renders without a provider (all flags off)", () => {
+  it("renders without a provider (all flags off) with the time control only", () => {
     window.history.pushState({}, "", "/settings");
     render(<App />);
-    expect(screen.queryByText("Display settings")).toBeNull();
+    expect(screen.getByText("Display settings")).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "Theme" })).toBeNull();
   });
 
   it("shows the section without the Theme fieldset when only highContrast is on", () => {
@@ -134,7 +152,7 @@ describe("DisplaySettings", () => {
     expect(document.getElementById(box.getAttribute("aria-describedby") ?? "")?.textContent).toBe(
       "Stronger colors and thicker outlines",
     );
-    expect(within(region).queryByRole("radio")).toBeNull();
+    expect(within(region).queryByRole("group", { name: "Theme" })).toBeNull();
   });
 
   it("hides the High contrast checkbox when highContrast is off", () => {

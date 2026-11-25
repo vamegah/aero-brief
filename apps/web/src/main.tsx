@@ -9,6 +9,7 @@ import "./styles/themes.css";
 import "./styles/app.css";
 import "./styles/primitives.css";
 import "./styles/display-settings.css";
+import "./styles/freshness.css";
 import "./styles/webhook-settings.css";
 import "./styles/digest-settings.css";
 import "./index.css";

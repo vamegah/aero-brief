@@ -1,0 +1,66 @@
+/* FreshnessChip and loading skeletons (ui-improvements tasks 10.3, 10.5). Tokens only. */
+.freshness-chip {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+}
+
+.freshness-chip__label {
+  font-weight: 600;
+}
+
+.freshness-chip--live {
+  border-color: var(--color-status-normal);
+}
+
+.freshness-chip--delayed {
+  border-color: var(--color-status-warning);
+}
+
+.freshness-chip--unavailable {
+  border-color: var(--color-status-alert);
+}
+
+.freshness-chip__time {
+  color: var(--color-text-muted);
+}
+
+.skeleton {
+  display: block;
+  background: var(--color-border);
+  border-radius: var(--radius-md);
+  animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+
+.skeleton--chip {
+  width: 1rem;
+  height: 1rem;
+}
+
+.skeleton--block {
+  height: var(--space-6);
+  margin-bottom: var(--space-3);
+}
+
+.skeleton-group {
+  margin-top: var(--space-3);
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

@@ -61,12 +61,14 @@ afterEach(() => {
 });
 
 describe("SettingsPage menu and visibility", () => {
-  it("shows only Account when every flag is off", async () => {
-    mount(ALL_FLAGS_OFF);
+  it("shows Display and Account when every flag is off", async () => {
+    mount(ALL_FLAGS_OFF, "#account");
     const menu = screen.getByRole("navigation", { name: "Settings sections" });
-    expect(within(menu).getAllByRole("link").map((a) => a.textContent)).toEqual(["Account"]);
+    expect(within(menu).getAllByRole("link").map((a) => a.textContent)).toEqual(["Display", "Account"]);
     expect(await screen.findByRole("button", { name: "Delete account" })).not.toBeNull();
-    expect(screen.queryByRole("region", { name: "Display settings" })).toBeNull();
+    // The time setting is always available. The theme controls stay behind their flags.
+    expect(within(pane("display")).getByRole("group", { name: "Time display", hidden: true })).not.toBeNull();
+    expect(within(pane("display")).queryByRole("group", { name: "Theme", hidden: true })).toBeNull();
     expect(calls).not.toContain("GET /api/digest");
     expect(calls).not.toContain("GET /api/webhooks");
   });
@@ -74,8 +76,8 @@ describe("SettingsPage menu and visibility", () => {
   it.each<[string, Partial<Features>, string[]]>([
     ["darkMode", { darkMode: true }, ["Display", "Account"]],
     ["highContrast", { highContrast: true }, ["Display", "Account"]],
-    ["digests", { digests: true }, ["Daily digest", "Account"]],
-    ["webhooks", { webhooks: true }, ["Webhooks", "Account"]],
+    ["digests", { digests: true }, ["Display", "Daily digest", "Account"]],
+    ["webhooks", { webhooks: true }, ["Display", "Webhooks", "Account"]],
   ])("shows the menu for the %s flag", async (_name, flags, labels) => {
     mount({ ...ALL_FLAGS_OFF, ...flags });
     const menu = screen.getByRole("navigation", { name: "Settings sections" });
@@ -211,11 +213,11 @@ describe("SettingsPage session states", () => {
     expect(calls).toEqual(["GET /api/watchlist"]);
   });
 
-  it("signed out with the display flags off: menu has Account only, with the sign-in state", async () => {
+  it("signed out with every flag off: menu has Display and Account, with the sign-in state", async () => {
     handlers["GET /api/watchlist"] = () => apiError(401, "unauthorized", "Sign in required.");
     mount({ ...ALL_FLAGS_OFF });
     const menu = screen.getByRole("navigation", { name: "Settings sections" });
-    expect(within(menu).getAllByRole("link").map((a) => a.textContent)).toEqual(["Account"]);
+    expect(within(menu).getAllByRole("link").map((a) => a.textContent)).toEqual(["Display", "Account"]);
     expect(await within(pane("account")).findByText("Sign in to manage your settings.")).not.toBeNull();
     expect(screen.queryByRole("button", { name: "Delete account" })).toBeNull();
   });
@@ -246,7 +248,7 @@ describe("SettingsPage account deletion", () => {
   it("deletes the account and goes to the home page", async () => {
     const assign = vi.fn<(url: string) => void>();
     handlers["DELETE /api/account"] = () => new Response(null, { status: 204 });
-    mount(ALL_FLAGS_OFF);
+    mount(ALL_FLAGS_OFF, "#account");
     vi.stubGlobal("location", { ...window.location, assign });
     fireEvent.click(await screen.findByRole("button", { name: "Delete account" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm delete account" }));
@@ -256,7 +258,7 @@ describe("SettingsPage account deletion", () => {
   it("keeps the user here and shows the error when deletion fails", async () => {
     const assign = vi.fn<(url: string) => void>();
     handlers["DELETE /api/account"] = () => apiError(500, "internal", "Could not delete your account. Try again.");
-    mount(ALL_FLAGS_OFF);
+    mount(ALL_FLAGS_OFF, "#account");
     vi.stubGlobal("location", { ...window.location, assign });
     fireEvent.click(await screen.findByRole("button", { name: "Delete account" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm delete account" }));

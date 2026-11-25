@@ -29,7 +29,9 @@ describe("StatusView loading, empty and failure states", () => {
     );
     expect(getByText(message).closest(".empty-state")).not.toBeNull();
     expect(container.querySelector("table")).toBeNull();
-    expect(container.querySelector(".summary-card")).toBeNull();
+    // Requirement 1.5: with no status data the summary shows every airport as Data Unavailable.
+    expect(container.querySelector(".summary-card")?.textContent).toContain("Data Unavailable for all");
+    expect(container.querySelector(".summary-card")?.textContent).not.toContain("operating normally");
     expect(queryByTestId("stale-data-banner")).toBeNull();
     expect(container.querySelector("[aria-live]")?.textContent).toBe("");
   });

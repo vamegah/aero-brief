@@ -8,7 +8,11 @@
     "./theme": "./src/theme.ts",
     "./airports": "./src/airports.ts",
     "./watchlist": "./src/watchlist.ts",
-    "./faa-relay": "./src/faa-relay.ts"
+    "./airport-time-zones": "./src/airport-time-zones.ts",
+    "./status-derivation": "./src/status-derivation.ts",
+    "./faa-relay": "./src/faa-relay.ts",
+    "./explain": "./src/explain.ts",
+    "./incidents": "./src/incidents.ts"
   },
   "types": "./src/index.ts",
   "scripts": {

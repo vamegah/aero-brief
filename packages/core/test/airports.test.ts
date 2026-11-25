@@ -69,8 +69,22 @@ describe("airports", () => {
   it("keeps the Legacy 20 with their old names and ARTCCs", () => {
     expect(LEGACY_20).toHaveLength(20);
     for (const legacy of LEGACY_20) {
-      expect(airportById(legacy.id)).toEqual(legacy);
+      const { city, state, ...rest } = airportById(legacy.id);
+      expect(rest).toEqual(legacy);
+      expect(city.length).toBeGreaterThan(0);
+      expect(state).toMatch(/^[A-Z]{2}$/);
     }
+  });
+
+  it("gives every airport a city and a two-letter state", () => {
+    for (const a of AIRPORTS) {
+      expect(a.city.length).toBeGreaterThan(0);
+      expect(a.state).toMatch(/^[A-Z]{2}$/);
+    }
+    expect(airportById("LAS")).toMatchObject({ city: "Las Vegas", state: "NV" });
+    expect(airportById("HNL")).toMatchObject({ city: "Honolulu", state: "HI" });
+    expect(airportById("DCA").city).toBe("Washington");
+    expect(airportById("IAD").city).toBe("Washington");
   });
 
   it("adds exactly the New_Airports beyond the Legacy 20", () => {

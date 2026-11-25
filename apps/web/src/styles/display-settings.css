@@ -49,3 +49,42 @@
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
+
+/* TimeText (ui-improvements task 8.5). Tokens only. Pairs: text-primary on surface-raised, focus on page. */
+.time-text {
+  position: relative;
+  display: inline-block;
+}
+
+.time-text__value {
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.time-text__value:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.time-text__tooltip {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  margin-top: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  min-width: max-content;
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  white-space: pre-line;
+}
+
+.time-text__tooltip[hidden] {
+  display: none;
+}

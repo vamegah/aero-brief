@@ -121,6 +121,28 @@
   color: var(--color-chip-text);
 }
 
+/* Airport_Status kinds. Colors reuse existing token pairs already in palettePairs. */
+.status-pill--minor-impact {
+  background: var(--color-accent-surface);
+  color: var(--color-accent);
+}
+
+.status-pill--disrupted,
+.status-pill--recovering {
+  background: var(--color-warning-surface);
+  color: var(--color-warning);
+}
+
+.status-pill--ground-stop {
+  background: var(--color-danger-surface);
+  color: var(--color-pill-danger-text);
+}
+
+.status-pill--data-unavailable {
+  background: var(--color-chip-bg);
+  color: var(--color-chip-text);
+}
+
 /* Form controls and labels that are their own hit area. */
 select,
 .text-input {

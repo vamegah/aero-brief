@@ -3,7 +3,9 @@ import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { EventCard } from "../../src/components/EventCard";
 import { EventList } from "../../src/components/EventList";
-import { formatUtc } from "../../src/lib/format-time";
+import { useUtcDisplayMode } from "./fixtures";
+
+useUtcDisplayMode();
 
 const base = {
   incidentKey: "evt-1",
@@ -23,7 +25,7 @@ describe("EventCard", () => {
     const { container } = render(<EventCard event={base} />);
     const time = container.querySelector("time");
     expect(time?.getAttribute("datetime")).toBe(base.occurredAt);
-    expect(time?.textContent).toBe(formatUtc(base.occurredAt));
+    expect(time?.textContent).toBe("Jun 1, 2024, 12:00 UTC");
   });
 
   it("has an aria-hidden icon and no svg or img", () => {

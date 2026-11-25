@@ -1,11 +1,13 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { StatusView } from "../../src/components/StatusView";
-import { AIRPORT_COUNT, CAPTURED_TEXT, makeAirports, okStatus } from "./fixtures";
+import { AIRPORT_COUNT, CAPTURED_TEXT, makeAirports, okStatus, useUtcDisplayMode } from "./fixtures";
 
 function follows(a: Element, b: Element): boolean {
   return (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
 }
+
+useUtcDisplayMode();
 
 describe("StatusView", () => {
   it("renders the stale banner with its time, above the list", () => {

@@ -1,41 +1,44 @@
 import { useState } from "react";
+import { AIRPORTS } from "@aerobrief/core/airports";
 import type { EventSummary, NationalStatusResponse } from "../api/client";
 import { matchesAirportSearch } from "../lib/airport-search";
-import { formatUtc } from "../lib/format-time";
-import { NO_EVENT_FILTER, filterEvents, type EventFilter } from "../lib/filter-events";
+import { NO_EVENT_FILTER, type EventFilter } from "../lib/filter-events";
+import {
+  buildIncidentFeed,
+  feedSize,
+  filterIncidentFeed,
+  latestEndedKeys,
+  limitFeed,
+} from "../lib/incident-feed";
 import { STATUS_SECTION_IDS, STATUS_SECTION_LABELS, resolveStatusSection } from "../lib/status-sections";
 import { useLocationHash } from "../hooks/use-location-hash";
+import { buildNetworkOverview } from "../lib/network-overview";
 import { sortAirports } from "../lib/sort-airports";
 import { AirportTable } from "./AirportTable";
 import { Button } from "./Button";
 import { EmptyState } from "./EmptyState";
 import { EventFilters } from "./EventFilters";
-import { EventList } from "./EventList";
+import { IncidentList } from "./IncidentList";
+import type { IncidentRecovery } from "./IncidentCard";
 import { SectionMenu } from "./SectionMenu";
 import { FormLabel } from "./FormLabel";
 import { TextInput } from "./TextInput";
 import { LoadingState } from "./LoadingState";
 import { StaleDataBanner } from "./StaleDataBanner";
-import { SummaryCard } from "./SummaryCard";
+import { NetworkOverview } from "./NetworkOverview";
 import { SystemWideBanner } from "./SystemWideBanner";
 
 export interface StatusViewProps {
   status: NationalStatusResponse | null;
   events: readonly EventSummary[];
   loading: boolean;
+  /** Current time; tests pass a fixed value. */
+  now?: Date;
 }
 
 const LATEST_EVENT_COUNT = 5;
 
-function DataAsOfLine({ capturedAt }: { capturedAt: string }) {
-  return (
-    <p className="data-as-of">
-      Data as of <time dateTime={capturedAt}>{formatUtc(capturedAt)}</time>
-    </p>
-  );
-}
-
-export function StatusView({ status, events, loading }: StatusViewProps) {
+export function StatusView({ status, events, loading, now }: StatusViewProps) {
   const ok = status !== null && status.state === "ok" ? status : null;
   const [affectedOnly, setAffectedOnly] = useState(false);
   const sorted = ok === null ? [] : sortAirports(ok.airports);
@@ -45,7 +48,46 @@ export function StatusView({ status, events, loading }: StatusViewProps) {
   const searching = query.trim() !== "";
   const active = resolveStatusSection(useLocationHash());
   const [eventFilter, setEventFilter] = useState<EventFilter>(NO_EVENT_FILTER);
-  const shownEvents = filterEvents(events, eventFilter);
+  const feed = buildIncidentFeed(events);
+  const shownFeed = filterIncidentFeed(feed, eventFilter);
+  const shownCount = feedSize(shownFeed);
+  const totalCount = feedSize(feed);
+  const latestFeed = limitFeed(feed, LATEST_EVENT_COUNT);
+  const noData = status !== null && status.state === "no_data";
+  const overview =
+    ok !== null
+      ? buildNetworkOverview({ airports: ok.airports, events, stale: ok.stale, hasData: true, now: now ?? new Date() })
+      : noData
+        ? buildNetworkOverview({
+            airports: AIRPORTS.map((a) => ({ airportId: a.id, name: a.name, groundStop: null })),
+            events: [],
+            stale: false,
+            hasData: false,
+            now: now ?? new Date(),
+          })
+        : null;
+
+  const activeStops = new Map<string, { reason: string | null; expectedEnd: string | null }>();
+  for (const airport of ok?.airports ?? []) {
+    if (airport.groundStop !== null) {
+      activeStops.set(airport.airportId, {
+        reason: airport.groundStop.reasonText,
+        expectedEnd: airport.groundStop.expectedEnd ?? null,
+      });
+    }
+  }
+  const recovery = new Map<string, IncidentRecovery>();
+  const endedKeys = latestEndedKeys(feed.incidents);
+  for (const incident of feed.incidents) {
+    if (!endedKeys.has(incident.incidentKey)) continue;
+    const view = overview?.affected.find((a) => a.airportId === incident.airportId && a.kind === "recovering");
+    if (view === undefined) continue;
+    recovery.set(incident.incidentKey, {
+      ...(view.sinceText !== undefined ? { sinceText: view.sinceText } : {}),
+      ...(view.estimateText !== undefined ? { estimateText: view.estimateText } : {}),
+    });
+  }
+  const listProps = { ...(now !== undefined ? { now } : {}), activeStops, recovery };
 
   return (
     <div className="status-view">
@@ -56,9 +98,19 @@ export function StatusView({ status, events, loading }: StatusViewProps) {
         ) : null}
       </div>
 
-      {status === null && loading ? <LoadingState text="Loading status…" /> : null}
+      {status === null && loading ? (
+        <>
+          <LoadingState text="Loading status…" />
+          <div aria-hidden="true" className="skeleton-group">
+            <span className="skeleton skeleton--block" />
+            <span className="skeleton skeleton--block" />
+            <span className="skeleton skeleton--block" />
+          </div>
+        </>
+      ) : null}
       {status === null && !loading ? <EmptyState text="No status to show yet." /> : null}
       {status !== null && status.state === "no_data" ? <EmptyState text={status.message} /> : null}
+      {noData && overview !== null ? <NetworkOverview overview={overview} capturedAt={null} /> : null}
 
       {ok !== null ? (
         <div className="status-layout">
@@ -70,9 +122,13 @@ export function StatusView({ status, events, loading }: StatusViewProps) {
           <div className="status-layout__panes">
             <div id="status-pane-overview" className="status-pane" hidden={active !== "overview"}>
               <h3>Overview</h3>
-              <SummaryCard airports={ok.airports} nationwide={ok.nationwide} capturedAt={ok.capturedAt} />
+              {overview !== null ? <NetworkOverview overview={overview} capturedAt={ok.capturedAt} /> : null}
               <h4>Latest events</h4>
-              <EventList events={events.slice(0, LATEST_EVENT_COUNT)} />
+              {totalCount === 0 ? (
+                <EmptyState text="No events in the last 24 hours." />
+              ) : (
+                <IncidentList feed={latestFeed} {...listProps} />
+              )}
               <p>
                 <a className="standalone" href="#events">
                   View all events
@@ -81,18 +137,14 @@ export function StatusView({ status, events, loading }: StatusViewProps) {
             </div>
             <div id="status-pane-events" className="status-pane" hidden={active !== "events"}>
               <h3>Events in the last 24 hours</h3>
-              <DataAsOfLine capturedAt={ok.capturedAt} />
               <EventFilters airports={ok.airports} value={eventFilter} onChange={setEventFilter} />
-              <p className="event-count">{`Showing ${shownEvents.length} of ${events.length} events`}</p>
-              {events.length === 0 ? <EmptyState text="No events in the last 24 hours." /> : null}
-              {events.length > 0 && shownEvents.length === 0 ? (
-                <EmptyState text="No events match these filters." />
-              ) : null}
-              {shownEvents.length > 0 ? <EventList events={shownEvents} /> : null}
+              <p className="event-count">{`Showing ${shownCount} of ${totalCount} incidents`}</p>
+              {totalCount === 0 ? <EmptyState text="No events in the last 24 hours." /> : null}
+              {totalCount > 0 && shownCount === 0 ? <EmptyState text="No events match these filters." /> : null}
+              {shownCount > 0 ? <IncidentList feed={shownFeed} {...listProps} /> : null}
             </div>
             <div id="status-pane-airports" className="status-pane" hidden={active !== "airports"}>
               <h3>Airports</h3>
-              <DataAsOfLine capturedAt={ok.capturedAt} />
               <div role="group" aria-label="Filter airports" className="segment-control">
                 <Button
                   variant="secondary"

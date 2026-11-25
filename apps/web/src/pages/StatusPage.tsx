@@ -1,3 +1,5 @@
+import { FreshnessChip } from "../components/FreshnessChip";
+import { deriveFreshness } from "../lib/freshness";
 import { ErrorRegion } from "../components/ErrorRegion";
 import { PageHeader } from "../components/PageHeader";
 import { StatusView } from "../components/StatusView";
@@ -13,10 +15,19 @@ export function StatusPage() {
       ? "Could not load the status. Retrying automatically."
       : REFRESH_FAILED_TEXT
     : null;
+  // Last known data stays on screen after a failed refresh (Delayed). Unavailable only when no
+  // status ever loaded.
+  const ok = status !== null && status.state === "ok" ? status : null;
+  const freshness = deriveFreshness({ hasData: ok !== null, stale: ok?.stale ?? false, refreshFailed });
+  const capturedAt = ok !== null ? ok.capturedAt : null;
 
   return (
     <>
-      <PageHeader title="National status" subtitle="FAA ground stop status for 30 major US airports." />
+      <PageHeader
+        title="National status"
+        subtitle="FAA ground stop status for 30 major US airports."
+        action={<FreshnessChip freshness={freshness} capturedAt={capturedAt} loading={loading && status === null} />}
+      />
       <ErrorRegion message={message} />
       <StatusView status={status} events={events} loading={loading} />
     </>

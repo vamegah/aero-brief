@@ -38,7 +38,7 @@ export function AirportTable({ airports }: AirportTableProps) {
               {airport.groundStop !== null ? (
                 <>
                   <StatusPill variant="active" text="Ground stop" />
-                  {hasDetails(airport.groundStop) ? <GroundStopDetails stop={airport.groundStop} /> : null}
+                  {hasDetails(airport.groundStop) ? <GroundStopDetails stop={airport.groundStop} airportId={airport.airportId} /> : null}
                 </>
               ) : (
                 <StatusPill variant="normal" text="No ground stop reported" />

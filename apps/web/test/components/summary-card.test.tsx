@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import { PageHeader } from "../../src/components/PageHeader";
 import { StatusView } from "../../src/components/StatusView";
 import { SummaryCard, overallStatusText } from "../../src/components/SummaryCard";
-import { CAPTURED_AT, CAPTURED_TEXT, makeAirports, okStatus } from "./fixtures";
+import { CAPTURED_AT, CAPTURED_TEXT, makeAirports, okStatus, useUtcDisplayMode } from "./fixtures";
+
+useUtcDisplayMode();
 
 describe("PageHeader", () => {
   it("renders an h2 title, optional subtitle and action", () => {
@@ -64,8 +66,7 @@ describe("SummaryCard", () => {
     expect(live!.compareDocumentPosition(card!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(card!.contains(live!)).toBe(false);
     expect(card!.compareDocumentPosition(table!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(card!.textContent).toContain("Affected ARTCCs: 4");
-    expect(card!.textContent).toContain("System-wide disruption");
+    expect(card!.textContent).toContain("Ground stops: 1");
     expect(card!.textContent?.toLowerCase()).not.toContain("map");
   });
 });

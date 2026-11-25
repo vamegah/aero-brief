@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useFeatures } from "../features/use-features";
+import { setDisplayMode, useDisplayMode } from "../hooks/use-display-mode";
+import type { DisplayMode } from "../lib/time-text";
 import { CONTRAST_KEY, THEME_CHANGE_EVENT, THEME_KEY } from "../theme/ThemeController";
 
 type ThemePreference = "system" | "light" | "dark";
@@ -9,6 +11,34 @@ const OPTIONS: ReadonlyArray<{ value: ThemePreference; label: string }> = [
   { value: "light", label: "Light" },
   { value: "dark", label: "Dark" },
 ];
+
+const TIME_OPTIONS: ReadonlyArray<{ value: DisplayMode; label: string }> = [
+  { value: "relative", label: "Relative (for example, 25 min ago)" },
+  { value: "airport_local", label: "Airport local time" },
+  { value: "my_local", label: "My local time" },
+  { value: "utc", label: "UTC" },
+];
+
+function TimeDisplayControl() {
+  const mode = useDisplayMode();
+  return (
+    <fieldset className="display-settings__group">
+      <legend>Time display</legend>
+      {TIME_OPTIONS.map((option) => (
+        <label key={option.value} className="display-settings__option">
+          <input
+            type="radio"
+            name="aerobrief-time-display"
+            value={option.value}
+            checked={mode === option.value}
+            onChange={() => setDisplayMode(option.value)}
+          />
+          {option.label}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
 
 function readPreference(): ThemePreference {
   try {
@@ -91,16 +121,15 @@ function ContrastControl() {
   );
 }
 
-/** "Display settings" section.
- Renders nothing while both darkMode and highContrast are off. */
+/** "Display settings" section. The time control is always shown; theme controls follow their flags. */
 export function DisplaySettings() {
   const { darkMode, highContrast } = useFeatures();
-  if (!darkMode && !highContrast) return null;
   return (
     <section className="display-settings" aria-labelledby="display-settings-heading">
       <h3 id="display-settings-heading" className="display-settings__title">
         Display settings
       </h3>
+      <TimeDisplayControl />
       {darkMode ? <ThemeControl /> : null}
       {highContrast ? <ContrastControl /> : null}
     </section>

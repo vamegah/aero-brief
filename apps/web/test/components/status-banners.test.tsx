@@ -3,16 +3,21 @@ import { describe, expect, it } from "vitest";
 import { ErrorRegion } from "../../src/components/ErrorRegion";
 import { StaleDataBanner } from "../../src/components/StaleDataBanner";
 import { SystemWideBanner } from "../../src/components/SystemWideBanner";
-import { formatUtc } from "../../src/lib/format-time";
+import { useUtcDisplayMode } from "./fixtures";
 
 const CAPTURED_AT = "2025-01-01T12:00:00.000Z";
+
+useUtcDisplayMode();
 
 describe("restyled status banners", () => {
   it("StaleDataBanner keeps its testid, classes and text", () => {
     const { getByTestId } = render(<StaleDataBanner capturedAt={CAPTURED_AT} />);
     const el = getByTestId("stale-data-banner");
     expect(el.className).toContain("banner");
-    expect(el.textContent).toBe(`Data may be out of date. Last updated ${formatUtc(CAPTURED_AT)}.`);
+    expect(el.textContent).toContain("Data may be out of date. Last updated");
+    const time = el.querySelector("time");
+    expect(time?.getAttribute("datetime")).toBe(CAPTURED_AT);
+    expect(time?.textContent).toBe("Jan 1, 2025, 12:00 UTC");
     expect(el.querySelector("svg, img")).toBeNull();
   });
 

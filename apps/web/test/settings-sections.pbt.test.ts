@@ -35,7 +35,7 @@ describe("Property 1: Visible sections follow the flags", () => {
         expect([...indexes].sort((a, b) => a - b)).toEqual(indexes);
         expect(new Set(visible).size).toBe(visible.length);
         expect(visible).toContain("account");
-        expect(visible.includes("display")).toBe(flags.darkMode || flags.highContrast);
+        expect(visible).toContain("display"); // the time preference is not behind a flag
         expect(visible.includes("digest")).toBe(flags.digests);
         expect(visible.includes("webhooks")).toBe(flags.webhooks);
       }),

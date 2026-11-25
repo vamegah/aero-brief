@@ -39,13 +39,14 @@ describe("StatusPage", () => {
     expect(queryByTestId("stale-data-banner")).toBeNull();
   });
 
-  it("shows Last updated once, inside the SummaryCard and not the header", async () => {
+  it("shows Last updated once, inside the SummaryCard, and the exact timestamp only in the header chip", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(okStatus()));
     const { container } = render(<StatusPage />);
     await advance(0);
     expect(container.textContent?.match(/Last updated/g)).toHaveLength(1);
     expect(container.querySelector(".summary-card")?.textContent).toContain("Last updated");
-    expect(container.querySelector(".page-header")?.querySelector("time")).toBeNull();
+    expect(container.querySelector(".page-header")?.textContent).not.toContain("Last updated");
+    expect(container.querySelectorAll(".page-header time")).toHaveLength(1);
   });
 
   it("keeps the data and shows an alert when a refresh fails", async () => {

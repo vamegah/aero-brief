@@ -1,7 +1,7 @@
 import type { EventSummary } from "../api/client";
 import { EVENT_TYPE_LABELS, type KnownEventType } from "../lib/event-types";
-import { formatUtc } from "../lib/format-time";
 import { Icon, type IconName } from "./Icon";
+import { TimeText } from "./TimeText";
 
 const TYPE_ICON: Record<KnownEventType, IconName> = {
   GROUND_STOP_STARTED: "alert",
@@ -43,9 +43,9 @@ export function EventCard({ event, duration }: EventCardProps) {
           <span className="event-card__type">{label}</span>
           {event.airportId !== null ? <strong className="event-card__airport">{event.airportId}</strong> : null}
         </div>
-        <time className="event-card__time" dateTime={event.occurredAt}>
-          {formatUtc(event.occurredAt)}
-        </time>
+        <span className="event-card__time">
+          <TimeText iso={event.occurredAt} airportId={event.airportId ?? undefined} />
+        </span>
       </div>
       {duration !== undefined ? <p className="event-card__duration">{duration}</p> : null}
       <p className="event-card__explanation">{event.explanation}</p>

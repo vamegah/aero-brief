@@ -69,15 +69,15 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Update `apps/api/test/status.test.ts`, `history-clamp.pbt.test.ts`, `nationwide-status.pbt.test.ts`, `apps/web/test/components/fixtures.ts` and any fixture that builds an `EventSummary` by hand to include `incidentKey`.
     - _Requirements: 2.1_
 
-- [-] 4. Checkpoint - Core and API pure logic
+- [x] 4. Checkpoint - Core and API pure logic
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Overview pane: network summary, chips, recovering detail
-  - [~] 5.1 Wire `summarizeNetwork` into the Overview pane of `StatusView.tsx`
+- [x] 5. Overview pane: network summary, chips, recovering detail
+  - [x] 5.1 Wire `summarizeNetwork` into the Overview pane of `StatusView.tsx`
     - Replace the ad hoc ground-stop/ARTCC counts with the all-normal headline, the "outdated" marker while stale, the "Data Unavailable" fallback with no status data, the two summary chips (ground stops, recovering) via `MetricChip`, and a recovering detail line (time since end, `normalizationEstimateMinutes` labeled "AeroBrief estimate").
     - _Requirements: 1.3, 1.4, 1.5, 1.6, 1.7_
 
-  - [~] 5.2 Add the six-kind `StatusPill`/icon mapping
+  - [x] 5.2 Add the six-kind `StatusPill`/icon mapping
     - Extend `StatusPill` (or add a sibling) so every `AirportStatusKind` has a distinct icon, color and text label (Requirement 1.8); add the new color tokens to `palette.ts`/`tokens.css`/`themes.ts` and their pairs to `palettePairs`.
     - _Requirements: 1.8, 17.1, 17.2_
 
@@ -85,27 +85,27 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Cover the all-normal headline, the "No events in the last 24 hours" fallback, the stale marker, and the recovering detail line text.
     - _Requirements: 1.4, 1.5, 1.6_
 
-- [ ] 6. Incident cards in the Events pane
-  - [~] 6.1 Create `apps/web/src/components/StructuredExplanation.tsx`
+- [x] 6. Incident cards in the Events pane
+  - [x] 6.1 Create `apps/web/src/components/StructuredExplanation.tsx`
     - Renders the five labeled fields from `explainStructured`.
     - _Requirements: 3.1, 3.2, 3.3, 3.7_
 
-  - [~] 6.2 Create `apps/web/src/components/IncidentCard.tsx`
+  - [x] 6.2 Create `apps/web/src/components/IncidentCard.tsx`
     - Merges events via `mergeIncidents`/`sortIncidents` (passed in by the parent), renders active/resolved style, the expand/collapse timeline, the FAA NAS Status site link, the airport page link, and `StructuredExplanation`. Falls back to the existing `EventCard` for any event type `mergeIncidents` does not recognize.
     - _Requirements: 2.2, 2.3, 2.4, 2.5, 2.6, 2.7_
 
-  - [~] 6.3 Wire `IncidentCard` into the Events pane and the Overview "Latest events" list in `StatusView.tsx`
+  - [x] 6.3 Wire `IncidentCard` into the Events pane and the Overview "Latest events" list in `StatusView.tsx`
     - _Requirements: 2.1, 2.5_
 
   - [ ]* 6.4 Write unit tests for `IncidentCard` and `StructuredExplanation`
     - Expand/collapse, FAA link href, active vs. resolved icon+text, all five fields rendered with fallbacks.
     - _Requirements: 2.2, 2.3, 2.4, 2.6, 2.7, 3.1_
 
-- [~] 7. Checkpoint - Overview and Events panes
+- [-] 7. Checkpoint - Overview and Events panes
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 8. Time display
-  - [~] 8.1 Implement `apps/web/src/lib/time-text.ts`
+- [x] 8. Time display
+  - [x] 8.1 Implement `apps/web/src/lib/time-text.ts`
     - `RELATIVE_THRESHOLD_MS`, `formatTimeText`, `formatTooltip`, `resolveDisplayMode`, as in `design.md`.
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
@@ -123,7 +123,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Every `MonitoredId` has an entry; every value is accepted by `Intl.DateTimeFormat`.
     - _Requirements: 7.2_
 
-  - [~] 8.5 Create `apps/web/src/components/TimeText.tsx`
+  - [x] 8.5 Create `apps/web/src/components/TimeText.tsx`
     - Renders `<time dateTime>` with a keyboard-reachable tooltip; refreshes relative text at least once a minute via a shared interval.
     - _Requirements: 7.5, 7.6_
 
@@ -133,15 +133,15 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Unit test with fake timers: the rendered text updates after 60 s without a re-render trigger from the parent.
     - _Requirements: 7.5_
 
-  - [~] 8.7 Add the Display_Setting control to the Settings Display section and replace `formatUtc` call sites
+  - [x] 8.7 Add the Display_Setting control to the Settings Display section and replace `formatUtc` call sites
     - Add the Relative/Airport local/My local/UTC choice to `DisplaySettings.tsx`, store it in `localStorage`. Replace `formatUtc(...)` in `EventCard`, `SummaryCard`, `AirportPage`, `GroundStopDetails` and the Overview/Events panes with `<TimeText>`.
     - _Requirements: 7.3, 7.4_
 
 - [~] 9. Checkpoint - time display
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 10. Freshness indicator
-  - [~] 10.1 Implement `apps/web/src/lib/freshness.ts`
+- [x] 10. Freshness indicator
+  - [x] 10.1 Implement `apps/web/src/lib/freshness.ts`
     - `Freshness`, `deriveFreshness`, `freshnessChanged`, as in `design.md`.
     - _Requirements: 9.1, 9.4, 9.5_
 
@@ -150,11 +150,11 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - **Property 15: Freshness announcement fires only on change**
     - **Validates: Requirements 9.1, 9.4, 9.5**
 
-  - [~] 10.3 Create `apps/web/src/components/FreshnessChip.tsx` and wire it into `StatusPage.tsx`
+  - [x] 10.3 Create `apps/web/src/components/FreshnessChip.tsx` and wire it into `StatusPage.tsx`
     - Live/Delayed/Unavailable text, `TimeText`-based exact-timestamp tooltip, a polite live region gated by `freshnessChanged`, loading skeletons on the first request. Remove the repeated "Data as of" lines the chip now covers.
     - _Requirements: 9.1, 9.2, 9.3, 9.4_
 
-  - [~] 10.4 Keep last known data and show Unavailable only when nothing ever loaded
+  - [x] 10.4 Keep last known data and show Unavailable only when nothing ever loaded
     - Confirm `useStatus`'s existing `refreshFailed`/last-data behavior feeds `deriveFreshness` correctly; adjust if the hook needs the "ever loaded" flag explicitly.
     - _Requirements: 9.5_
 
@@ -174,7 +174,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - _Requirements: 8.1, 8.3, 8.5_
 
 - [ ] 13. Filters, search and URL query state
-  - [~] 13.1 Implement `apps/web/src/lib/dashboard-query.ts`
+  - [x] 13.1 Implement `apps/web/src/lib/dashboard-query.ts`
     - `encodeDashboardQuery`, `decodeDashboardQuery`, as in `design.md`.
     - _Requirements: 11.7_
 
@@ -182,7 +182,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - **Property 18: Dashboard query round-trips**
     - **Validates: Requirements 11.7**
 
-  - [~] 13.3 Add city to the airport registry and extend the search predicate
+  - [x] 13.3 Add city to the airport registry and extend the search predicate
     - Add a `city` field to `packages/core/src/airports.ts` for the 30 Core 30 airports. Extend `apps/web/src/lib/airport-search.ts` (`matchesAirportSearch`) to match the city.
     - _Requirements: 11.2_
 
@@ -206,7 +206,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 15. Signed-out watchlist
-  - [~] 15.1 Implement `apps/web/src/lib/local-watchlist.ts`
+  - [x] 15.1 Implement `apps/web/src/lib/local-watchlist.ts`
     - `readLocalWatchlist`, `writeLocalWatchlist`, `mergeIntoAccount`, `sortBySeverity`, as in `design.md`.
     - _Requirements: 4.1, 4.3, 4.5_
 
