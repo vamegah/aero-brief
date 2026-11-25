@@ -9,7 +9,7 @@ export interface EventFiltersProps {
   onChange: (next: EventFilter) => void;
 }
 
-/** Two native selects. The value "" means "All airports" or "All types". */
+/** Three native selects. The value "" means "All airports", "All types" or "All states". */
 export function EventFilters({ airports, value, onChange }: EventFiltersProps) {
   const sorted = [...airports].sort((a, b) => (a.airportId < b.airportId ? -1 : a.airportId > b.airportId ? 1 : 0));
   return (
@@ -42,6 +42,21 @@ export function EventFilters({ airports, value, onChange }: EventFiltersProps) {
               {EVENT_TYPE_LABELS[type]}
             </option>
           ))}
+        </select>
+      </div>
+      <div className="event-filters__field">
+        <FormLabel htmlFor="event-filter-state">State</FormLabel>
+        <select
+          id="event-filter-state"
+          value={value.state ?? ""}
+          onChange={(event) => {
+            const next = event.target.value;
+            onChange({ ...value, state: next === "active" || next === "ended" ? next : null });
+          }}
+        >
+          <option value="">All states</option>
+          <option value="active">Active</option>
+          <option value="ended">Ended</option>
         </select>
       </div>
     </div>

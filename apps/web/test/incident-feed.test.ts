@@ -80,6 +80,24 @@ describe("filterIncidentFeed", () => {
   });
 });
 
+describe("filterIncidentFeed state filter", () => {
+  const feed = buildIncidentFeed([started, ended, activeLax, nationwide, unknown]);
+  const keys = (state: "active" | "ended" | null) =>
+    filterIncidentFeed(feed, { airportId: null, type: null, state }).incidents.map((i) => i.incidentKey);
+
+  it("keeps active incidents or ended incidents, and drops unrecognised events", () => {
+    expect(keys("active").sort()).toEqual(["N", "b"]);
+    expect(keys("ended")).toEqual(["a"]);
+    expect(filterIncidentFeed(feed, { airportId: null, type: null, state: "active" }).others).toEqual([]);
+    expect(keys(null)).toHaveLength(3);
+  });
+
+  it("combines with the airport and type filters", () => {
+    const out = filterIncidentFeed(feed, { airportId: "ATL", type: "GROUND_STOP_STARTED", state: "active" });
+    expect(out.incidents).toEqual([]);
+  });
+});
+
 describe("limitFeed and latestEndedKeys", () => {
   it("limits to the first N cards, incidents first", () => {
     const feed = buildIncidentFeed([started, ended, activeLax, nationwide, unknown]);

@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PageHeader } from "../../src/components/PageHeader";
 import { StatusView } from "../../src/components/StatusView";
@@ -9,8 +9,8 @@ useUtcDisplayMode();
 
 describe("PageHeader", () => {
   it("renders an h2 title, optional subtitle and action", () => {
-    const { container } = render(<PageHeader title="National status" subtitle="Sub" action={<span>Act</span>} />);
-    expect(container.querySelector("h2")?.textContent).toBe("National status");
+    const { container } = render(<PageHeader title="Airport status" subtitle="Sub" action={<span>Act</span>} />);
+    expect(container.querySelector("h2")?.textContent).toBe("Airport status");
     expect(container.querySelector("h1")).toBeNull();
     expect(container.textContent).toContain("Sub");
     expect(container.textContent).toContain("Act");
@@ -32,10 +32,26 @@ describe("SummaryCard", () => {
     const text = container.textContent ?? "";
     expect(text).toContain("Overall: Ground stops active");
     expect(text).toContain("Ground stops: 3");
-    expect(text).toContain("Affected ARTCCs: 0");
+    expect(text).toContain("Regions affected: 0");
+    expect(text).not.toContain("Affected ARTCCs");
     expect(text).toContain(`Last updated ${CAPTURED_TEXT}`);
     expect(container.querySelector("time")?.getAttribute("dateTime")).toBe(CAPTURED_AT);
     expect(container.querySelectorAll(".metric-chip")).toHaveLength(3);
+  });
+
+  it("offers a keyboard and screen reader reachable definition of a region", () => {
+    const { container, getByRole } = render(
+      <SummaryCard airports={makeAirports()} nationwide={{ active: false, count: 0 }} capturedAt={CAPTURED_AT} />,
+    );
+    const trigger = getByRole("button", { name: "What is a region?" });
+    const tip = container.querySelector("[role=tooltip].definition-tip__text") as HTMLElement;
+    expect(trigger.getAttribute("aria-describedby")).toBe(tip.id);
+    expect(tip.textContent).toContain("Air Route Traffic Control Center");
+    expect(tip.hidden).toBe(true);
+    fireEvent.focus(trigger);
+    expect(tip.hidden).toBe(false);
+    fireEvent.keyDown(trigger, { key: "Escape" });
+    expect(tip.hidden).toBe(true);
   });
 
   it("derives the overall status text", () => {

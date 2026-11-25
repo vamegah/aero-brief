@@ -24,8 +24,8 @@ export function StatusPage() {
   return (
     <>
       <PageHeader
-        title="National status"
-        subtitle="FAA ground stop status for 30 major US airports."
+        title="Airport status"
+        subtitle="Ground stops and system-wide disruptions at 30 major US airports."
         action={<FreshnessChip freshness={freshness} capturedAt={capturedAt} loading={loading && status === null} />}
       />
       <ErrorRegion message={message} />

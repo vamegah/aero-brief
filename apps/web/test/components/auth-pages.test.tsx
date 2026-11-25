@@ -13,11 +13,11 @@ afterEach(() => {
 });
 
 describe("NotFoundPage", () => {
-  it("shows the message and a link to national status", () => {
+  it("shows the message and a link to airport status", () => {
     render(<NotFoundPage />);
     expect(screen.getByRole("heading", { level: 2, name: "Page not found" })).toBeTruthy();
     expect(screen.getByText("There is no page at this address.")).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Go to national status" }).getAttribute("href")).toBe("/");
+    expect(screen.getByRole("link", { name: "Go to airport status" }).getAttribute("href")).toBe("/");
   });
 });
 

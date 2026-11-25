@@ -1,7 +1,10 @@
-/** `null` means "all". */
+import type { EventStateFilter } from "./dashboard-query";
+
+/** `null` means "all". `state` applies to incidents only (see `filterIncidentFeed`); absent means "all". */
 export interface EventFilter {
   airportId: string | null;
   type: string | null;
+  state?: EventStateFilter | null;
 }
 
 export const NO_EVENT_FILTER: EventFilter = { airportId: null, type: null };

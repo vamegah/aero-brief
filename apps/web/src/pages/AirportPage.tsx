@@ -76,7 +76,7 @@ export function AirportPage({ airportId }: { airportId: string }) {
       <PageHeader
         titleId="airport-heading"
         title={title}
-        action={<a href="/">Back to national status</a>}
+        action={<a href="/">Back to airport status</a>}
       />
       <div aria-live="polite" className="status-view__live">
         {ok !== null && ok.stale ? <StaleDataBanner capturedAt={ok.capturedAt} /> : null}

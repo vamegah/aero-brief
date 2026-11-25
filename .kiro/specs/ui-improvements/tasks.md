@@ -101,7 +101,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Expand/collapse, FAA link href, active vs. resolved icon+text, all five fields rendered with fallbacks.
     - _Requirements: 2.2, 2.3, 2.4, 2.6, 2.7, 3.1_
 
-- [-] 7. Checkpoint - Overview and Events panes
+- [x] 7. Checkpoint - Overview and Events panes
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 8. Time display
@@ -137,7 +137,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Add the Relative/Airport local/My local/UTC choice to `DisplaySettings.tsx`, store it in `localStorage`. Replace `formatUtc(...)` in `EventCard`, `SummaryCard`, `AirportPage`, `GroundStopDetails` and the Overview/Events panes with `<TimeText>`.
     - _Requirements: 7.3, 7.4_
 
-- [~] 9. Checkpoint - time display
+- [x] 9. Checkpoint - time display
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 10. Freshness indicator
@@ -161,11 +161,11 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
   - [ ]* 10.5 Write unit tests for `FreshnessChip` and the loading skeleton
     - _Requirements: 9.2, 9.3, 9.4_
 
-- [~] 11. Checkpoint - freshness
+- [x] 11. Checkpoint - freshness
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 12. Plain-language labels
-  - [~] 12.1 Add the ARTCC definition and rename labels
+- [x] 12. Plain-language labels
+  - [x] 12.1 Add the ARTCC definition and rename labels
     - Add a reachable (keyboard and screen reader) definition of Air Route Traffic Control Center next to "Regions affected" (renamed from "Affected ARTCCs") in `SummaryCard.tsx`. Rename the Status page title to "Airport status" in `StatusPage.tsx` and update its subtitle to state what AeroBrief tracks now without referring only to ground stops.
     - _Requirements: 8.1, 8.3, 8.5_
 
@@ -173,7 +173,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Update `test/components/summary-card.test.tsx`, `test/components/status-page.test.tsx`, `test/components/auth-pages.test.tsx` and any other test asserting the old "National status"/"Affected ARTCCs" text.
     - _Requirements: 8.1, 8.3, 8.5_
 
-- [ ] 13. Filters, search and URL query state
+- [x] 13. Filters, search and URL query state
   - [x] 13.1 Implement `apps/web/src/lib/dashboard-query.ts`
     - `encodeDashboardQuery`, `decodeDashboardQuery`, as in `design.md`.
     - _Requirements: 11.7_
@@ -190,11 +190,11 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - **Property 17: Airport search matches code, name or city case-insensitively**
     - **Validates: Requirements 11.2**
 
-  - [~] 13.5 Update the Airports pane filter and search UI in `StatusView.tsx`
+  - [x] 13.5 Update the Airports pane filter and search UI in `StatusView.tsx`
     - "All (N)" / "Affected (N)" counts with a selected state that differs by more than color; the new placeholder, search icon and clear button; a polite "Showing X of Y" announcement on every filter or search change; an empty state with a "Clear filters" button; persist filter/search state via `dashboard-query.ts` in the URL query string, leaving the `#section` hash untouched.
     - _Requirements: 11.1, 11.2, 11.5, 11.6, 11.7_
 
-  - [~] 13.6 Extend the Events pane filters to use `dashboard-query.ts` and add the "state" filter
+  - [x] 13.6 Extend the Events pane filters to use `dashboard-query.ts` and add the "state" filter
     - Add an active/ended filter alongside the existing airport/type filters in `EventFilters.tsx`; wire all three into the URL query string; add the same "Showing X of Y" announcement and "Clear filters" empty state.
     - _Requirements: 11.4, 11.5, 11.6, 11.7_
 
@@ -202,7 +202,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Count correctness, announcement text, empty-state "Clear filters" behavior, URL round trip through the rendered page.
     - _Requirements: 11.1, 11.4, 11.5, 11.6_
 
-- [~] 14. Checkpoint - filters and search
+- [-] 14. Checkpoint - filters and search
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 15. Signed-out watchlist

@@ -88,3 +88,26 @@
 .time-text__tooltip[hidden] {
   display: none;
 }
+
+/* DefinitionTip (ui-improvements task 12.1). Reuses the TimeText tooltip; tokens only. */
+.definition-tip__trigger {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-primary);
+  font: inherit;
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.definition-tip__trigger:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.definition-tip__text {
+  max-width: 20rem;
+  min-width: 0;
+  white-space: normal;
+}

@@ -105,7 +105,7 @@ describe("AirportPage", () => {
     await screen.findByRole("heading", { level: 2, name: "Atlanta Hartsfield-Jackson (ATL)" });
     expect(screen.getByText("No ground stop reported")).toBeTruthy();
     expect(screen.getByText(/Last updated/)).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Back to national status" }).getAttribute("href")).toBe("/");
+    expect(screen.getByRole("link", { name: "Back to airport status" }).getAttribute("href")).toBe("/");
     expect(screen.getByText("No events for this airport in the last 24 hours.")).toBeTruthy();
   });
 

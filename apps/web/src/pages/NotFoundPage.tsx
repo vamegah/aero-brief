@@ -6,7 +6,7 @@ export function NotFoundPage() {
       <PageHeader titleId="not-found-heading" title="Page not found" />
       <p>There is no page at this address.</p>
       <p>
-        <a href="/">Go to national status</a>
+        <a href="/">Go to airport status</a>
       </p>
     </section>
   );

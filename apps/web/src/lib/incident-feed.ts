@@ -65,6 +65,7 @@ export function feedSize(feed: IncidentFeed): number {
  * (a system-wide incident has none, so it matches only "all airports"). The type filter keeps the
  * event-type options: "Ground stop started" matches every ground stop incident, "Ground stop ended"
  * matches ground stop incidents that have ended, "System-wide disruption" matches nationwide ones.
+ * The state filter keeps incidents that are still active (no end) or that have ended.
  */
 export function filterIncidentFeed(feed: IncidentFeed, filter: EventFilter): IncidentFeed {
   const airportOk = (airportId: string | null): boolean => filter.airportId === null || airportId === filter.airportId;
@@ -75,9 +76,15 @@ export function filterIncidentFeed(feed: IncidentFeed, filter: EventFilter): Inc
     }
     return incident.type === filter.type;
   };
+  const state = filter.state ?? null;
+  const stateOk = (incident: Incident): boolean =>
+    state === null || (state === "active" ? incident.endedAt === null : incident.endedAt !== null);
   return {
-    incidents: feed.incidents.filter((i) => airportOk(i.airportId) && typeOk(i)),
-    others: feed.others.filter((e) => airportOk(e.airportId) && (filter.type === null || e.type === filter.type)),
+    incidents: feed.incidents.filter((i) => airportOk(i.airportId) && typeOk(i) && stateOk(i)),
+    // Events of an unrecognised type have no active or ended state, so a state filter hides them.
+    others: feed.others.filter(
+      (e) => state === null && airportOk(e.airportId) && (filter.type === null || e.type === filter.type),
+    ),
   };
 }
 

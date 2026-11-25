@@ -13,7 +13,7 @@ afterEach(() => {
 function setup(status = okStatus()) {
   const utils = render(<StatusView status={status} events={[]} loading={false} />);
   const all = utils.getByRole("button", { name: `All (${AIRPORT_COUNT})` });
-  const affected = utils.getByRole("button", { name: "Affected only" });
+  const affected = utils.getByRole("button", { name: "Affected (1)" });
   return { ...utils, all, affected };
 }
 
@@ -27,7 +27,7 @@ describe("Status airport filter", () => {
     expect(container.querySelector("[aria-live]")?.contains(all)).toBe(false);
   });
 
-  it("Affected only shows only airports with a ground stop and toggles back", () => {
+  it("Affected (1) shows only airports with a ground stop and toggles back", () => {
     const { container, all, affected } = setup();
     fireEvent.click(affected);
     expect(container.querySelectorAll("tbody tr")).toHaveLength(1);

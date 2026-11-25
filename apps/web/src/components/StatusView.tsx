@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { AIRPORTS } from "@aerobrief/core/airports";
+import { AIRPORTS, isMonitoredId } from "@aerobrief/core/airports";
 import type { EventSummary, NationalStatusResponse } from "../api/client";
 import { matchesAirportSearch } from "../lib/airport-search";
-import { NO_EVENT_FILTER, type EventFilter } from "../lib/filter-events";
+import { DEFAULT_DASHBOARD_QUERY, type AirportScope } from "../lib/dashboard-query";
+import { EVENT_TYPES } from "../lib/event-types";
+import type { EventFilter } from "../lib/filter-events";
 import {
   buildIncidentFeed,
   feedSize,
@@ -11,6 +12,7 @@ import {
   limitFeed,
 } from "../lib/incident-feed";
 import { STATUS_SECTION_IDS, STATUS_SECTION_LABELS, resolveStatusSection } from "../lib/status-sections";
+import { useDashboardQuery } from "../hooks/use-dashboard-query";
 import { useLocationHash } from "../hooks/use-location-hash";
 import { buildNetworkOverview } from "../lib/network-overview";
 import { sortAirports } from "../lib/sort-airports";
@@ -18,6 +20,7 @@ import { AirportTable } from "./AirportTable";
 import { Button } from "./Button";
 import { EmptyState } from "./EmptyState";
 import { EventFilters } from "./EventFilters";
+import { Icon } from "./Icon";
 import { IncidentList } from "./IncidentList";
 import type { IncidentRecovery } from "./IncidentCard";
 import { SectionMenu } from "./SectionMenu";
@@ -40,14 +43,48 @@ const LATEST_EVENT_COUNT = 5;
 
 export function StatusView({ status, events, loading, now }: StatusViewProps) {
   const ok = status !== null && status.state === "ok" ? status : null;
-  const [affectedOnly, setAffectedOnly] = useState(false);
+  // Filter and search state lives in the URL query string (Requirement 11.7).
+  const [dashQuery, setDashQuery] = useDashboardQuery();
+  const affectedOnly = dashQuery.airportScope === "affected";
+  const query = dashQuery.search;
   const sorted = ok === null ? [] : sortAirports(ok.airports);
-  const [query, setQuery] = useState("");
+  const affectedCount = sorted.filter((airport) => airport.groundStop !== null).length;
   const filtered = affectedOnly ? sorted.filter((airport) => airport.groundStop !== null) : sorted;
   const shown = filtered.filter((airport) => matchesAirportSearch(airport, query));
   const searching = query.trim() !== "";
   const active = resolveStatusSection(useLocationHash());
-  const [eventFilter, setEventFilter] = useState<EventFilter>(NO_EVENT_FILTER);
+  // Values read from the URL are checked, so a stale or hand-edited link cannot hide every event.
+  const eventFilter: EventFilter = {
+    airportId:
+      dashQuery.eventAirportId !== null && isMonitoredId(dashQuery.eventAirportId) ? dashQuery.eventAirportId : null,
+    type:
+      dashQuery.eventType !== null && (EVENT_TYPES as readonly string[]).includes(dashQuery.eventType)
+        ? dashQuery.eventType
+        : null,
+    state: dashQuery.eventState,
+  };
+  const setEventFilter = (next: EventFilter): void =>
+    setDashQuery((prev) => ({
+      ...prev,
+      eventAirportId: next.airportId,
+      eventType: next.type,
+      eventState: next.state ?? null,
+    }));
+  const clearEventFilters = (): void =>
+    setDashQuery((prev) => ({
+      ...prev,
+      eventAirportId: DEFAULT_DASHBOARD_QUERY.eventAirportId,
+      eventType: DEFAULT_DASHBOARD_QUERY.eventType,
+      eventState: DEFAULT_DASHBOARD_QUERY.eventState,
+    }));
+  const clearAirportFilters = (): void =>
+    setDashQuery((prev) => ({
+      ...prev,
+      airportScope: DEFAULT_DASHBOARD_QUERY.airportScope,
+      search: DEFAULT_DASHBOARD_QUERY.search,
+    }));
+  const setSearch = (search: string): void => setDashQuery((prev) => ({ ...prev, search }));
+  const setScope = (airportScope: AirportScope): void => setDashQuery((prev) => ({ ...prev, airportScope }));
   const feed = buildIncidentFeed(events);
   const shownFeed = filterIncidentFeed(feed, eventFilter);
   const shownCount = feedSize(shownFeed);
@@ -88,6 +125,8 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
     });
   }
   const listProps = { ...(now !== undefined ? { now } : {}), activeStops, recovery };
+  // "Clear filters" is a secondary button: the page has no primary action.
+  const clearFiltersButton = (onClick: () => void) => <Button onClick={onClick}>Clear filters</Button>;
 
   return (
     <div className="status-view">
@@ -138,9 +177,15 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
             <div id="status-pane-events" className="status-pane" hidden={active !== "events"}>
               <h3>Events in the last 24 hours</h3>
               <EventFilters airports={ok.airports} value={eventFilter} onChange={setEventFilter} />
-              <p className="event-count">{`Showing ${shownCount} of ${totalCount} incidents`}</p>
+              {/* A polite status region of its own, apart from the banner region above. The text
+                  changes only when a count changes, so that is the only time it is announced. */}
+              <p className="event-count" role="status" aria-live="polite">
+                {`Showing ${shownCount} of ${totalCount} incidents`}
+              </p>
               {totalCount === 0 ? <EmptyState text="No events in the last 24 hours." /> : null}
-              {totalCount > 0 && shownCount === 0 ? <EmptyState text="No events match these filters." /> : null}
+              {totalCount > 0 && shownCount === 0 ? (
+                <EmptyState text="No events match these filters." action={clearFiltersButton(clearEventFilters)} />
+              ) : null}
               {shownCount > 0 ? <IncidentList feed={shownFeed} {...listProps} /> : null}
             </div>
             <div id="status-pane-airports" className="status-pane" hidden={active !== "airports"}>
@@ -150,34 +195,57 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
                   variant="secondary"
                   className="segment-control__option"
                   aria-pressed={!affectedOnly}
-                  onClick={() => setAffectedOnly(false)}
+                  onClick={() => setScope("all")}
                 >
+                  {!affectedOnly ? <Icon name="check" /> : null}
                   {`All (${ok.airports.length})`}
                 </Button>
                 <Button
                   variant="secondary"
                   className="segment-control__option"
                   aria-pressed={affectedOnly}
-                  onClick={() => setAffectedOnly(true)}
+                  onClick={() => setScope("affected")}
                 >
-                  Affected only
+                  {affectedOnly ? <Icon name="check" /> : null}
+                  {`Affected (${affectedCount})`}
                 </Button>
               </div>
               <div className="airport-search">
                 <FormLabel htmlFor="airport-search">Search airports</FormLabel>
-                <TextInput
-                  id="airport-search"
-                  type="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  autoComplete="off"
-                />
+                <div className="search-field">
+                  <Icon name="search" className="search-field__icon" />
+                  <TextInput
+                    id="airport-search"
+                    type="search"
+                    value={query}
+                    placeholder="Search by code or city (for example, LAS, Las Vegas)"
+                    onChange={(event) => setSearch(event.target.value)}
+                    autoComplete="off"
+                  />
+                  {query !== "" ? (
+                    <Button
+                      variant="ghost"
+                      className="search-field__clear"
+                      aria-label="Clear search"
+                      onClick={() => setSearch("")}
+                    >
+                      <Icon name="close" />
+                    </Button>
+                  ) : null}
+                </div>
               </div>
-              <p className="airport-search__count">{`Showing ${shown.length} of ${ok.airports.length} airports`}</p>
+              <p className="airport-search__count" role="status" aria-live="polite">
+                {`Showing ${shown.length} of ${ok.airports.length} airports`}
+              </p>
               <AirportTable airports={shown} />
-              {shown.length === 0 && searching ? <EmptyState text="No airports match your search." /> : null}
-              {shown.length === 0 && !searching ? (
-                <EmptyState text="No airports have an active ground stop." />
+              {shown.length === 0 && searching ? (
+                <EmptyState text="No airports match your search." action={clearFiltersButton(clearAirportFilters)} />
+              ) : null}
+              {shown.length === 0 && !searching && affectedOnly ? (
+                <EmptyState
+                  text="No airports have an active ground stop."
+                  action={clearFiltersButton(clearAirportFilters)}
+                />
               ) : null}
             </div>
           </div>

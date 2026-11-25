@@ -41,9 +41,9 @@ describe("Status airport search", () => {
     expect(container.querySelector("tbody tr th")?.textContent).toBe("SFO");
   });
 
-  it("combines with the Affected only filter", () => {
+  it("combines with the Affected filter", () => {
     const { container, type, getByRole } = setup();
-    fireEvent.click(getByRole("button", { name: "Affected only" }));
+    fireEvent.click(getByRole("button", { name: "Affected (1)" }));
     type("lax");
     expect(container.querySelectorAll("tbody tr")).toHaveLength(0);
     type("atl");

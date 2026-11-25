@@ -6,6 +6,8 @@ export const ICON_NAMES = [
   "error",
   "loading",
   "empty",
+  "search",
+  "close",
   // Airport_Status kinds (STATUS_CATALOG icons)
   "info-circle",
   "warning-triangle",

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
 import { FeaturesProvider } from "../../src/features/FeaturesProvider";
 
-const TAGLINE = "FAA ground stop status for 30 major US airports.";
+const TAGLINE = "Ground stops and system-wide disruptions at 30 major US airports.";
 
 function stubFetch(): void {
   vi.stubGlobal("fetch", () =>

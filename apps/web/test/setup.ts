@@ -42,4 +42,6 @@ Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
 
 afterEach(() => {
   cleanup();
+  // The Status page keeps filter state in the URL query string; do not let it leak into the next test.
+  window.history.replaceState(null, "", "/");
 });

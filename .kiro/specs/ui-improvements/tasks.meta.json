@@ -194,6 +194,11 @@
         "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795572215915
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572548589
       }
     ],
     "8.1 Implement `apps/web/src/lib/time-text.ts`": [
@@ -269,6 +274,16 @@
         "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795559667216
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572555216
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572561584
       }
     ],
     "10.1 Implement `apps/web/src/lib/freshness.ts`": [
@@ -327,6 +342,16 @@
         "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795559667747
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572567581
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572574157
       }
     ],
     "12.1 Add the ARTCC definition and rename labels": [
@@ -334,6 +359,16 @@
         "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795559667861
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572580994
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572864654
       }
     ],
     "13.1 Implement `apps/web/src/lib/dashboard-query.ts`": [
@@ -375,6 +410,16 @@
         "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795559668378
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572871654
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795573535393
       }
     ],
     "13.6 Extend the Events pane filters to use `dashboard-query.ts` and add the \"state\" filter": [
@@ -382,6 +427,16 @@
         "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795559668466
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795573539967
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795573546134
       }
     ],
     "14. Checkpoint - filters and search": [
@@ -389,6 +444,11 @@
         "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795559668588
+      },
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795573552561
       }
     ],
     "15.1 Implement `apps/web/src/lib/local-watchlist.ts`": [
@@ -609,6 +669,20 @@
         "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
         "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
         "timestamp": 1795572207177
+      }
+    ],
+    "12. Plain-language labels": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795572864836
+      }
+    ],
+    "13. Filters, search and URL query state": [
+      {
+        "executionId": "a116fba8-c56e-4bfe-8438-dabbc7981a79",
+        "chatSessionId": "sess_b65015d7-ef65-4555-8b1f-40b771929096",
+        "timestamp": 1795573546197
       }
     ]
   }

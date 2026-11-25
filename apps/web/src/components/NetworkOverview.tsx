@@ -13,7 +13,7 @@ export interface NetworkOverviewProps {
 export function NetworkOverview({ overview, capturedAt }: NetworkOverviewProps) {
   const { summary, affected, outdated, showAllNormal, headline, latestEventAt } = overview;
   return (
-    <section className="summary-card" aria-label="National summary">
+    <section className="summary-card" aria-label="Airport summary">
       <p className="summary-card__headline">{headline}</p>
       {showAllNormal ? (
         <p className="summary-card__latest">
