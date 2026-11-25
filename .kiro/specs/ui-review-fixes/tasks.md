@@ -274,11 +274,11 @@ Tasks 18 to 25 are listed here, ahead of Tasks 16 and 17, because they run first
   - Run `npm test`, `npm run typecheck` and the web build (`npm run build -w apps/web`), and parse every file in `.kiro/hooks/` as JSON. Ensure all pass, ask the user if questions arise. Do not commit, push, or deploy.
   - _Requirements: 18.6, 19.5, 20.4, 21.3, 22.3, 23.4, 24.5_
 
-- [~] 16. Owner Preview review
+- [x] 16. Owner Preview review
   - Runs after Task 25. Deploy or point the owner to the Vercel Preview of this branch (signed-out views, per the existing rollout pattern in `.kiro/specs/ui-improvements/requirements.md`) and a phone-width view, and ask the owner to confirm all 11 fixes read correctly, including the Requirement 7.3 wording question flagged in `design.md`. For the second round, also ask the owner to confirm the seven fixes of Requirements 18 to 24 (the live ORD incident, Recovering length, likely-impact wording, Account card, webhook wording, Watchlist status, hook).
   - _Requirements: all_
 
-- [~] 17. Ship
+- [x] 17. Ship
   - Runs after Task 16. Confirm every checkpoint, Task 25 and the owner Preview review passed; remind the owner that fast-forwarding and pushing `main` before the Deadline (December 4, 2026, 2:00 PM PT) is a manual step performed by the owner, not by this task.
   - _Requirements: all_
 
