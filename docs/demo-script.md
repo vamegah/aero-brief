@@ -1,9 +1,13 @@
 # AeroBrief demo video script
 
-**First, check the maximum video length in the Devpost rules (https://kiroween.devpost.com/rules) before you record.** The rules text I read says the video must be uploaded to YouTube and made public, and that judges look for the project working end to end. It states no maximum length. The earlier version of this script said "under 3:00" and cited the rules, but I could not find that limit in the rules page text. Check the rules and the Devpost submission form. If neither gives a limit, this script targets 3:00 total. If a lower limit exists, cut shot 7 first, then shorten shot 4.
+**Contest rules (verified by the owner from the official Kiroween 2026 rules, 2026-11-25):**
 
-You record and upload. Nothing in this file is automated. About 400 spoken words at a calm pace fit in 3:00.
+- The video "should be less than three (3) minutes. Judges are not required to watch beyond three minutes." This script targets 2:45 with a hard stop before 3:00.
+- It must show the project functioning on the device it was built for (the desktop or laptop it was built on, not only a phone).
+- It must be public on YouTube.
+- It must not include third-party trademarks or copyrighted music or material without permission.
 
+You record and upload. Nothing in this file is automated. The narration is about 270 spoken words, at a calm pace that fits 2:45 with room for pauses.
 Live URLs:
 
 - Web: https://www.aerobriefs.com (use `www`; the API only accepts writes from this exact origin)
@@ -20,27 +24,31 @@ Live URLs:
 - **Safe_Send_Mode is on in production.** Digests and webhooks reach only allowlisted recipients. Sign in with an address on `SAFE_SEND_ALLOWLIST_EMAILS` for the digest shot. For the webhook shot, the webhook host must also be on `SAFE_SEND_ALLOWLIST_HOSTS`, or the test event reports "failed (not_allowlisted)" (`apps/api/src/handlers/webhooks.ts`). Check both lists before recording (`docs/phase2-rollout.md`). Never show the lists, a secret or a token on screen.
 - **Nothing on screen may show `.env` files, API keys, a webhook signing secret you plan to keep, or a sign-in link token.**
 
-## Shot list (target 3:00)
+## Shot list (target 2:45, hard stop before 3:00)
+
+Record on the desktop or laptop the project was built on. Labels in quotes are copied from `apps/web/src` as of 2026-11-25.
 
 | # | Time | Screen | Narration | Have open before recording | Fallback if the live step fails |
 |---|------|--------|-----------|----------------------------|---------------------------------|
-| 1 | 0:00-0:15 | Title card, or the live Status page at https://www.aerobriefs.com with the header "Airport status" in view. | "On November 13th a nationwide ground stop halted US flights. The FAA's status page went down. Airline apps said delayed, and never said why. AeroBrief is the independent channel." | Browser, signed out, tab on `/`. | Use a plain title card ("AeroBrief") with the narration. |
-| 2 | 0:15-0:40 | Status, **Overview** section. Point at: the headline sentence, the two chips "Ground stops" and "Recovering", any affected airport with its status pill, the "Last updated ..." line, and the freshness chip in the page header ("Live", with "Updated ..."). | "The Overview says in one sentence what is happening across the thirty FAA Core 30 airports. Two counters: ground stops and recovering. The chip in the header says Live, with when the data was updated. If it falls behind it says Delayed. If it never loaded it says Unavailable." | Tab on `/#overview`. | If every airport is normal, the card shows "No events in the last 24 hours" or "Most recent event ..." instead of affected airports. Say so and move on. |
-| 3 | 0:40-1:05 | **Events** section ("Events in the last 24 hours"). Click "Show details" on one incident card. Point at the five fields: "What's happening", "Why", "Likely impact", "Next update", "Source", and the "Timeline" with "Started" and "Ended". | "Each incident is one card, Active or Ended. Open it and you get five plain-language fields: what's happening, why, the likely impact, when the next update is due, and the source. Not raw FAA codes." | Tab on `/#events`. At least one event in the list. | If "No events in the last 24 hours" shows, use a recorded clip from an earlier day. Do not fake an incident. |
-| 4 | 1:05-1:20 | **Airports** section. Type `Las Vegas` in "Search airports". Point at "Showing 1 of 30 airports". Click "Affected" then "All" if time allows. | "Search by code or city. The count is announced, so it works with a screen reader." | Tab on `/#airports`. Search box empty. | Type `LAS` instead. |
-| 5 | 1:20-1:50 | Go to `/watchlist` signed out. Header "Your watchlist", counter "0 of 30 airports watched". Click the quick-add chips for ATL and LAS (the button text is the code). Point at "Your list stays in this browser." Click "Sign in". On `/sign-in`, enter the allowlisted address, click "Email me a sign-in link", point at "Check your inbox" and "It expires in 15 minutes and works once". Switch to the inbox, open "Your AeroBrief sign-in link" (keep the token off screen), click the link. On `/watchlist`, the banner "You saved 2 airports in this browser. Add them to your account?" shows. Click "Add to my account". | "No account is needed to build a watchlist. It lives in your browser. To get email alerts, sign in with a one-time link: no passwords. On sign-in, AeroBrief offers to move the list to your account. Up to thirty airports." | Browser local storage empty for the site (use a fresh window). Webmail open in a second tab. Allowlisted address ready. | If the email is slow, cut after "Check your inbox" and join a pre-recorded clip of the click-through. |
-| 6 | 1:50-2:15 | **Settings** (open from the "Account" menu, then "Settings"). Show **Display**: the "Time display" group, pick "UTC", then "Relative (for example, 25 min ago)". Show **Daily digest**: checkbox "Send me a daily digest", "Send at (UTC)", button "Save digest settings". Show **Webhooks**: click "Send test event" on your allowlisted webhook, point at the result "Test event to <host>: delivered (HTTP 200)". | "Settings: choose how times are shown. Turn on a daily digest. Add up to three signed webhooks, and send a test event to check them." | Signed in as the allowlisted address. One webhook already added (a receiver you control, host on the allowlist). Do not show its signing secret. | If the test event fails, show the display and digest parts only, and say webhooks are signed and limited to allowlisted hosts. Do not claim a delivery you did not see. |
-| 7 | 2:15-2:25 | Phone-width window (narrow the browser under 768 px, or use DevTools device mode). Point at the "Menu" button and the stacked tables. | "It works on a phone: collapsed menu, stacked tables." | A second narrow window ready. | Skip this shot. |
-| 8 | 2:25-2:50 | The Kiro story. (a) File tree: `.kiro/specs/` list. (b) `.kiro/steering/` (`tech.md`, `scope.md`, `structure.md`, `design.md`, `product.md`). (c) Agent Hooks panel with a hook firing (see `docs/hooks.md`, "How to see each hook fire"). (d) The Neon MCP server in the Kiro MCP panel. (e) A property test run: `npx vitest --run packages/core/test/digest-unsubscribe.pbt.test.ts`. (f) One or two items from "Where Kiro surprised us" in `docs/kiro-usage.md`. | "Built with Kiro. Specs drove every feature. Steering files fixed the stack and the scope, and refused out-of-scope work. A hook typechecks and tests what the agent saves. Neon's MCP server applied our migrations on a branch first. Property tests caught real bugs: an unsubscribe signature that accepted a non-canonical encoding, and a fetch function that threw on an unusual error object." | Kiro window with the file tree open. Terminal with the test command ready. Hook-firing screenshots from task 6 of `.kiro/specs/submission-polish/tasks.md`, taken before you record. | Show the screenshots. If a hook did not fire in your Kiro version (see the "Firing record" in `docs/hooks.md`), do not show or claim a firing: show the hook files and say they are defined. |
-| 9 | 2:50-3:00 | Back to the live Status page. | "AeroBrief: FAA ground stops in plain language, on Cloudflare Workers, Neon, Resend and Vercel, built with Kiro. aerobriefs.com. Thanks for watching." | Tab on `/`. | None. |
+| 1 | 0:00-0:12 | The live Status page at https://www.aerobriefs.com, header "Airport status" in view. | "On November 13th a nationwide ground stop halted US flights and the FAA's status page went down. Airline apps said delayed, and never said why. AeroBrief is the independent channel." | Browser, signed out, tab on `/`. | Plain title card ("AeroBrief") with the narration. |
+| 2 | 0:12-0:30 | Status, **Overview**. Point at the headline ("N of 30 airports affected", or "All 30 airports operating normally"), the chips "Ground stops" and "Recovering", the "Last updated ..." line, and the freshness chip in the page header ("Live", with "Updated ..."). | "The Overview says in one sentence how many of the thirty FAA Core 30 airports are affected, with counters for ground stops and recovering. The header chip says Live, and when the data was updated." | Tab on `/#overview`. | If all airports are normal, read the "All 30 airports operating normally" headline and move on. |
+| 3 | 0:30-0:52 | **Events** ("Events in the last 24 hours"). Point at an incident card: the state pill (Active or Ended), the type, the airport code link and name (do not click it), and for an ended one "Ended <time> · lasted N min". Click "Show details". Point at the "Timeline" and the five fields "What's happening", "Why", "Likely impact", "Next update", "Source", then the link "View the FAA NAS Status site". | "Each incident is a card, Active or Ended, with how long it lasted. Open it for five plain-language fields: what's happening, why, likely impact, next update and source. No raw FAA codes." | Tab on `/#events`. At least one event, ideally one ended. | If "No events in the last 24 hours" shows, use a clip from an earlier day. Do not fake an incident. |
+| 4 | 0:52-1:02 | **Airports**. Type `Las Vegas` into the search box (placeholder "Code or city, e.g. LAS or Las Vegas"). Point at "Showing 1 of 30 airports" and the "Operating normally" or "Recovering" pill. Click "Affected (N)" then "All (N)". | "Search by code or city, and filter to affected airports. Each row says operating normally or recovering." | Tab on `/#airports`. Search box empty. | Type `LAS`. |
+| 5 | 1:02-1:25 | `/watchlist` signed out: "Your watchlist", "0 of 30 airports watched". Click the quick-add chips ATL and LAS. Click "Sign in". On `/sign-in`, enter the allowlisted address, click "Email me a sign-in link", point at "Check your inbox". Open the email "Your AeroBrief sign-in link" (token off screen), click the link. On `/watchlist`, click "Add to my account" on the banner "You saved 2 airports in this browser. Add them to your account?". Point at the status pill next to "Watching" for each airport. | "A watchlist needs no account. It lives in your browser. Sign in with a one-time email link, no passwords, and AeroBrief offers to move the list to your account. Signed in, each airport shows its live status." | Fresh window with empty local storage. Webmail in a second tab. Allowlisted address ready. | If the email is slow, cut after "Check your inbox" and join a pre-recorded click-through clip. |
+| 6 | 1:25-1:48 | Top nav **Settings** (a top-level link; the "Account" menu holds only "Sign out"). **Display**: pick "UTC", then "Relative (for example, 25 min ago)", then point at the three theme swatches (System, Light, Dark). **Daily digest**: point at the send time in the form "01:00 UTC (7:00 PM your time)". **Webhooks**: point at the existing webhook's line "delivered 18 h ago"-style outcome, click "Send test event", point at "Test event to <host>: delivered (HTTP 200)". | "In Settings, choose how times and themes look. A daily digest shows its send time in your local time. Add signed webhooks and send a test event to check them." | Signed in as the allowlisted address. One webhook added (receiver you control, host on the allowlist). No signing secret on screen. | If the test event fails, show display and digest only, and do not claim a delivery you did not see. |
+| 7 | 1:48-2:35 | The Kiro story, about 8 seconds each. (a) The two hooks firing: edit a comment in `packages/core/src/airports.ts` and show both hooks fire in the Kiro panel (`docs/hooks.md`, "Firing record"), or show the screenshot. (b) `.kiro/specs/` listing eight specs. (c) `.kiro/steering/`. (d) The Neon MCP server in the Kiro MCP panel. (e) One property test run: `npx vitest --run packages/core/test/digest-unsubscribe.pbt.test.ts`. (f) One surprise: the ORD stale-active bug caught from a phone screenshot and fixed with a live-data fixture test, or the probe that proved the FAA blocks Cloudflare (`docs/kiro-usage.md`). | "Built with Kiro. Eight specs drove the work. Steering files fixed the stack and the scope. Two hooks fired when I edited a file: one typechecks and tests, one checks that tests were updated. Neon's MCP server ran our migrations on a branch first. Here a property test runs. And one surprise: a phone screenshot showed Chicago O'Hare stuck as active. A live-data fixture test reproduced it, and we fixed it." | Kiro window with the file tree. Terminal with the test command typed but not run. Hook screenshots taken. | Show screenshots. Never claim a firing you did not see. |
+| 8 | 2:35-2:45 | Back to the live Status page. | "AeroBrief: FAA ground stops in plain language, built with Kiro. aerobriefs.com. Thanks for watching." | Tab on `/`. | None. |
 
-Total: 3:00. Trim shot 7 first, then shot 4.
+Total: 2:45. If the dry run exceeds 2:50, cut shot 4 first, then trim shot 7 to four items.
+
+The phone-width shot was dropped to meet the 3:00 limit. The footer is two-column on desktop and needs no shot.
 
 Narration notes:
 
 - Do not read FAA codes aloud. The product's rule is plain language.
-- For shot 8, use at most two "surprises" and keep each to one sentence. Details and evidence are in `docs/kiro-usage.md`. Check the narration against that file once it is final.
-
+- Saying product names (Kiro, Neon) in narration is fine. Keep their logos and dashboards off screen (see the checklist).
+- Shot 7 count of specs: eight folders in `.kiro/specs/` (aerobrief, aerobrief-phase2, core30-limits, faa-403-poller, submission-polish, ui-improvements, ui-refresh, ui-review-fixes). Recount before recording.
+- The theme swatches appear only when the dark-mode flag is on in production. If Display shows no "Theme" group, skip that clause and edit the narration.
 ## Stale banner and freshness chip: how it works and how to show it safely
 
 How the app decides (verified in code):
@@ -50,7 +58,7 @@ How the app decides (verified in code):
 - There is no dev flag, query parameter or preview mode that forces the banner.
 - The poller runs every 5 minutes, so real stale data only appears if polling fails for 10+ minutes. Do not wait for that.
 
-Where to fit it: the shot list has no separate stale shot. If time allows, add 10 seconds to shot 2 (point at the chip reading "Delayed" and at the banner "Data may be out of date. Last updated ..."), or record it as a separate clip and join it in editing. Say honestly that the state is simulated.
+Where to fit it: the shot list has no separate stale shot. There is no room for it inside the 2:45 cut. Only add it by trimming another shot, and say honestly that the state is simulated.
 
 ### Recommended: edit the response in your browser (production is not touched)
 
@@ -80,7 +88,7 @@ The shot list does not need an alert email. If you want to add one (for example 
 
 ## Pre-recording checklist
 
-- [ ] Devpost rules checked for the maximum video length (first line of this file).
+- [ ] Video under 3:00 (target 2:45). Judges need not watch past 3:00.\n- [ ] Recorded on the device the project was built on.\n- [ ] No third-party logos on screen: no Cloudflare, Neon, Vercel or Resend dashboards or pages. Close the webhook.site tab, or keep its logo out of frame. Check browser tabs, bookmarks and the Kiro MCP panel for logos.\n- [ ] No copyrighted music: record with none, or use only royalty-free music with a licence you can show. Saying product names in narration is fine.
 - [ ] Recording tool ready: OBS Studio (Display Capture or Window Capture, 1920x1080, 30 fps) or Windows Game Bar (Win+G, then Record; it captures one app window, so open the webmail in a browser tab).
 - [ ] Microphone checked: record 10 seconds and play it back. Quiet room, notifications silenced (Windows Focus Assist on).
 - [ ] Browser: a window with no personal bookmarks or extensions visible. Zoom at 125 percent. Window maximised.
@@ -88,10 +96,10 @@ The shot list does not need an alert email. If you want to add one (for example 
 - [ ] The sign-in address is on `SAFE_SEND_ALLOWLIST_EMAILS`. The webhook host is on `SAFE_SEND_ALLOWLIST_HOSTS`. Send one test sign-in first to check the email arrives in seconds (the link is single-use, so request a new one while recording).
 - [ ] The account has the digest and one webhook set up before shot 6, so the shot shows existing state. No signing secret on screen.
 - [ ] Stale override prepared and disabled.
-- [ ] Kiro window ready for shot 8: file tree, `.kiro/specs/`, `.kiro/steering/`, Agent Hooks panel, MCP panel, terminal with the test command. Hook-firing screenshots taken (task 6 of the submission-polish spec).
+- [ ] Kiro window ready for shot 7: file tree, `.kiro/specs/`, `.kiro/steering/`, Agent Hooks panel, MCP panel, terminal with the test command. Both hooks fire on a comment edit to `packages/core/src/airports.ts` (or screenshots taken).
 - [ ] Close or hide: `.env` files, terminals showing keys, Resend, Neon and Cloudflare dashboards, password manager.
-- [ ] Dry run the whole script once with a stopwatch. Aim for 2:50 to 3:00.
-- [ ] After recording, delete the account (Settings, "Account", "Delete account", then "Confirm delete account") if you do not want the demo address to keep receiving mail.
+- [ ] Dry run the whole script once with a stopwatch. Aim for 2:40 to 2:50.
+- [ ] After recording, delete the account (Settings, Account section, "Delete account", then "Confirm delete account") if you do not want the demo address to keep receiving mail.
 
 ## YouTube upload notes
 
@@ -110,23 +118,22 @@ Built with Cloudflare Workers, Neon Postgres + Drizzle, React + Vite on Vercel, 
 
 Chapters
 0:00 The problem
-0:15 Overview and freshness
-0:40 Incident cards
-1:05 Airport search
-1:20 Watchlist and sign-in
-1:50 Settings
-2:15 Phone layout
-2:25 Built with Kiro
-2:50 Wrap-up
+0:12 Overview and freshness
+0:30 Incident cards
+0:52 Airport search
+1:02 Watchlist and sign-in
+1:25 Settings
+1:48 Built with Kiro
+2:35 Wrap-up
 ```
 
 - If you show the simulated stale state, say so in the description.
-- Confirm the length in YouTube Studio against the Devpost limit before submitting.
+- Confirm in YouTube Studio that the length is under 3:00.
 - Add the final link to the Devpost submission (`docs/devpost-submission.md`).
 
 ## What you must do
 
-1. Check the Devpost rules for the maximum length. Trim if needed.
+1. Dry run with a stopwatch and trim to under 3:00.
 2. Confirm the allowlisted email address and webhook host, and set up the digest and the webhook before recording.
-3. Complete task 6 of the submission-polish spec (hook firing) and take the screenshots for shot 8.
+3. Take the hook-firing screenshots for shot 7 as a fallback.
 4. Run the checklist, record, upload, and paste the video URL into the Devpost form.

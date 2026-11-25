@@ -24,7 +24,7 @@ The submission is `main` as of the deadline, December 4, 2026, 2:00 PM PT. The a
 - **Overview.** A summary card gives a headline such as "All 30 airports operating normally" or "2 of 30 airports affected", two chips ("Ground stops" and "Recovering") with counts, and the named affected airports with the time since they changed and an estimate. Below it are the five latest events and a "View all events" link. When data is stale, the headline reads "Status is outdated. Showing the last known status of 30 airports" and never claims all is normal.
 - **Freshness chip.** A chip in the page header reads Live, Delayed or Unavailable, with an "Updated" time. Delayed means the last known data stays on screen after a failed refresh. Unavailable means no status has ever loaded. The text carries the state and the color only repeats it.
 - **Incident cards.** The Events section shows one card per incident, with the start and the end of a ground stop together. "Show details" opens a timeline and five labeled fields: What's happening, Why, Likely impact, Next update and Source. The cause is written in plain language, not as an FAA code. Filters by airport, type and state narrow the list, and a line says "Showing N of M incidents".
-- **Airports table.** The Airports section has an "All (30)" and "Affected (N)" filter, a search box ("Search by code or city (for example, LAS, Las Vegas)") and a count line, "Showing N of 30 airports". Filters and search live in the URL, so a link keeps them. Ground stop airports come first, then the rest by code. A stopped airport's row shows the reason, "Expected to end around <time> UTC" or "Until further notice", and a link to the FAA advisory. Only `https://` links on `faa.gov` are shown; otherwise the link goes to the FAA status page.
+- **Airports table.** The Airports section has an "All (30)" and "Affected (N)" filter, a search box (placeholder "Code or city, e.g. LAS or Las Vegas") and a count line, "Showing N of 30 airports". Airports with no disruption show an "Operating normally" pill. Filters and search live in the URL, so a link keeps them. Ground stop airports come first, then the rest by code. A stopped airport's row shows the reason, "Expected to end around <time> UTC" or "Until further notice", and a link to the FAA advisory. Only `https://` links on `faa.gov` are shown; otherwise the link goes to the FAA status page.
 - **Airport page.** Each airport code links to `/airport/<code>`, which shows that airport's current status, its details, the last-updated time and its events from the last 24 hours.
 - **System-wide banner.** When ground stops affect three or more FAA centers (ARTCCs) at once, the page shows a "System-wide disruption" banner with an explanation.
 - **Stale-data banner and cached fallback.** If the latest stored data is more than 10 minutes old, the page says so and shows the last update time. The page is served from our database, not from the FAA at request time. If a refresh fails, the page keeps the last data and shows an error message instead of going blank.
@@ -32,7 +32,7 @@ The submission is `main` as of the deadline, December 4, 2026, 2:00 PM PT. The a
 - **Watchlist without an account.** A signed-out visitor can follow airports with "Quick add" buttons (ATL, DFW, LAS) or search, up to 30. The list is stored in the browser and the page shows "N of 30 airports watched". The daily digest and email alerts need an account.
 - **Passwordless sign-in and merge.** Enter an email, get a one-time magic link that expires in 15 minutes and works once. There are no passwords. After sign-in, a banner offers "Add to my account" for the airports saved in the browser. A 31st airport is refused with a message that an account holds 30 airports at most.
 - **Settings.** `/settings` has a section menu in this order: Daily digest, Webhooks, Display and Account. Display and Account always appear. Daily digest and Webhooks need a session; a signed-out visitor sees a lock that says "Sign in to manage your settings."
-- **Navigation and footer.** The nav bar (Status, Watchlist, Settings, Sign in) collapses behind a "Menu" button on a phone. Once signed in, Settings moves into an "Account" menu with Sign out. The footer links the API documentation and the FAA NAS Status data source, and says "Information is advisory and not for operational flight decisions."
+- **Navigation and footer.** The nav bar (Status, Watchlist, Settings, Sign in) collapses behind a "Menu" button on a phone. Settings is always a top-level link. Once signed in, "Sign in" is replaced by an "Account" menu that holds Sign out. The footer links the API documentation and the FAA NAS Status data source, and says "Information is advisory and not for operational flight decisions."
 - **Email alerts and unsubscribe.** Sent when a ground stop starts or ends at a watched airport, and for nationwide events. Alerts pause while data is stale. Each ground stop alert carries a signed one-click unsubscribe link.
 
 ## Phase 2 features, live in production
@@ -51,6 +51,12 @@ The owner raised the limits on 2026-11-24 (`docs/decisions.md`): the app monitor
 The FAA blocks requests from Cloudflare Workers with HTTP 403. The Poller therefore asks one small Vercel Function (`apps/web/api/internal/faa-relay.ts`) to fetch the fixed FAA URL for it. The function does nothing else. The owner approved this single exception on 2026-11-22; `.kiro/steering/tech.md` records it, `docs/decisions.md` has the decision, and the steps are in `docs/production-runbook.md` ("FAA relay").
 
 ## How we built it
+
+### Data source and the FAA relay
+
+AeroBrief reads the FAA's public NAS Status airport-events feed (https://nasstatus.faa.gov/api/airport-events). This is public US government status information. AeroBrief is free and non-commercial. We do not claim FAA permission or endorsement.
+
+The FAA's servers answer requests from Cloudflare Workers with HTTP 403 (probe evidence in `.kiro/specs/faa-403-poller/probe-result.md`). The Poller therefore asks one small Vercel Function to fetch that one fixed URL, once every 5 minutes, and nothing else. AeroBrief does not scrape any website. Billing and commercial use wait for a review of the FAA data terms (`.kiro/steering/scope.md`).
 
 The stack is fixed and serverless:
 
@@ -121,7 +127,33 @@ TypeScript (strict), Cloudflare Workers, Neon Postgres, Drizzle ORM, Zod, React 
 - Source: https://github.com/vamegah/aero-brief
 - Demo video: _add the public YouTube URL after task 14.4_
 
+## Testing instructions for judges (paste into the PRIVATE Devpost testing field)
+
+```text
+Live app: https://www.aerobriefs.com
+
+NO LOGIN NEEDED for:
+- Status: Overview, Events and Airports (open https://www.aerobriefs.com).
+- Watchlist while signed out (https://www.aerobriefs.com/watchlist). Use "Quick add" or search. The list is stored in your browser, up to 30 airports.
+- Settings, then Display (time display, theme).
+
+TO SIGN IN: choose "Sign in" (https://www.aerobriefs.com/sign-in, use the www address), enter any email address you own, then open the magic link we email you. Check your spam folder. The link expires in 15 minutes and works once. There are no passwords and no test account.
+
+SIGNED-IN FEATURES: Watchlist (up to 30 airports, "Add to my account" copies your browser list), Settings, then Daily digest, Webhooks, and Account (including "Delete account").
+
+SAFE SEND MODE IS ON DURING JUDGING. Digest emails and webhook deliveries go only to allowlisted recipients and hosts, so your own address will not receive a digest and your webhook URL will not be called unless we add it. Contact us through Devpost with your email address or webhook host and we will add it.
+
+DATA: the app updates every 5 minutes from the FAA's public NAS Status feed. When there are no ground stops, the dashboard shows "All 30 airports operating normally". Alert emails are sent only when a real ground stop starts or ends at a watched airport, so one may not arrive during judging.
+
+STALE BANNER: it appears only when data is more than 10 minutes old. To see it, override the /api/status/national response in browser DevTools so it returns "stale": true (steps in the judge notes below). This changes only your own browser.
+
+API documentation: https://github.com/vamegah/aero-brief/blob/main/docs/api.md
+Source: https://github.com/vamegah/aero-brief
+```
+
 ## Judge testing notes (PRIVATE Devpost field only)
+
+Longer notes behind the block above.
 
 - Open https://www.aerobriefs.com. The "Airport status" page opens on Overview. The chip in the header reads Live, Delayed or Unavailable and shows the update time. Open Events and choose "Show details" on an incident card to see the five fields.
 - The watchlist works signed out, with no sign-in needed. Open https://www.aerobriefs.com/watchlist, use "Quick add" or search, and the list is stored in your browser (up to 30).
