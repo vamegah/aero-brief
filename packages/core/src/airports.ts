@@ -1,3 +1,4 @@
+// The FAA Core 30 airports; source: FAA ASPM help page ASPM 77 (see docs/decisions.md, 2026-11-24).
 export const AIRPORTS = [
   { id: "ATL", name: "Hartsfield-Jackson Atlanta International", city: "Atlanta", state: "GA", artcc: "ZTL" },
   { id: "BOS", name: "Boston Logan International", city: "Boston", state: "MA", artcc: "ZBW" },

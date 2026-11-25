@@ -10,7 +10,7 @@ AeroBrief is live at https://www.aerobriefs.com. The Kiroween 2026 submission is
 | --- | --- | --- |
 | Kiro IDE, CLI, Web or Crew | Kiro IDE only | No CLI, Web or Crew artifacts in the repo |
 | Custom agents | None created | No `.kiro/agents/` directory |
-| Agent hooks | 2 defined and rewritten in the current Kiro schema (the first two were broken). The agent's observation of one firing is in "Hooks"; the owner's confirmation is pending | `.kiro/hooks/`, `docs/hooks.md` |
+| Agent hooks | 2 defined and rewritten in the current Kiro schema (the first two were broken). Both were observed firing on 2026-11-25 and the owner confirmed it, see "Hooks" | `.kiro/hooks/`, `docs/hooks.md` |
 | Spec-driven development | Central. MVP spec: 18 requirements, 38 properties, 20 task sections. Phase 2 spec: 21 properties, features behind flags. Five later specs: FAA relay, UI refresh, Core 30 limits, UI improvements and submission polish | `.kiro/specs/aerobrief/`, `.kiro/specs/aerobrief-phase2/`, `.kiro/specs/faa-403-poller/`, `.kiro/specs/ui-refresh/`, `.kiro/specs/core30-limits/`, `.kiro/specs/ui-improvements/`, `.kiro/specs/submission-polish/` |
 | Steering | 5 files, all `inclusion: always` | `.kiro/steering/` |
 | MCP | Neon MCP used for the Phase 2 branch and migrations, restore-point branches before production migrations, and read-only production checks. context7 available, no recorded use | `docs/decisions.md`, `docs/phase2-rollout.md` |
@@ -40,7 +40,7 @@ Limits, as stated in `docs/hooks.md`: both hooks are prompts that the agent foll
 
 **History.** The first two hooks were broken. They were committed in `66e1b0e` ("chore: add Kiro agent hooks") in an older flat format (`when`, `then`, `toolTypes`), and neither could work in this repository. `lint-on-save.json` ran `npx eslint --fix`, but no ESLint config exists at the repo root, no `package.json` lists `eslint`, and ESLint is outside the approved stack in `tech.md`. `require-test-update.json` watched `src/lib/schemas/` and `tests/pbt/`, which do not exist here (schemas live in `packages/core/src/schemas.ts`, PBT files in `packages/core/test/`), so it never matched a real write. No record shows either of them firing. The `submission-polish` spec (`.kiro/specs/submission-polish/`) replaced them on 2026-11-25: `lint-on-save.json` was deleted, `typecheck-on-save.json` was created, and `require-test-update.json` was rewritten. ESLint was not added.
 
-**Firing.** The agent that edited this document observed the Test_Gate hook fire in a Kiro session on 2026-11-25. It intercepted writes to `docs/kiro-usage.md` before they ran. The agent found that the path was outside `packages/core/src/`, as the hook prompt says to check, and the write then went ahead. This is the agent's observation only. It is not the owner's confirmation. The owner's confirmation for both hooks is pending and is recorded in the "Firing record" table of `docs/hooks.md`. No firing of the Typecheck hook has been observed.
+**Firing.** The agent that edited this document observed the Test_Gate hook fire in a Kiro session on 2026-11-25. It intercepted writes to `docs/kiro-usage.md` before they ran. The agent found that the path was outside `packages/core/src/`, as the hook prompt says to check, and the write then went ahead. The owner then confirmed both hooks on 2026-11-25. After Kiro saved a comment line in `packages/core/src/airports.ts` at about 16:41:14, both the Typecheck hook and the Test_Gate hook fired. Typecheck on `packages/core` passed and `airports.test.ts` passed 9/9. The Test_Gate check found the change comment-only, so no test update was needed. The details are in the "Firing record" table of `docs/hooks.md`.
 
 The process improvements in this project came mainly from the spec, the steering files and the tests. The hooks added a reminder, not an enforced check.
 
@@ -204,7 +204,7 @@ No Kiro powers were used to build AeroBrief. The Kiro environment had the postma
 
 - No comparison of Kiro IDE with CLI, Web or Crew. Only the IDE was used.
 - No custom agents. Only built-in Kiro sub-agents were used.
-- No claim that the hooks protected anything. Both are prompts that do not block a write. One firing of the Test_Gate hook was observed by the agent in a Kiro session on 2026-11-25. The owner's confirmation of both hooks is pending (`docs/hooks.md`, "Firing record"), and no firing of the Typecheck hook is recorded.
+- No claim that the hooks protected anything. Both are prompts that do not block a write. Both hooks were observed firing on 2026-11-25 and the owner confirmed it (`docs/hooks.md`, "Firing record").
 - No claim that context7 was used. It was available, and no use is recorded.
 - No MVP bug caught by a property test. The recorded catch is in Phase 2 (item a).
 - No claim that a property test found the bug in item d. Which test exposed it first is not recorded.
