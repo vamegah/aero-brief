@@ -89,8 +89,8 @@
   max-width: 100%;
 }
 
-/* Wide: side menu. */
-@media (min-width: 641px) {
+/* Wide (768px and up, the same breakpoint as the nav bar): side menu. Below it, tab bar. */
+@media (min-width: 768px) {
   .settings,
   .status-layout {
     grid-template-columns: 14rem minmax(0, 1fr);

@@ -18,7 +18,7 @@ describe("shared watchlist request", () => {
     });
     render(<App />);
 
-    await screen.findByRole("button", { name: "Sign out" });
+    await screen.findByRole("button", { name: "Account" });
     await screen.findByRole("button", { name: "Remove New York JFK from watchlist" });
 
     const watchlistCalls = fetchMock.mock.calls.filter(([input]) => String(input) === "/api/watchlist");

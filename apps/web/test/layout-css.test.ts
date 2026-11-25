@@ -17,7 +17,8 @@ import themesCss from "../src/styles/themes.css?raw";
 import { declared, findRules, parseCss, stripComments, type CssRule } from "./helpers/css";
 
 const NARROW = "(max-width: 640px)";
-const WIDE = "(min-width: 641px)";
+/** Narrow_Layout is below 768px (Requirement 13.3); the nav bar and the section menu share it. */
+const WIDE = "(min-width: 768px)";
 
 /** The five stylesheets added by the refresh. */
 const refresh: Record<string, string> = {
@@ -197,6 +198,57 @@ describe("layout css: Settings tab bar scrolls inside itself", () => {
   });
 });
 
+describe("layout css: nav bar collapse and 320px usability (Requirements 13.3, 13.4, 13.5)", () => {
+  const shell = rulesOf(shellCss);
+
+  it("collapses the list behind the Menu toggle below 768px and shows it at 768px and up", () => {
+    expect(declared(shell, ".nav-bar .nav-bar__toggle", "display", null)).toBe("inline-flex");
+    expect(declared(shell, ".nav-bar .nav-bar__list--collapsed", "display", null)).toBe("none");
+    expect(declared(shell, ".nav-bar .nav-bar__toggle", "display", WIDE)).toBe("none");
+    expect(declared(shell, ".nav-bar .nav-bar__list--collapsed", "display", WIDE)).toBe("flex");
+  });
+
+  it("stacks the narrow list in one column and lays it out as a row when wide", () => {
+    expect(declared(shell, ".nav-bar .nav-bar__list", "flex-direction", null)).toBe("column");
+    expect(declared(shell, ".nav-bar .nav-bar__list", "flex-direction", WIDE)).toBe("row");
+  });
+
+  it("the header switches to one row at the same 768px breakpoint as the Settings menu", () => {
+    expect(declared(shell, ".site-header__inner", "flex-direction", WIDE)).toBe("row");
+    expect(declared(settings, ".section-menu__list", "flex-direction", WIDE)).toBe("column");
+  });
+
+  it("the Settings menu stays a scrollable horizontal tab bar below 768px", () => {
+    expect(declared(settings, ".section-menu__list", "flex-direction", null)).toBeUndefined();
+    expect(declared(settings, ".section-menu__list", "overflow-x", null)).toBe("auto");
+  });
+
+  it("every nav control keeps a 44px Touch_Target, including the toggle and the account button", () => {
+    // The toggle, account button and Sign out are all <button> inside .nav-bar; Sign in and
+    // Settings are <a> inside it. Both selectors carry min-height: 44px.
+    expect(declared(controls, ".nav-bar a", "min-height", null)).toBe("44px");
+    expect(declared(controls, ".nav-bar button", "min-height", null)).toBe("44px");
+    expect(declared(shell, ".nav-bar a.nav-bar__signin", "border", null)).toContain("2px solid");
+    expect(declared(shell, ".nav-bar a.nav-bar__signin", "min-height", null)).toBeUndefined();
+  });
+
+  it("the narrow nav never needs horizontal page scroll: the account panel is in flow, the dropdown only when wide", () => {
+    expect(declared(shell, ".account-menu__panel", "position", null)).toBeUndefined();
+    expect(declared(shell, ".account-menu__panel", "position", WIDE)).toBe("absolute");
+    expect(declared(shell, ".nav-bar", "align-self", null)).toBe("stretch");
+  });
+
+  it("nothing in the nav rules sets a fixed width or min-width wider than 320px", () => {
+    const code = stripComments(shellCss);
+    expect(code).not.toMatch(/(?<!max-)(?<!min-)width\s*:\s*\d{3,}px/);
+    expect(declared(shell, ".account-menu__panel", "min-width", WIDE)).toBe("12rem");
+  });
+
+  it("the nav-bar rules use no raw color", () => {
+    expect(stripComments(shellCss)).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/);
+  });
+});
+
 describe("layout css: Status dashboard", () => {
   const surfaces = rulesOf(surfacesCss);
   const themes = rulesOf(themesCss);
@@ -244,6 +296,59 @@ describe("layout css: Status dashboard", () => {
     const code = stripComments(surfacesCss);
     const dashboard = code.slice(code.indexOf(".status-pane {"));
     expect(dashboard).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/);
+  });
+});
+
+describe("layout css: footer and shared container (ui-improvements Requirements 14.4, 15.1, 15.2)", () => {
+  const shell = rulesOf(shellCss);
+  const app = rulesOf(appCss);
+
+  it("header, main and footer share one max-width and gutter", () => {
+    const rule = shell.find(
+      (r) =>
+        r.media === null &&
+        r.selectors.includes(".site-header__inner") &&
+        r.selectors.includes("main") &&
+        r.selectors.includes(".site-footer__inner"),
+    );
+    expect(rule?.decls.get("max-width")).toBe("var(--layout-max)");
+    expect(rule?.decls.get("padding-inline")).toBe("var(--gutter)");
+    expect(rule?.decls.get("margin-inline")).toBe("auto");
+  });
+
+  it("the page header adds no horizontal offset, so title and subtitle sit on the container edge", () => {
+    const code = stripComments(surfacesCss);
+    const block = (selector: string) => code.slice(code.indexOf(`${selector} {`)).split("}")[0] ?? "";
+    for (const selector of [".page-header", ".page-header__text", ".page-header__title", ".page-header__subtitle"]) {
+      expect(block(selector), selector).not.toMatch(/(margin|padding)(-left|-inline)[^;]*:/);
+    }
+  });
+
+  it("the app root is a flex column at least one viewport tall and main takes the slack", () => {
+    expect(declared(shell, "#root", "display", null)).toBe("flex");
+    expect(declared(shell, "#root", "flex-direction", null)).toBe("column");
+    expect(declared(shell, "#root", "min-height", null)).toBe("100dvh");
+    expect(stripComments(shellCss)).toContain("min-height: 100vh");
+    expect(declared(shell, "main", "flex", null)).toBe("1 0 auto");
+    expect(declared(shell, "main", "width", null)).toBe("100%");
+  });
+
+  it("footer links are underlined with a visible focus indicator", () => {
+    expect(declared(app, ".site-footer a", "text-decoration", null)).toBe("underline");
+    expect(declared(app, ".site-footer a:focus-visible", "outline", null)).toBe("var(--focus-outline)");
+  });
+
+  it("footer spacing uses the spacing scale and the secondary line is smaller", () => {
+    expect(declared(app, ".site-footer__inner", "padding-block", null)).toBe("var(--space-5)");
+    expect(declared(app, ".site-footer__inner", "gap", null)).toMatch(/^var\(--space-\d\)( var\(--space-\d\))?$/);
+    expect(declared(app, ".site-footer__secondary", "font-size", null)).toBe("var(--text-xs)");
+  });
+
+  it("the footer rules use no raw color or pixel spacing", () => {
+    const code = stripComments(appCss);
+    const footer = code.slice(code.indexOf(".site-footer {"), code.indexOf(".nav-bar a:focus-visible"));
+    expect(footer).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/);
+    expect(footer).not.toMatch(/(margin|padding|gap)[^;]*\d+px/);
   });
 });
 

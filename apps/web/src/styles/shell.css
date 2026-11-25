@@ -13,7 +13,17 @@ main,
   box-sizing: border-box;
 }
 
+/* Sticky footer: the app root is a flex column at least one viewport tall and main takes the slack. */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 main {
+  flex: 1 0 auto;
+  width: 100%; /* auto side margins would otherwise shrink main to its content in a flex column */
   min-width: 0;
   overflow-wrap: break-word;
   padding-block: var(--space-5);
@@ -70,13 +80,113 @@ main {
   border-bottom-color: var(--color-accent);
 }
 
-/* Wide: brand and nav on one row. */
-@media (min-width: 641px) {
+/*
+ * Narrow (below 768px, Narrow_Layout): the nav collapses behind the Menu button and the list
+ * stacks. The toggle is the only control shown while collapsed. Text says "Menu" and the
+ * expanded state; nothing relies on color.
+ */
+.nav-bar {
+  position: relative;
+  align-self: stretch;
+}
+.nav-bar .nav-bar__toggle {
+  display: inline-flex;
+  border: 2px solid var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-weight: 600;
+}
+.nav-bar .nav-bar__list {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  margin-top: var(--space-1);
+}
+.nav-bar .nav-bar__list--collapsed {
+  display: none;
+}
+.nav-bar__list > li > a,
+.nav-bar__list > li > button {
+  display: flex;
+  width: 100%;
+}
+
+/* Sign in: a secondary Button-styled link, set apart from the plain links by a rule. */
+.nav-bar__auth {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--color-table-rule);
+}
+.nav-bar a.nav-bar__signin {
+  justify-content: center;
+  padding: 0 var(--space-4);
+  border: 2px solid var(--color-text-primary);
+  font-weight: 600;
+}
+.nav-bar a.nav-bar__signin[aria-current="page"] {
+  border-color: var(--color-accent);
+}
+
+/* Account menu: the panel is inline on Narrow and a dropdown on Wide. */
+.account-menu__panel {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.account-menu__panel a,
+.account-menu__panel button {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* Wide: brand and nav on one row, links in a row, no toggle. */
+@media (min-width: 768px) {
   .site-header__inner {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-2) var(--space-5);
+  }
+  .nav-bar {
+    align-self: auto;
+  }
+  .nav-bar .nav-bar__toggle {
+    display: none;
+  }
+  .nav-bar .nav-bar__list,
+  .nav-bar .nav-bar__list--collapsed {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 0;
+  }
+  .nav-bar__list > li > a,
+  .nav-bar__list > li > button {
+    display: inline-flex;
+    width: auto;
+  }
+  .nav-bar__auth {
+    margin-top: 0;
+    padding-top: 0;
+    padding-left: var(--space-3);
+    border-top: 0;
+    border-left: 1px solid var(--color-table-rule);
+  }
+  .account-menu {
+    position: relative;
+  }
+  .account-menu__panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 10;
+    min-width: 12rem;
+    padding: var(--space-1);
+    border: 1px solid var(--color-table-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-raised);
+    box-shadow: var(--elevation-1);
   }
 }
 

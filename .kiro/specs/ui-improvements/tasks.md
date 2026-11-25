@@ -243,19 +243,19 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Section order, Save/Saved/Retry states, lock indicator text and link, segmented control selection and preview update, existing `aria-describedby` wiring for the High contrast hint.
     - _Requirements: 12.1, 12.3, 12.4, 12.5, 12.6_
 
-- [-] 18. Checkpoint - Settings
+- [x] 18. Checkpoint - Settings
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 19. Navigation and responsiveness
-  - [~] 19.1 Split the Sign-in control and add the account menu in `NavBar.tsx`
+- [x] 19. Navigation and responsiveness
+  - [x] 19.1 Split the Sign-in control and add the account menu in `NavBar.tsx`
     - Render "Sign in" as a `Button`-styled link, visually separate from the plain nav links, while signed out. Add `AccountMenu.tsx` (new) rendered in place of `SignOutButton` while signed in. Keep one active-indicator style shared with `SectionMenu`'s `aria-current` styling.
     - _Requirements: 13.1, 13.2_
 
-  - [~] 19.2 Add the narrow-viewport collapse to `NavBar.tsx` and a horizontal tab bar to `SectionMenu.tsx`
+  - [x] 19.2 Add the narrow-viewport collapse to `NavBar.tsx` and a horizontal tab bar to `SectionMenu.tsx`
     - A `<button aria-expanded>` toggles a `hidden` `<ul>` under 768px; `SectionMenu` becomes a horizontal, scrollable tab bar at the same breakpoint. Ensure every control (nav links, account menu, section menu links, filter buttons added in task 13) meets the 44px Touch_Target.
     - _Requirements: 13.3, 13.4_
 
-  - [~] 19.3 Verify 320px usability
+  - [x] 19.3 Verify 320px usability
     - Add/adjust CSS so no page introduces horizontal scrolling at 320px, reusing the layout fix already in place from `ui-refresh`.
     - _Requirements: 13.5_
 
@@ -263,19 +263,19 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Update `test/components/nav-bar.test.tsx` and `test/a11y/nav-bar.test.tsx` for the new markup (Sign-in button, account menu, collapse toggle). Add tests for the Touch_Target sizes and the 320px layout (reusing the pattern in `test/layout-css.test.ts`).
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
 
-- [~] 20. Checkpoint - navigation
+- [x] 20. Checkpoint - navigation
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 21. Footer and layout consistency
-  - [~] 21.1 Update `Footer.tsx`
+- [x] 21. Footer and layout consistency
+  - [x] 21.1 Update `Footer.tsx`
     - Add the API documentation link, the advisory notice "Information is advisory and not for operational flight decisions.", and restyle the license/attribution line as a secondary (smaller, muted) line below the primary links. Keep the existing data-source and license links.
     - _Requirements: 14.1, 14.2, 14.3_
 
-  - [~] 21.2 Add footer spacing, underline/focus and sticky-bottom CSS
+  - [x] 21.2 Add footer spacing, underline/focus and sticky-bottom CSS
     - Use the shared spacing scale; visible underlines and a focus indicator on footer links; keep the footer at the bottom of the viewport on pages shorter than the viewport.
     - _Requirements: 14.4_
 
-  - [~] 21.3 Verify shared container width and left-edge alignment
+  - [x] 21.3 Verify shared container width and left-edge alignment
     - Confirm the page title, page content and footer text share one left edge and one maximum-width container across all edited pages; adjust CSS where a new element (FreshnessChip, IncidentCard, segmented control) does not yet follow the spacing scale.
     - _Requirements: 15.1, 15.2, 15.3_
 
@@ -283,7 +283,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Update `test/components/footer.test.tsx` for the new link and notice text. Extend `test/layout-css.test.ts` for the new components' spacing-scale usage.
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 15.1, 15.2, 15.3_
 
-- [~] 22. Checkpoint - footer and layout
+- [-] 22. Checkpoint - footer and layout
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 23. Accessibility pass

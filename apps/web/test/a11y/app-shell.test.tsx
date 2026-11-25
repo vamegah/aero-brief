@@ -28,7 +28,7 @@ describe("a11y: full app shell (header, nav, main, footer)", () => {
       "GET /api/watchlist": () => json({ watchlist: [] }),
     });
     render(<App />);
-    await screen.findByRole("button", { name: "Sign out" });
+    await screen.findByRole("button", { name: "Account" });
     await screen.findByTestId("stale-data-banner");
     expect(await runAxe(document.body)).toHaveNoViolations();
   });

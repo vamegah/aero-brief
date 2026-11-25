@@ -14,6 +14,7 @@ a {
 
 /* Footer: text-muted and link on surface. */
 .site-footer {
+  flex: 0 0 auto;
   margin-top: var(--space-6);
   background: var(--color-surface);
   border-top: 2px solid var(--color-border);
@@ -25,10 +26,33 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-5);
+  padding-block: var(--space-5);
 }
 
 .site-footer__item {
   margin: 0;
+}
+
+/* The notice and the secondary line each take a full row below the primary links. */
+.site-footer__notice,
+.site-footer__secondary {
+  flex: 1 0 100%;
+}
+
+.site-footer__secondary {
+  font-size: var(--text-xs);
+}
+
+/* Underlined at rest; the focus ring comes from the shared token. */
+.site-footer a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+.site-footer a:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
 }
 
 .nav-bar a:focus-visible,
