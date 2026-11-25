@@ -311,10 +311,10 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Any accessibility assertion not already covered by component tests in earlier tasks.
     - _Requirements: 17.1, 17.2, 17.3, 17.4_
 
-- [-] 24. Checkpoint - accessibility pass, full suite green
+- [x] 24. Checkpoint - accessibility pass, full suite green
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 25. Owner review on a Vercel Preview of `phase-2` (**needs user action**)
+- [-] 25. Owner review on a Vercel Preview of `phase-2` (**needs user action**)
   - The owner pushes `phase-2`. A Preview is built only when the push changes files under `apps/web`; this work does, so the push builds one. The owner reviews the signed-out views only (sign-in works only on `www`): the Overview/Events/Airports panes in each status, the signed-out Watchlist page, the Settings page's Display section, the collapsed nav bar on a phone-width viewport, and the footer. Changes the owner asks for become new tasks appended here before the ship task.
   - _Requirements: (owner acceptance of all Build now criteria)_
 
