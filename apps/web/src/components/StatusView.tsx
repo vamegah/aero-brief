@@ -1,6 +1,6 @@
 import { AIRPORTS, isMonitoredId } from "@aerobrief/core/airports";
 import type { EventSummary, NationalStatusResponse } from "../api/client";
-import { matchesAirportSearch } from "../lib/airport-search";
+import { matchesAirportSearch, rankAirportMatches } from "../lib/airport-search";
 import { DEFAULT_DASHBOARD_QUERY, type AirportScope } from "../lib/dashboard-query";
 import { EVENT_TYPES } from "../lib/event-types";
 import type { EventFilter } from "../lib/filter-events";
@@ -52,7 +52,12 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
   const sorted = ok === null ? [] : sortAirports(ok.airports);
   const affectedCount = sorted.filter((airport) => airport.groundStop !== null).length;
   const filtered = affectedOnly ? sorted.filter((airport) => airport.groundStop !== null) : sorted;
-  const shown = filtered.filter((airport) => matchesAirportSearch(airport, query));
+  // The table keeps its severity order; ranking applies only while a search is active.
+  const shown = rankAirportMatches(
+    filtered.filter((airport) => matchesAirportSearch(airport, query)),
+    query,
+    (airport) => airport,
+  );
   const searching = query.trim() !== "";
   const active = resolveStatusSection(useLocationHash());
   // Values read from the URL are checked, so a stale or hand-edited link cannot hide every event.

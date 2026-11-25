@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { AIRPORTS, type MonitoredId } from "@aerobrief/core/airports";
 import { WATCHLIST_CAP } from "@aerobrief/core/watchlist";
 import type { EventSummary, NationalStatusResponse } from "../api/client";
-import { matchesAirportSearch } from "../lib/airport-search";
+import { matchesAirportSearch, rankAirportMatches } from "../lib/airport-search";
 import { readLocalWatchlist, sortBySeverity, writeLocalWatchlist } from "../lib/local-watchlist";
 import { buildWatchedViews } from "../lib/watchlist-view";
 import { AirportStatusPill } from "./AirportStatusPill";
@@ -52,8 +52,12 @@ export function SignedOutWatchlist({ status, events }: SignedOutWatchlistProps) 
     return order.flatMap((id) => byId.get(id) ?? []);
   }, [ids, status, events]);
 
-  const matches = AIRPORTS.filter(
-    (a) => !ids.includes(a.id) && matchesAirportSearch({ airportId: a.id, name: a.name, city: a.city }, query),
+  const matches = rankAirportMatches(
+    AIRPORTS.filter(
+      (a) => !ids.includes(a.id) && matchesAirportSearch({ airportId: a.id, name: a.name, city: a.city }, query),
+    ),
+    query,
+    (a) => ({ airportId: a.id, name: a.name, city: a.city }),
   );
   const searching = query.trim() !== "";
 
