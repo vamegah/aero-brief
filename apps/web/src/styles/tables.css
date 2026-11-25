@@ -148,6 +148,13 @@
     border: 0;
   }
 
+  /* The wide rule sets width: 1% with higher specificity than the reset above. */
+  .airport-table--status tbody td:last-child,
+  .airport-table--watchlist tbody td {
+    width: auto;
+    min-width: 0;
+  }
+
   .airport-table--status tbody tr {
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;

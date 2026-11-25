@@ -118,6 +118,11 @@ describe("layout css: stacked table layout at 640px and below", () => {
     expect(declared(tables, ".airport-table thead", "display", NARROW)).not.toBe("none");
   });
 
+  it("resets the wide width: 1% on the shrink-to-content cells so buttons are not clipped", () => {
+    expect(declared(tables, ".airport-table--watchlist tbody td", "width", NARROW)).toBe("auto");
+    expect(declared(tables, ".airport-table--status tbody td:last-child", "width", NARROW)).toBe("auto");
+  });
+
   it("leaves the wide layout as a table", () => {
     expect(declared(tables, ".airport-table", "display", null)).toBeUndefined();
     expect(declared(tables, ".airport-table tbody tr", "display", null)).toBeUndefined();
