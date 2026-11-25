@@ -123,8 +123,10 @@ main {
   border: 2px solid var(--color-text-primary);
   font-weight: 600;
 }
+/* Current page: the same bottom bar the plain links get (shape), plus the accent color (decoration). */
 .nav-bar a.nav-bar__signin[aria-current="page"] {
   border-color: var(--color-accent);
+  border-bottom-width: 5px;
 }
 
 /* Account menu: the panel is inline on Narrow and a dropdown on Wide. */

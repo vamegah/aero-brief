@@ -113,7 +113,8 @@ export function MergeOffer({ account, onMerged }: MergeOfferProps) {
           ? ` Your account has room for ${toAdd.length}, so ${cannotAdd === 1 ? "1 airport" : `${cannotAdd} airports`} could not be added.`
           : ""}
       </p>
-      {error !== null ? <p role="alert">{error}</p> : null}
+      {/* No role="alert": the page wraps this offer in a polite status region, which announces it. */}
+      {error !== null ? <p>{error}</p> : null}
       <div className="chip-row">
         <Button variant="primary" disabled={phase === "working"} onClick={() => void accept()}>
           {phase === "working" ? "Adding…" : "Add to my account"}

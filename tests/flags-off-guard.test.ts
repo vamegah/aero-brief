@@ -17,7 +17,9 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
  * Baseline hashes of the two frozen design files. The baseline is the ui-refresh palette
  * retune (spec `.kiro/specs/ui-refresh`, task 4.1, decisions D3 and D8), which replaced the
  * earlier `main` baseline. Task 8.1 added one palettePairs entry (disabled-fg on surface-raised)
- * and recomputed the palette.ts hash. Phase 2 work still must not edit these files.
+ * and recomputed the palette.ts hash. ui-improvements task 23.1 added five palettePairs entries
+ * (freshness chip borders, active incident stripe) and recomputed the palette.ts hash again; tokens.css
+ * is unchanged. Phase 2 work still must not edit these files.
  *
  * The hash is SHA-256 of the UTF-8 text with CRLF normalized to LF, so a Windows checkout with
  * CRLF and the Linux CI checkout produce the same value. Computed once with:
@@ -31,7 +33,7 @@ const FROZEN_FILES: ReadonlyArray<{ path: string; sha256: string }> = [
   },
   {
     path: "apps/web/src/styles/palette.ts",
-    sha256: "5cfb746957fdc16c044f91cc6f3c3c2a0fd9e624a3b6fe8e44c1f82837a9ce5a",
+    sha256: "33891c8ecc1667b24dfe645b4402afc0209087b72e35bc091778451d21f8c2b4",
   },
 ];
 

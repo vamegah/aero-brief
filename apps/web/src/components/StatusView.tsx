@@ -70,19 +70,26 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
       eventType: next.type,
       eventState: next.state ?? null,
     }));
-  const clearEventFilters = (): void =>
+  // A clear button disappears once it is used. Focus moves to the field it cleared, so a keyboard
+  // user does not drop back to the top of the page.
+  const focusById = (id: string): void => document.getElementById(id)?.focus();
+  const clearEventFilters = (): void => {
     setDashQuery((prev) => ({
       ...prev,
       eventAirportId: DEFAULT_DASHBOARD_QUERY.eventAirportId,
       eventType: DEFAULT_DASHBOARD_QUERY.eventType,
       eventState: DEFAULT_DASHBOARD_QUERY.eventState,
     }));
-  const clearAirportFilters = (): void =>
+    focusById("event-filter-airport");
+  };
+  const clearAirportFilters = (): void => {
     setDashQuery((prev) => ({
       ...prev,
       airportScope: DEFAULT_DASHBOARD_QUERY.airportScope,
       search: DEFAULT_DASHBOARD_QUERY.search,
     }));
+    focusById("airport-search");
+  };
   const setSearch = (search: string): void => setDashQuery((prev) => ({ ...prev, search }));
   const setScope = (airportScope: AirportScope): void => setDashQuery((prev) => ({ ...prev, airportScope }));
   const feed = buildIncidentFeed(events);
@@ -227,7 +234,10 @@ export function StatusView({ status, events, loading, now }: StatusViewProps) {
                       variant="ghost"
                       className="search-field__clear"
                       aria-label="Clear search"
-                      onClick={() => setSearch("")}
+                      onClick={() => {
+                        setSearch("");
+                        focusById("airport-search");
+                      }}
                     >
                       <Icon name="close" />
                     </Button>

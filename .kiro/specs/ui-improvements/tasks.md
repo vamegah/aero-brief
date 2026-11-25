@@ -283,27 +283,27 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Update `test/components/footer.test.tsx` for the new link and notice text. Extend `test/layout-css.test.ts` for the new components' spacing-scale usage.
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 15.1, 15.2, 15.3_
 
-- [-] 22. Checkpoint - footer and layout
+- [x] 22. Checkpoint - footer and layout
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 23. Accessibility pass
-  - [~] 23.1 Add every new color pair to `palettePairs` and recompute the Flags_Guard hash
+- [x] 23. Accessibility pass
+  - [x] 23.1 Add every new color pair to `palettePairs` and recompute the Flags_Guard hash
     - Add pairs for the Airport_Status colors (minor_impact, disrupted, ground_stop, recovering, data_unavailable if new tokens were introduced beyond task 5.2), the FreshnessChip states, and the IncidentCard active/resolved accents. Update `tests/flags-off-guard.test.ts`'s pinned SHA-256 hashes for `tokens.css` and `palette.ts`.
     - _Requirements: 17.1, 17.2_
 
-  - [~] 23.2 Audit color-only signaling across new UI
+  - [x] 23.2 Audit color-only signaling across new UI
     - Confirm every status, filter-selected state and freshness state is conveyed by text as well as color (Overview chips, Airports filter buttons, Events state filter, FreshnessChip, IncidentCard active/resolved).
     - _Requirements: 17.2_
 
-  - [~] 23.3 Audit keyboard operability and focus indicators
+  - [x] 23.3 Audit keyboard operability and focus indicators
     - Confirm every new control (TimeText tooltip, IncidentCard disclosure, segmented control, account menu, nav collapse toggle, quick-add chips, Clear filters button) is reachable and operable by keyboard with a focus indicator at least 2px wide.
     - _Requirements: 17.3_
 
-  - [~] 23.4 Audit live regions
+  - [x] 23.4 Audit live regions
     - Confirm every change announcement (Freshness, "Showing X of Y", Settings Saved/error) uses a polite live region, never assertive.
     - _Requirements: 17.4_
 
-  - [~] 23.5 Extend the axe all-variants matrix
+  - [x] 23.5 Extend the axe all-variants matrix
     - Add cases to `apps/web/test/a11y/themes/all-variants.test.tsx` for: the Overview pane with recovering/ground-stop/data-unavailable states, the signed-out Watchlist page, each reordered Settings section, and the collapsed nav bar at a narrow viewport. Keep zero tolerated violations across all four Theme_Variants.
     - _Requirements: 17.6_
 
@@ -311,7 +311,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Any accessibility assertion not already covered by component tests in earlier tasks.
     - _Requirements: 17.1, 17.2, 17.3, 17.4_
 
-- [~] 24. Checkpoint - accessibility pass, full suite green
+- [-] 24. Checkpoint - accessibility pass, full suite green
   - Ensure all tests pass, ask the user if questions arise.
 
 - [~] 25. Owner review on a Vercel Preview of `phase-2` (**needs user action**)

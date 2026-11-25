@@ -1,6 +1,11 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
+import appCss from "../src/styles/app.css?raw";
 import controlsCss from "../src/styles/controls.css?raw";
+import digestSettingsCss from "../src/styles/digest-settings.css?raw";
+import displaySettingsCss from "../src/styles/display-settings.css?raw";
+import freshnessCss from "../src/styles/freshness.css?raw";
+import primitivesCss from "../src/styles/primitives.css?raw";
 import settingsCss from "../src/styles/settings.css?raw";
 import shellCss from "../src/styles/shell.css?raw";
 import surfacesCss from "../src/styles/surfaces.css?raw";
@@ -69,6 +74,33 @@ const NEW_STYLESHEET_PAIRS: readonly PalettePair[] = [
   p("color-status-normal", "color-surface-raised", "large"),
   p("color-status-warning", "color-surface-raised", "large"),
   p("color-status-alert", "color-surface-raised", "large"),
+  // ui-improvements task 23.1: controls.css Airport_Status pills (no new tokens)
+  p("color-accent", "color-accent-surface", "normal"), // minor_impact
+  p("color-warning", "color-warning-surface", "normal"), // disrupted, recovering
+  p("color-pill-danger-text", "color-danger-surface", "normal"), // ground_stop
+  p("color-chip-text", "color-chip-bg", "normal"), // data_unavailable
+  p("color-success", "color-success-surface", "normal"), // normal
+  // freshness.css: chip text and the status-colored 1px chip border
+  p("color-text-primary", "color-surface-raised", "normal"),
+  p("color-text-muted", "color-surface-raised", "normal"),
+  p("color-status-normal", "color-surface-raised", "ui"), // Live
+  p("color-status-warning", "color-surface-raised", "ui"), // Delayed
+  p("color-status-alert", "color-surface-raised", "ui"), // Unavailable
+  // surfaces.css: active and resolved incident cards, structured explanation labels
+  p("color-event-accent-started", "color-surface-raised", "ui"),
+  p("color-event-accent-started", "color-page", "ui"),
+  // display-settings.css: tooltips, segmented theme control, preview swatch
+  p("color-focus", "color-surface-raised", "ui"),
+  p("color-border", "color-surface-raised", "ui"),
+  p("color-border", "color-surface", "ui"),
+  // app.css footer
+  p("color-text-muted", "color-surface", "normal"),
+  p("color-link", "color-surface", "normal"),
+  p("color-focus", "color-surface", "ui"),
+  p("color-border", "color-surface", "ui"),
+  // primitives.css: search field icon and clear button, segment control selected state
+  p("color-accent", "color-surface-raised", "normal"),
+  p("color-accent", "color-accent-surface", "ui"),
 ];
 
 describe("Property 4: every palette pair meets its threshold in every theme", () => {
@@ -103,7 +135,18 @@ describe("Property 4: every palette pair meets its threshold in every theme", ()
   });
 
   it("color-table-rule is used only in border declarations, so it needs no pair", () => {
-    const files = { "shell.css": shellCss, "tables.css": tablesCss, "controls.css": controlsCss, "settings.css": settingsCss, "surfaces.css": surfacesCss };
+    const files = {
+      "shell.css": shellCss,
+      "tables.css": tablesCss,
+      "controls.css": controlsCss,
+      "settings.css": settingsCss,
+      "surfaces.css": surfacesCss,
+      "app.css": appCss,
+      "digest-settings.css": digestSettingsCss,
+      "display-settings.css": displaySettingsCss,
+      "freshness.css": freshnessCss,
+      "primitives.css": primitivesCss,
+    };
     for (const [file, css] of Object.entries(files)) {
       const lines = css.split(/\r?\n/);
       for (const line of lines) {

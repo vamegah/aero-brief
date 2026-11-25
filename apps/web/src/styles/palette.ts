@@ -192,4 +192,20 @@ export const palettePairs: readonly PalettePair[] = [
   // separators next to text, background and spacing cues (WCAG 1.4.11 covers only the
   // boundaries of controls, which use color-border).
   { fg: "color-disabled-fg", bg: "color-surface-raised", size: "normal" },
+
+  // ui-improvements task 23.1. The six Airport_Status pills (controls.css) reuse token pairs that
+  // are already listed above, with no new tokens: minor_impact = accent on accent-surface, disrupted
+  // and recovering = warning on warning-surface, ground_stop = pill-danger-text on danger-surface,
+  // data_unavailable = chip-text on chip-bg, normal = success on success-surface.
+  // FreshnessChip (freshness.css): the 1px border takes the status color on the raised chip surface.
+  // The label text carries the state, so these are component-boundary (ui, 3:1) pairs. The chip text
+  // pairs (text-primary and text-muted on surface-raised) are listed above.
+  { fg: "color-status-normal", bg: "color-surface-raised", size: "ui" }, // ~3.3:1 Live
+  { fg: "color-status-warning", bg: "color-surface-raised", size: "ui" }, // ~5.0:1 Delayed
+  { fg: "color-status-alert", bg: "color-surface-raised", size: "ui" }, // ~4.8:1 Unavailable
+  // IncidentCard (surfaces.css): the active card keeps the 4px alarm stripe on its raised surface and
+  // beside the page. The word "Active" and the stop icon carry the meaning. The resolved card uses
+  // color-table-rule, a decorative separator like every Card border, so it has no pair.
+  { fg: "color-event-accent-started", bg: "color-surface-raised", size: "ui" }, // ~3.8:1
+  { fg: "color-event-accent-started", bg: "color-page", size: "ui" }, // ~3.5:1
 ];
