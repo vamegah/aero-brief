@@ -55,7 +55,7 @@ Fix the two Kiro hooks and bring four documents in line with the live product be
   - Ensure all tests pass, ask the user if questions arise.
   - _Requirements: 7.1, 7.2, 7.3_
 
-- [-] 6. Confirm each hook fires in Kiro (**needs user action**)
+- [x] 6. Confirm each hook fires in Kiro (**needs user action**)
   - The owner restarts the Kiro session so it loads `.kiro/hooks/`, then opens the Agent Hooks panel and confirms both hooks are listed and enabled.
   - Typecheck_Hook: ask Kiro in chat to make a harmless edit to a file in `packages/core/src/` (for example add a one-line comment to `packages/core/src/time.ts`), then watch the hook run the typecheck and the mirrored tests. Revert the comment afterwards.
   - Test_Gate_Hook: ask Kiro to change `packages/core/src/schemas.ts` (for example add a comment) and watch the hook ask for the mirrored tests before the write. Decline or revert the change.
