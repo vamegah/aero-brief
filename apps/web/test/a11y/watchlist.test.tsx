@@ -75,7 +75,8 @@ describe("a11y: watchlist management", () => {
   it("has no violations when the user is signed out", async () => {
     stubFetch(routes({ "GET /api/watchlist": () => apiError(401, "unauthorized", "Not signed in.") }));
     const { container } = render(<WatchlistPage />);
-    await screen.findByText("Sign in to see your watchlist.");
+    await screen.findByRole("link", { name: "Sign in" });
+    expect(screen.queryByRole("alert")).toBeNull();
     expect(await runAxe(container)).toHaveNoViolations();
   });
 

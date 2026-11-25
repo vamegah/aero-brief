@@ -14,6 +14,8 @@ export interface UseWatchlistResult {
   busy: boolean;
   add: (airportId: string) => Promise<void>;
   remove: (airportId: string) => Promise<void>;
+  /** Replaces the list with one the API already returned (used by the sign-in merge). */
+  replaceList: (list: string[]) => void;
   /** Resolves true when the account was deleted. */
   removeAccount: () => Promise<boolean>;
 }
@@ -84,5 +86,5 @@ export function useWatchlist(): UseWatchlistResult {
     }
   }, []);
 
-  return { watchlist, loading, unauthorized, error, busy, add, remove, removeAccount };
+  return { watchlist, loading, unauthorized, error, busy, add, remove, replaceList: setWatchlist, removeAccount };
 }

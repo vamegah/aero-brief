@@ -62,21 +62,33 @@ function ThemeControl() {
     window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   };
 
+  const selected = OPTIONS.find((option) => option.value === preference) ?? OPTIONS[0]!;
+
   return (
     <fieldset className="display-settings__group">
       <legend>Theme</legend>
-      {OPTIONS.map((option) => (
-        <label key={option.value} className="display-settings__option">
-          <input
-            type="radio"
-            name="aerobrief-theme"
-            value={option.value}
-            checked={preference === option.value}
-            onChange={() => choose(option.value)}
-          />
-          {option.label}
-        </label>
-      ))}
+      <div className="display-settings__segments">
+        {OPTIONS.map((option) => (
+          <label
+            key={option.value}
+            className="display-settings__segment"
+            data-selected={preference === option.value ? "true" : "false"}
+          >
+            <input
+              type="radio"
+              name="aerobrief-theme"
+              value={option.value}
+              checked={preference === option.value}
+              onChange={() => choose(option.value)}
+            />
+            <span>{option.label}</span>
+          </label>
+        ))}
+      </div>
+      <p className="display-settings__preview" data-testid="theme-preview" data-preview={selected.value}>
+        <span className="display-settings__swatch" aria-hidden="true" />
+        <span>Preview: {selected.label} theme</span>
+      </p>
     </fieldset>
   );
 }

@@ -1,6 +1,6 @@
 import type { Features } from "../features/features-schema";
 
-export const SECTION_IDS = ["display", "digest", "webhooks", "account"] as const;
+export const SECTION_IDS = ["digest", "webhooks", "display", "account"] as const;
 export type SectionId = (typeof SECTION_IDS)[number];
 
 export const SECTION_LABELS: Readonly<Record<SectionId, string>> = {

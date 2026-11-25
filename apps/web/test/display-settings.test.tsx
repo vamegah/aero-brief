@@ -224,6 +224,41 @@ describe("DisplaySettings", () => {
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
+  it("renders the theme as one segmented radio group with a single selected segment", () => {
+    mount(DARK_ON);
+    const group = screen.getByRole("group", { name: "Theme" });
+    const segments = group.querySelectorAll(".display-settings__segment");
+    expect(segments).toHaveLength(3);
+    expect(Array.from(segments).map((s) => s.getAttribute("data-selected"))).toEqual(["true", "false", "false"]);
+    const radios = within(group).getAllByRole("radio") as HTMLInputElement[];
+    expect(new Set(radios.map((r) => r.name)).size).toBe(1);
+    fireEvent.click(screen.getByRole("radio", { name: "Light" }));
+    expect(Array.from(segments).map((s) => s.getAttribute("data-selected"))).toEqual(["false", "true", "false"]);
+  });
+
+  it("updates the live preview immediately on selection", () => {
+    mount(DARK_ON);
+    const preview = screen.getByTestId("theme-preview");
+    expect(preview.textContent).toBe("Preview: System theme");
+    fireEvent.click(screen.getByRole("radio", { name: "Dark" }));
+    expect(preview.textContent).toBe("Preview: Dark theme");
+    expect(preview.getAttribute("data-preview")).toBe("dark");
+    fireEvent.click(screen.getByRole("radio", { name: "Light" }));
+    expect(preview.textContent).toBe("Preview: Light theme");
+  });
+
+  it("shows no theme preview when darkMode is off", () => {
+    mount(CONTRAST_ONLY);
+    expect(screen.queryByTestId("theme-preview")).toBeNull();
+  });
+
+  it("places the High contrast hint directly after its label and links it with aria-describedby", () => {
+    mount(CONTRAST_ONLY);
+    const box = screen.getByRole("checkbox", { name: "High contrast" });
+    const hint = document.getElementById(box.getAttribute("aria-describedby") ?? "");
+    expect(hint?.previousElementSibling).toBe(box.closest("label"));
+  });
+
   it("works signed out (401) on /settings", () => {
     mount(DARK_ON);
     const group = within(screen.getByRole("region", { name: "Display settings" })).getByRole("group", { name: "Theme" });

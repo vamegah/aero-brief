@@ -76,8 +76,8 @@ describe("SettingsPage menu and visibility", () => {
   it.each<[string, Partial<Features>, string[]]>([
     ["darkMode", { darkMode: true }, ["Display", "Account"]],
     ["highContrast", { highContrast: true }, ["Display", "Account"]],
-    ["digests", { digests: true }, ["Display", "Daily digest", "Account"]],
-    ["webhooks", { webhooks: true }, ["Display", "Webhooks", "Account"]],
+    ["digests", { digests: true }, ["Daily digest", "Display", "Account"]],
+    ["webhooks", { webhooks: true }, ["Webhooks", "Display", "Account"]],
   ])("shows the menu for the %s flag", async (_name, flags, labels) => {
     mount({ ...ALL_FLAGS_OFF, ...flags });
     const menu = screen.getByRole("navigation", { name: "Settings sections" });
@@ -90,9 +90,9 @@ describe("SettingsPage menu and visibility", () => {
     mount(ALL_ON);
     const menu = screen.getByRole("navigation", { name: "Settings sections" });
     expect(within(menu).getAllByRole("link").map((a) => a.textContent)).toEqual([
-      "Display",
       "Daily digest",
       "Webhooks",
+      "Display",
       "Account",
     ]);
   });
@@ -120,7 +120,8 @@ describe("SettingsPage active pane", () => {
 
   it("falls back to the first visible section for an unknown hash", () => {
     mount(ALL_ON, "#nope");
-    expect(pane("display").hidden).toBe(false);
+    expect(pane("digest").hidden).toBe(false);
+    expect(pane("display").hidden).toBe(true);
     expect(pane("account").hidden).toBe(true);
   });
 
@@ -188,7 +189,7 @@ describe("SettingsPage session states", () => {
     for (const id of ["digest", "webhooks", "account"]) {
       expect(within(pane(id)).getByText("Loading your settings…")).not.toBeNull();
     }
-    expect(screen.getByRole("region", { name: "Display settings" })).not.toBeNull();
+    expect(screen.getByRole("region", { name: "Display settings", hidden: true })).not.toBeNull();
     expect(screen.queryByRole("button", { name: "Delete account" })).toBeNull();
     expect(screen.queryByRole("region", { name: "Daily digest" })).toBeNull();
     expect(screen.queryByRole("region", { name: "Webhooks" })).toBeNull();
@@ -241,6 +242,96 @@ describe("SettingsPage session states", () => {
     watchlist = [];
     mount({ ...ALL_FLAGS_OFF, digests: true }, "#digest");
     expect(await screen.findByText("Add an airport to receive a digest")).not.toBeNull();
+  });
+});
+
+describe("SettingsPage order, lock indicator and save feedback", () => {
+  it("opens Webhooks by default when digests are off, webhooks are on and the visitor is signed out", async () => {
+    handlers["GET /api/watchlist"] = () => apiError(401, "unauthorized", "Sign in required.");
+    mount({ ...ALL_FLAGS_OFF, webhooks: true });
+    expect(pane("webhooks").hidden).toBe(false);
+    expect(pane("display").hidden).toBe(true);
+    await within(pane("webhooks")).findByText("Sign in to manage your settings.");
+  });
+
+  it("opens Display by default when both account flags are off", () => {
+    mount(ALL_FLAGS_OFF);
+    expect(pane("display").hidden).toBe(false);
+  });
+
+  it("signed out: each account section shows a text lock label, an aria-hidden icon and the sign-in link", async () => {
+    handlers["GET /api/watchlist"] = () => apiError(401, "unauthorized", "Sign in required.");
+    mount(ALL_ON, "#digest");
+    for (const id of ["digest", "webhooks", "account"]) {
+      const scope = within(pane(id));
+      expect(await scope.findByText("Locked")).not.toBeNull();
+      expect(scope.getByText("Sign in to manage your settings.")).not.toBeNull();
+      expect(scope.getByRole("link", { name: "Go to sign in", hidden: true }).getAttribute("href")).toBe("/sign-in");
+      expect(pane(id).querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
+    }
+    expect(pane("display").textContent).not.toContain("Locked");
+    expect(pane("display").querySelector(".settings-lock")).toBeNull();
+  });
+
+  it("display: High contrast is described by the hint beneath its label", () => {
+    mount(ALL_ON, "#display");
+    const box = within(pane("display")).getByRole("checkbox", { name: "High contrast" });
+    const hint = document.getElementById(box.getAttribute("aria-describedby") ?? "");
+    expect(hint?.textContent).toBe("Stronger colors and thicker outlines");
+  });
+
+  it("digest: shows Saved after a successful save", async () => {
+    handlers["PUT /api/digest"] = () => json({ enabled: true, hour: 7 });
+    mount(ALL_ON, "#digest");
+    fireEvent.click(await screen.findByRole("button", { name: "Save digest settings" }));
+    expect(await screen.findByText("Saved")).not.toBeNull();
+    expect(screen.getByText("Digest settings saved.")).not.toBeNull();
+  });
+
+  it("digest: shows the error with Retry, and Retry saves again", async () => {
+    let attempts = 0;
+    handlers["PUT /api/digest"] = () => {
+      attempts += 1;
+      return attempts === 1 ? apiError(500, "internal", "Could not save your digest settings.") : json({ enabled: false, hour: 7 });
+    };
+    mount(ALL_ON, "#digest");
+    fireEvent.click(await screen.findByRole("button", { name: "Save digest settings" }));
+    const retry = await screen.findByRole("button", { name: "Retry" });
+    expect(screen.queryByText("Saved")).toBeNull();
+    fireEvent.click(retry);
+    expect(await screen.findByText("Saved")).not.toBeNull();
+    expect(screen.queryByRole("button", { name: "Retry" })).toBeNull();
+    expect(attempts).toBe(2);
+  });
+
+  it("webhooks: a failed add shows Retry, and Retry adds the webhook", async () => {
+    let attempts = 0;
+    handlers["POST /api/webhooks"] = () => {
+      attempts += 1;
+      return attempts === 1
+        ? apiError(500, "internal", "Could not add the webhook.")
+        : json(
+            {
+              id: "w1",
+              host: "hooks1.example.com",
+              createdAt: "2026-01-02T00:00:00.000Z",
+              state: "active",
+              lastOutcome: null,
+              lastOutcomeAt: null,
+              disabledAt: null,
+              secret: "whsec_retry",
+            },
+            201,
+          );
+    };
+    mount(ALL_ON, "#webhooks");
+    await screen.findByText("You have no webhooks yet.");
+    fireEvent.change(screen.getByLabelText("Webhook URL (https)"), { target: { value: "https://hooks1.example.com/x" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add webhook" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Retry" }));
+    await screen.findByDisplayValue("whsec_retry");
+    expect(screen.queryByRole("button", { name: "Retry" })).toBeNull();
+    expect(attempts).toBe(2);
   });
 });
 

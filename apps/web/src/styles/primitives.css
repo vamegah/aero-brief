@@ -223,6 +223,42 @@
   font-weight: 700;
 }
 
+/* Signed-out watchlist and merge offer. Layout only; no new color pairs. */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+
+.signed-out-intro .btn {
+  text-decoration: none;
+}
+
+.watch-results,
+.watch-list {
+  list-style: none;
+  margin: var(--space-2) 0;
+  padding: 0;
+}
+
+.watch-results li,
+.watch-list__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+}
+
+.watch-list__item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.watch-list__why {
+  margin: 0 0 var(--space-2);
+}
+
 /* Search field: icon at the start, clear button at the end, both inside the input's box. */
 .search-field {
   position: relative;

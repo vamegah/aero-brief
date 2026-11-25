@@ -19,11 +19,11 @@ describe("visibleSections", () => {
   });
 
   it("shows digest for digests alone", () => {
-    expect(visibleSections(flags({ digests: true }))).toEqual(["display", "digest", "account"]);
+    expect(visibleSections(flags({ digests: true }))).toEqual(["digest", "display", "account"]);
   });
 
   it("shows webhooks for webhooks alone", () => {
-    expect(visibleSections(flags({ webhooks: true }))).toEqual(["display", "webhooks", "account"]);
+    expect(visibleSections(flags({ webhooks: true }))).toEqual(["webhooks", "display", "account"]);
   });
 
   it("shows all four in fixed order with every flag on", () => {
@@ -35,17 +35,25 @@ describe("visibleSections", () => {
 describe("resolveSection", () => {
   const all = [...SECTION_IDS];
 
+  it("orders sections Daily digest, Webhooks, Display, Account", () => {
+    expect([...SECTION_IDS]).toEqual(["digest", "webhooks", "display", "account"]);
+  });
+
   it("falls back to the first visible section for an empty hash", () => {
-    expect(resolveSection("", all)).toBe("display");
+    expect(resolveSection("", all)).toBe("digest");
     expect(resolveSection("", ["account"])).toBe("account");
   });
 
   it("falls back for a bare #", () => {
-    expect(resolveSection("#", all)).toBe("display");
+    expect(resolveSection("#", all)).toBe("digest");
   });
 
   it("falls back for an unknown hash", () => {
-    expect(resolveSection("#nope", all)).toBe("display");
+    expect(resolveSection("#nope", all)).toBe("digest");
+  });
+
+  it("defaults to webhooks when digests are off and webhooks are on", () => {
+    expect(resolveSection("", visibleSections(flags({ webhooks: true })))).toBe("webhooks");
   });
 
   it("falls back to display when the webhooks flag is off", () => {

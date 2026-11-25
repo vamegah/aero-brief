@@ -25,6 +25,7 @@ export function DigestSettings({ watchlistCount }: { watchlistCount: number | nu
   const [busy, setBusy] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [message, setMessage] = useState("");
+  const [showSaved, setShowSaved] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const mounted = useRef(true);
 
@@ -48,9 +49,10 @@ export function DigestSettings({ watchlistCount }: { watchlistCount: number | nu
     };
   }, [attempt]);
 
-  async function onSubmit(event: FormEvent): Promise<void> {
-    event.preventDefault();
+  async function onSubmit(event?: FormEvent): Promise<void> {
+    event?.preventDefault();
     setBusy(true);
+    setShowSaved(false);
     setSaveError(null);
     setMessage("");
     try {
@@ -59,6 +61,7 @@ export function DigestSettings({ watchlistCount }: { watchlistCount: number | nu
       setEnabled(saved.enabled);
       setHour(saved.hour);
       setMessage("Digest settings saved.");
+      setShowSaved(true);
     } catch (err) {
       if (!mounted.current) return;
       const text = err instanceof ApiRequestError ? err.message : "Could not save your digest settings.";
@@ -86,7 +89,10 @@ export function DigestSettings({ watchlistCount }: { watchlistCount: number | nu
               type="checkbox"
               checked={enabled}
               disabled={busy}
-              onChange={(e) => setEnabled(e.target.checked)}
+              onChange={(e) => {
+                setEnabled(e.target.checked);
+                setShowSaved(false);
+              }}
             />
             Send me a daily digest
           </label>
@@ -99,7 +105,10 @@ export function DigestSettings({ watchlistCount }: { watchlistCount: number | nu
             className="digest-settings__select"
             value={hour}
             disabled={busy}
-            onChange={(e) => setHour(Number(e.target.value))}
+            onChange={(e) => {
+              setHour(Number(e.target.value));
+              setShowSaved(false);
+            }}
           >
             {HOURS.map((h) => (
               <option key={h} value={h}>
@@ -107,10 +116,22 @@ export function DigestSettings({ watchlistCount }: { watchlistCount: number | nu
               </option>
             ))}
           </select>
-          {saveError !== null ? <p className="digest-settings__error">{saveError}</p> : null}
+          {saveError !== null ? (
+            <div className="digest-settings__error">
+              <p>{saveError}</p>
+              <Button variant="secondary" disabled={busy} onClick={() => void onSubmit()}>
+                Retry
+              </Button>
+            </div>
+          ) : null}
           <Button type="submit" variant="primary" disabled={busy}>
             Save digest settings
           </Button>
+          {showSaved ? (
+            <p className="digest-settings__saved" aria-hidden="true">
+              Saved
+            </p>
+          ) : null}
         </form>
       )}
       <div aria-live="polite" className="digest-settings__live">

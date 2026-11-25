@@ -31,3 +31,10 @@
 .digest-settings__hint {
   color: var(--color-text-muted);
 }
+
+.digest-settings__saved {
+  margin: var(--space-1) 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+

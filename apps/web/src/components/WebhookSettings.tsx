@@ -65,6 +65,7 @@ export function WebhookSettings() {
   const [secret, setSecret] = useState<Secret | null>(null);
   const [message, setMessage] = useState("");
   const [testResults, setTestResults] = useState<Record<string, string>>({});
+  const [retry, setRetry] = useState<(() => void) | null>(null);
   const mounted = useRef(true);
 
   const load = useCallback(async (signal?: AbortSignal) => {
@@ -92,6 +93,7 @@ export function WebhookSettings() {
 
   async function run(action: () => Promise<void>, fallback: string): Promise<void> {
     setBusy(true);
+    setRetry(null);
     try {
       await action();
     } catch (err) {
@@ -99,6 +101,7 @@ export function WebhookSettings() {
       const text = errorText(err, fallback);
       setMessage(text);
       setFormError(text);
+      setRetry(() => () => void run(action, fallback));
     } finally {
       if (mounted.current) setBusy(false);
     }
@@ -108,6 +111,7 @@ export function WebhookSettings() {
     event.preventDefault();
     const trimmed = url.trim();
     if (trimmed === "") {
+      setRetry(null);
       setFormError("Enter a webhook URL that starts with https://.");
       return;
     }
@@ -278,6 +282,11 @@ export function WebhookSettings() {
               {full ? "Up to 3 webhooks. Delete one to add another." : "Up to 3 webhooks."}
             </p>
             {formError !== null ? <p className="webhook-settings__error">{formError}</p> : null}
+            {formError !== null && retry !== null ? (
+              <Button variant="secondary" disabled={busy} onClick={retry}>
+                Retry
+              </Button>
+            ) : null}
             <Button type="submit" variant="secondary" disabled={busy || full}>
               Add webhook
             </Button>

@@ -202,10 +202,10 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Count correctness, announcement text, empty-state "Clear filters" behavior, URL round trip through the rendered page.
     - _Requirements: 11.1, 11.4, 11.5, 11.6_
 
-- [-] 14. Checkpoint - filters and search
+- [x] 14. Checkpoint - filters and search
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 15. Signed-out watchlist
+- [x] 15. Signed-out watchlist
   - [x] 15.1 Implement `apps/web/src/lib/local-watchlist.ts`
     - `readLocalWatchlist`, `writeLocalWatchlist`, `mergeIntoAccount`, `sortBySeverity`, as in `design.md`.
     - _Requirements: 4.1, 4.3, 4.5_
@@ -215,11 +215,11 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - **Property 9: Severity sort is a total order consistent with status**
     - **Validates: Requirements 4.3, 4.5**
 
-  - [~] 15.3 Add the signed-out branch to `WatchlistPage.tsx`
+  - [x] 15.3 Add the signed-out branch to `WatchlistPage.tsx`
     - Quick-add chips for ATL, DFW and LAS, airport search, the Local_Watchlist-backed status list sorted by severity with a one-line explanation, a non-blocking note that the daily digest and alerts need an account, and no error banner while signed out.
     - _Requirements: 4.1, 4.2, 4.4, 4.5, 4.6_
 
-  - [~] 15.4 Add the sign-in merge offer
+  - [x] 15.4 Add the sign-in merge offer
     - On sign-in with a non-empty Local_Watchlist, offer to add the saved airports to the account (respecting the cap of 30) and report how many could not be added.
     - _Requirements: 4.3_
 
@@ -227,15 +227,15 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Quick-add chips present and functional, search present, no error banner, the account note text, the merge-offer banner and its overflow message.
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.6_
 
-- [~] 16. Checkpoint - signed-out watchlist
+- [x] 16. Checkpoint - signed-out watchlist
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 17. Settings structure
-  - [~] 17.1 Reorder `SECTION_IDS` and add the Save/Saved/Retry and lock-indicator UI
+- [x] 17. Settings structure
+  - [x] 17.1 Reorder `SECTION_IDS` and add the Save/Saved/Retry and lock-indicator UI
     - Change `SECTION_IDS` in `settings-sections.ts` to `["digest", "webhooks", "display", "account"]`. Add Saved confirmation text (or an error with a Retry button) to `DigestSettings.tsx` and `WebhookSettings.tsx` where missing. Add a lock icon and sign-in prompt to the signed-out state of `SettingsPage.tsx`'s `SessionGate`, replacing the plain text.
     - _Requirements: 12.1, 12.5, 12.6_
 
-  - [~] 17.2 Convert the theme control to a segmented control with live preview
+  - [x] 17.2 Convert the theme control to a segmented control with live preview
     - In `DisplaySettings.tsx`, replace the radio-button theme control with a segmented control (keeping the same `localStorage` keys and change event) and add a small live preview swatch that updates immediately on selection.
     - _Requirements: 12.3_
 
@@ -243,7 +243,7 @@ Build the **Build now** criteria of `requirements.md` on branch `phase-2`. All c
     - Section order, Save/Saved/Retry states, lock indicator text and link, segmented control selection and preview update, existing `aria-describedby` wiring for the High contrast hint.
     - _Requirements: 12.1, 12.3, 12.4, 12.5, 12.6_
 
-- [~] 18. Checkpoint - Settings
+- [-] 18. Checkpoint - Settings
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 19. Navigation and responsiveness
