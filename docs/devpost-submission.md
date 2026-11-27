@@ -161,7 +161,7 @@ Longer notes behind the block above.
 - Open the emailed magic link within 15 minutes. It works once. The email comes from `alerts@aerobriefs.com`.
 - Open Settings, then "Display", to change "Time display" (Relative, Airport local time, My local time, UTC). Times shown in the app follow it.
 - No password and no test account is needed.
-- Alert emails are sent only when the real FAA feed shows a ground stop starting or ending at a watched airport. An alert may not arrive during judging. The demo video shows one.
+- Alert emails are sent only when the real FAA feed shows a ground stop starting or ending at a watched airport. An alert may not arrive during judging.
 - The stale-data banner appears only when the poller has fallen 10 minutes behind, so it will normally not be visible. The way we showed it is in `docs/demo-script.md` ("Stale banner"): override the `/api/status/national` response in browser DevTools so it returns `"stale": true`. This changes only your own browser.
 - To remove your data, open Settings, the "Account" section, and use "Delete account" (`apps/web/src/components/AccountSection.tsx`).
 - Digests and webhooks are limited by Safe_Send_Mode to allowlisted recipients, so a judge's address will not receive a digest, and webhooks go only to allowlisted hosts.

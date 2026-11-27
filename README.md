@@ -18,7 +18,7 @@ These limits are fixed for the MVP:
 
 ## Phase 2 features (built, off by default)
 
-Four Phase 2 features are merged into `main`. Each sits behind its own flag, and every flag is **off by default**. They are built but not live: production has not had the Phase 2 migrations (`0004`, `0005`, `0006`) applied, and no flag is on there. With every flag off, AeroBrief behaves exactly as the MVP does.
+Four Phase 2 features are merged into `main`. Each sits behind its own flag, and every flag is **off by default** in code. They are live in production: the Phase 2 migrations (`0004`, `0005`, `0006`) are applied and all four flags are on there. With every flag off, AeroBrief behaves exactly as the MVP does.
 
 | Feature | Flag | Default | What it does |
 | --- | --- | --- | --- |
@@ -27,7 +27,7 @@ Four Phase 2 features are merged into `main`. Each sits behind its own flag, and
 | Daily digest | `FEATURE_DIGESTS` | off | An optional daily email digest, sent at an hour (0 to 23) you choose |
 | Signed webhooks | `FEATURE_WEBHOOKS` | off | Up to 3 HTTPS URLs per account that receive a signed `POST` when a ground stop starts or ends, or a nationwide ground stop is detected |
 
-A flag is on only when its value is exactly the text `true`. A missing flag, `false`, or any other value means off. Flags are plain Worker variables, set for `apps/api` and `apps/poller` (the examples are in each `.dev.vars.example`). The web app reads them from the API's `GET /api/features`.
+A flag is on only when its value is exactly the text `true`. A missing flag, `false`, or any other value means off. Flags are set for `apps/api` and `apps/poller` (the examples are in each `.dev.vars.example`). In production they are stored as Worker secrets (`wrangler secret put`), because a deploy removes text variables set in the Cloudflare dashboard. The web app reads them from the API's `GET /api/features`.
 
 Webhooks also need a `WEBHOOK_MASTER_SECRET` Worker secret of at least 32 characters. Without it the webhook routes answer `503`.
 
