@@ -4,6 +4,9 @@ AeroBrief watches FAA airport status and sends plain-language email alerts when 
 
 Every explanation is written in plain English, so a traveler doesn't need to read FAA jargon.
 
+- Live app: https://www.aerobriefs.com
+- Demo video (under 3 minutes): https://youtu.be/zM7OS0r_CiI
+
 ## MVP scope
 
 These limits are fixed for the MVP:

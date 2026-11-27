@@ -125,7 +125,7 @@ TypeScript (strict), Cloudflare Workers, Neon Postgres, Drizzle ORM, Zod, React 
 
 - App: https://www.aerobriefs.com
 - Source: https://github.com/vamegah/aero-brief
-- Demo video: _add the public YouTube URL after task 14.4_
+- Demo video: https://youtu.be/zM7OS0r_CiI
 
 ## Testing instructions for judges (paste into the PRIVATE Devpost testing field)
 
@@ -172,7 +172,7 @@ Longer notes behind the block above.
 - [ ] GitHub repo public, `.kiro/` at the root and not ignored, MIT license visible in About (task 14.5)
 - [ ] Working URL: https://www.aerobriefs.com
 - [ ] Text description pasted from this file
-- [ ] Public YouTube demo under 3 minutes (task 14.4, pending). Public, not unlisted, per task 14.7
+- [x] Public YouTube demo under 3 minutes: https://youtu.be/zM7OS0r_CiI (2:57, public)
 - [x] Kiro write-up: `docs/kiro-usage.md` updated again for the Kiroween questions (task 14.8)
 - [ ] Optional, Social Blitz: post with `#KiroweenHackathon26` at the start (task 15.2)
 - [ ] Optional, Bonus Blog: public post mentioning Kiroween 2026 (task 15.1)
