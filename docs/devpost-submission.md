@@ -61,16 +61,16 @@ The FAA's servers answer requests from Cloudflare Workers with HTTP 403 (probe e
 The stack is fixed and serverless:
 
 - A **Cloudflare Worker** runs on a 5-minute cron. It fetches the FAA airport events feed through the relay, validates it with Zod, normalizes it to exactly 30 airports (the FAA Core 30), and stores a snapshot in **Neon Postgres** through **Drizzle ORM**. A second 30-minute cron deletes data older than 24 hours.
-- A **pure TypeScript core** (`packages/core`) holds the change detector, explanation mapper, event keys, watchlist rules and unsubscribe signing. It has no I/O. **fast-check** property tests (85 `*.pbt.test.ts` files across the repo, counted on 2026-11-25) check it against the correctness properties in the design.
+- A **pure TypeScript core** (`packages/core`) holds the change detector, explanation mapper, event keys, watchlist rules and unsubscribe signing. It has no I/O. **fast-check** property tests (88 `*.pbt.test.ts` files across the repo) check it against the correctness properties in the design.
 - A second **Worker** serves a hand-written JSON API for status, history, sign-in and watchlists.
 - **Resend** sends magic links and alerts. A small shared client retries and sets an `Idempotency-Key` so a retried poll cannot email a user twice about the same event.
 - **React 18 + Vite** on **Vercel** renders the dashboard. Colors are tokens, and a test checks every color pair against WCAG 2.1 AA contrast. A vitest-axe suite checks every page.
 
 How Kiro was used: the Kiro IDE only, with built-in sub-agents (no custom agents) and no Kiro powers. Full account: [`docs/kiro-usage.md`](kiro-usage.md).
 
-- **Specs.** The first spec (18 requirements, 38 design properties, 20 task sections) drove the MVP, with tasks that cite requirements and property tests that cite design properties. A second spec (`.kiro/specs/aerobrief-phase2/`, 21 design properties) drove the four flagged features. Five later specs followed: `faa-403-poller` (the FAA relay fix), `ui-refresh` (the Status and Settings redesign), `core30-limits` (the move to 30 airports and a 30-airport watchlist), `ui-improvements` (the Overview, incident cards, freshness chip, signed-out Watchlist, navigation and footer; every criterion marked build now, deferred or out of scope) and `submission-polish` (the hooks and these documents).
+- **Specs.** The first spec (18 requirements, 38 design properties, 20 task sections) drove the MVP, with tasks that cite requirements and property tests that cite design properties. A second spec (`.kiro/specs/aerobrief-phase2/`, 21 design properties) drove the four flagged features. Six later specs followed, for eight in all: `faa-403-poller` (the FAA relay fix), `ui-refresh` (the Status and Settings redesign), `core30-limits` (the move to 30 airports and a 30-airport watchlist), `ui-improvements` (the Overview, incident cards, freshness chip, signed-out Watchlist, navigation and footer; every criterion marked build now, deferred or out of scope), `submission-polish` (the hooks and these documents) and `ui-review-fixes` (fixes from two screenshot reviews of the live UI, including the stale-active incident bug).
 - **Steering.** Five steering files fix the stack, structure, MVP scope, visual design and product tone. `tests/repo-guard.test.ts` turns some of those rules into a failing test. The scope file's Phase 2 section requires a flag per feature and a rollback rule.
-- **Hooks.** Two agent hooks are defined in `.kiro/hooks/`: a typecheck and test run after the agent saves a file, and a test reminder before a write under `packages/core/src/`. Both are prompts and neither blocks a write. `docs/hooks.md` describes them, their limits and the firing record. The first versions were broken and were replaced by the `submission-polish` spec.
+- **Hooks.** Two agent hooks are defined in `.kiro/hooks/`, both on `PostFileSave`: a typecheck and test run after the agent saves a `.ts` or `.tsx` file, and a check that tests cover any change saved under `packages/core/src/`. Both are prompts and neither blocks a save. `docs/hooks.md` describes them, their limits and the firing record. The first versions were broken and were replaced by the `submission-polish` spec.
 - **Neon MCP.** The Neon MCP tools made read-only checks of production during the live smoke test, ran migrations 0004 and 0005 on a copy-on-write `phase-2` branch, and applied migrations 0004 to 0006 to production after restore-point branches (`docs/decisions.md`, `docs/phase2-rollout.md`).
 - **Property tests.** One property test caught a real bug: the digest unsubscribe signature check accepted more than one string for the same signature.
 
@@ -95,7 +95,7 @@ Two more are in the write-up: a thrown value that could break the error reporter
 ## Accomplishments
 
 - A deployed, working pipeline: cron poll through a relay, stored snapshots, live dashboard, and real email through our own verified domain.
-- 85 property-based test files over the core logic, plus unit, component and accessibility tests.
+- 88 property-based test files across the repo, plus unit, component and accessibility tests.
 - Sign-in, alerts and unsubscribe with no passwords stored anywhere.
 
 ## What we learned
@@ -126,6 +126,28 @@ TypeScript (strict), Cloudflare Workers, Neon Postgres, Drizzle ORM, Zod, React 
 - App: https://www.aerobriefs.com
 - Source: https://github.com/vamegah/aero-brief
 - Demo video: https://youtu.be/zM7OS0r_CiI
+
+## How the project meets the main technology requirement (Devpost field)
+
+Paste into the field "Explain how your project meets the main technology requirement." Keep the clause "and appear in the demo video" only if the final video shows the hooks firing.
+
+```text
+AeroBrief was built in the Kiro IDE. Everything Kiro produced is in the public repo under .kiro/ (https://github.com/vamegah/aero-brief). Full account: docs/kiro-usage.md.
+
+SPECS (.kiro/specs/, 8 specs): every feature started as a Kiro spec with requirements, a design with numbered correctness properties, and a task list. aerobrief (the MVP: 18 requirements, 38 design properties), aerobrief-phase2 (four features behind flags), faa-403-poller (the bugfix spec for the FAA HTTP 403 block), ui-refresh, core30-limits, ui-improvements, ui-review-fixes and submission-polish. Tasks cite requirements, and property tests cite design properties.
+
+KIRO TOOLS AND SUB-AGENTS: an orchestrating chat session dispatched Kiro's built-in spec-task-execution sub-agent, one per task, and checked each result. Kiro's built-in requirements, design and bugfix workflows wrote the specs. No custom agents were created.
+
+STEERING (.kiro/steering/, 5 files): tech.md fixes the stack and records the one approved exception, the FAA relay. scope.md enforces the MVP limits and the Phase 2 rules: flags off by default, reversible migrations, no scraping. structure.md sets layering and test locations. product.md sets the plain-language tone. design.md sets the design tokens and WCAG AA contrast. Kiro refused out-of-scope requests until the owner changed scope.md. tests/repo-guard.test.ts turns some steering rules into failing tests.
+
+HOOKS (.kiro/hooks/, 2 agent hooks, PostFileSave): typecheck-on-save runs the workspace typecheck and the mirrored Vitest tests after the agent saves a .ts or .tsx file. require-test-update checks that tests in packages/core/test/ cover any change saved under packages/core/src/. Both were seen firing on a real edit, recorded in docs/hooks.md, and appear in the demo video.
+
+MCP: the Neon MCP server ran migrations on a copy-on-write Neon branch first, took restore-point branches before each production migration (0004 to 0006), and made read-only production checks during the smoke test.
+
+PROPERTY-BASED TESTING: 88 fast-check *.pbt.test.ts files test the pure core against the spec's correctness properties. One caught a real bug: a digest unsubscribe signature verified for two different strings, because atob ignores trailing base64 bits. It was fixed in commit bbd419e and kept as a regression test.
+
+POWERS: none used.
+```
 
 ## Testing instructions for judges (paste into the PRIVATE Devpost testing field)
 
